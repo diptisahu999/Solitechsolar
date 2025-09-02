@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="city_mst_view_form" model="ir.ui.view">
+        <field name="name">city.mst.view.form</field>
+        <field name="model">city.mst</field>
+        <field name="arch" type="xml">
+            <form string="City">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="state_id" options="{'no_quick_create' : True}"/>
+                        </group>    
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="city_mst_view_tree" model="ir.ui.view">
+        <field name="name">city.mst.view.tree</field>
+        <field name="model">city.mst</field>
+        <field name="arch" type="xml">
+            <tree string="City" sample="1">
+                <field name="name" />
+                <field name="state_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="city_mst_action" model="ir.actions.act_window">
+        <field name="name">City</field>
+        <field name="res_model">city.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="latest_status_mst_view_form" model="ir.ui.view">
+        <field name="name">latest.status.mst.view.form</field>
+        <field name="model">latest.status.mst</field>
+        <field name="arch" type="xml">
+            <form string="Latest Status">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>    
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="latest_status_mst_view_tree" model="ir.ui.view">
+        <field name="name">latest.status.mst.view.tree</field>
+        <field name="model">latest.status.mst</field>
+        <field name="arch" type="xml">
+            <tree string="Latest Status" sample="1">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="latest_status_mst_action" model="ir.actions.act_window">
+        <field name="name">Latest Status</field>
+        <field name="res_model">latest.status.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="company_mst_view_form" model="ir.ui.view">
+        <field name="name">company.mst.view.form</field>
+        <field name="model">company.mst</field>
+        <field name="arch" type="xml">
+            <form string="Company">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>    
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="company_mst_view_tree" model="ir.ui.view">
+        <field name="name">company.mst.view.tree</field>
+        <field name="model">company.mst</field>
+        <field name="arch" type="xml">
+            <tree string="Company" sample="1">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="company_mst_action" model="ir.actions.act_window">
+        <field name="name">Company</field>
+        <field name="res_model">company.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="project_contact_mst_view_form" model="ir.ui.view">
+        <field name="name">project.contact.mst.view.form</field>
+        <field name="model">project.contact.mst</field>
+        <field name="arch" type="xml">
+            <form string="Project Contact">
+                <sheet>
+                    <div class="oe_button_box" name="button_box" >
+                        <button type="object"
+                            name="action_view_project"
+                            class="oe_stat_button"
+                            invisible="project_count &lt; 1"
+                            icon="fa-file-powerpoint-o">
+                            <field name="project_count" string="Projects" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="postion_type" required="1"/>
+                            <field name="name" />
+                            <field name="designation" />
+                            <field name="source_id" options="{'no_create' : True}"/>
+                        </group>    
+                        <group>
+                            <field name="company_id" options="{'no_quick_create' : True}"/>
+                            <field name="email" />
+                            <field name="contact" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="project_line" string="Project" invisible="1">
+                            <field name="project_ids" >
+                                <tree editable="1" >
+                                    <field name = "name" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="project_contact_mst_view_tree" model="ir.ui.view">
+        <field name="name">project.contact.mst.view.tree</field>
+        <field name="model">project.contact.mst</field>
+        <field name="arch" type="xml">
+            <tree string="Project Contact" sample="1">
+                <field name="postion_type"/>
+                <field name="name"/>
+                <field name="designation" />
+                <field name="source_id" />
+                <field name="company_id" />
+                <field name="email" />
+                <field name="contact" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="project_contact_mst_action" model="ir.actions.act_window">
+        <field name="name">Project Contact</field>
+        <field name="res_model">project.contact.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

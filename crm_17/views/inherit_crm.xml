@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.view.form.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet" position="before">
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" invisible="is_same_lead == False" > 
+                    <bold><a class="alert-link" role="button">Lead already generated. Lead no  <field name="same_lead" force_save="1" readonly="True"/></a></bold>
+                </div>
+            </xpath>
+            <xpath expr="//group[@name='lead_partner']/field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+                <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
+                <attribute name="required">type == 'opportunity'</attribute>
+                <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
+            </xpath>
+            <xpath expr="//group[@name='opportunity_partner']/field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+                <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
+                <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
+            </xpath>
+            <!-- <xpath expr="//sheet/div[@class='oe_title']" position="after" >
+                <div style="margin-bottom:5px;">
+                    <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user"/>
+                </div>
+            </xpath> -->
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="create_date_formatted" /><br/>
+                <h1>
+                    <field name="pi_no" readonly="1" force_save="1" invisible="pi_no == 0"/>
+                </h1>
+            </xpath>
+            <xpath expr="//header/button[@name='action_set_won_rainbowman']" position="after">
+                <button name="action_assign_other_saleperson" type="object" class="oe_highlight" string="Assign Saleperson" groups="sales_team.group_sale_manager"/>
+            </xpath>
+            <xpath expr="//header/button[@name='action_set_won_rainbowman']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>    
+            <xpath expr="//header/button[@name='%(crm.crm_lead_lost_action)d']" position="after">
+                <button name="%(crm_17.action_crm_lead_lost_stage_wiz)d" string="Lost"  type="action" invisible="type == 'lead' or lost_reason_id != False" />
+            </xpath>
+            <xpath expr="//header/button[@name='%(crm.crm_lead_lost_action)d']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='iap_enrich'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='iap_enrich'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//label[@for='phone']" position="before">
+                <field name="person_contacts" />
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="before">
+                <field name="bulk_requirement" />
+                <field name="team_leader_id" invisible="1"/>
+                <field name="last_update" invisible="1"/>
+                <field name="partner_vat" invisible="1"/>
+                <field name="is_same_lead" invisible="1"/>
+                <field name="is_create_uid" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='lost_reason_id']" position="before">
+                <label for="mobile_page_lead" class="oe_inline"/>
+                <div class="o_row o_row_readonly">
+                    <button name="phone_action_blacklist_remove" class="fa fa-ban text-danger" title="This phone number is blacklisted for SMS Marketing. Click to unblacklist." type="object" context="{'default_phone': mobile}" groups="base.group_user" invisible="not mobile_blacklisted"/>
+                    <field name="mobile" id="mobile_page_lead" widget="phone"/>
+                </div>
+                <label for="street" string="Address"/>
+                    <div class="o_address_format">
+                        <field name="street" placeholder="Street..." class="o_address_street" readonly="1"/>
+                        <field name="street2" placeholder="Street 2..." class="o_address_street" readonly="1"/>
+                        <field name="city" placeholder="City" class="o_address_city" readonly="1"/>
+                        <field name="state_id" class="o_address_state" placeholder="State" readonly="1" options="{&quot;no_open&quot;: True}"/>
+                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="1"/>
+                        <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" readonly="1"/>
+                    </div>
+                <field name="due_days" />
+            </xpath>
+            <xpath expr="//page[@name='lead']//group/label[@for='street_page_lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lead']//group/div" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lead']//group/group[hasclass('mt48')]/div[2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lost_reason_id']" position="attributes">
+                <attribute name="invisible">not lost_reason_id</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <!-- <attribute name="readonly">is_group_manager == False</attribute> -->
+                <attribute name="force_save">1</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="required">type == 'opportunity'</attribute>
+            </xpath>
+            <xpath expr="//group[@name='lead_priority']/field[@name='tag_ids']" position="attributes">
+                <!-- <attribute name="readonly">is_group_manager == False</attribute> -->
+                <attribute name="force_save">1</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="label_ids" widget="many2many_tags" options="{'no_quick_create' : True}" />
+                <!-- readonly="is_group_uid == False" -->
+                <field name="last_date_formatted" />
+                <field name="interest" readonly="1" force_save="1"/>
+                <field name="is_group_uid" invisible="1" force_save="1"/>
+                <field name="is_group_manager" invisible="1" force_save="1"/>
+                <field name="interest_id"  options="{'no_create': True,'no_open': True}" required="type == 'opportunity'"/>
+                <field name="project_id"  options="{'no_create': True,'no_open': True}" invisible="type != 'opportunity'"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="required">type == 'opportunity'</attribute>
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="source_id"  options="{'no_create': True}" required="type == 'opportunity'" />
+                <!-- readonly="is_create_uid == False" -->
+            </xpath>
+            <xpath expr="//page[@name='extra']//field[@name='source_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lead']//field[@name='source_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='expected_revenue']" position="attributes">
+                <attribute name="required">type == 'opportunity'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="attributes">
+                <attribute name="required">type == 'opportunity'</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lead']" position="after">
+                <page name="lead_accent" string="Lead Assigned">
+                    <field name="sale_line_ids" >
+                        <tree create="0" edit="0" delete="0">
+                            <field name="date_formatted" readonly="1"/>
+                            <field name="date" column_invisible="1"/>
+                            <field name="user_by_id"/>
+                            <field name="user_to_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_crm_lead_sale_line_form" model="ir.ui.view">
+        <field name="name">crm.lead.sale.line.form</field>
+        <field name="model">crm.lead.sale.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="date_formatted" readonly="1"/>
+                        <field name="date" invisible="1"/>
+                        <field name="user_by_id" readonly="1"/>
+                        <field name="user_to_id" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_assign_other_saleperson" model="ir.actions.server">
+        <field name="name">Assign Other Saleperson</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="binding_model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_assign_other_saleperson()
+        </field>
+    </record>
+
+    <record id="action_assign_other_details_ser" model="ir.actions.server">
+        <field name="name">Assign Details</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="binding_model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_assign_other_details()
+        </field>
+    </record>
+
+    <record id="crm_lead_view_tree_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.view.tree.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="create_date_formatted" string="Create Date" optional="show"/>
+                <field name="create_uid" string="Created by" optional="hide"/>
+                <field name="pi_no" string="Number" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='create_date']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='contact_name']" position="after">
+                <field name="person_contacts" />
+                <field name="email_from" optional="show"/>
+                <field name="phone" />
+                <field name="mobile" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='contact_name']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email_from']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="due_days" optional="hide"/>
+                <field name="action_link" widget="html"/>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="tag_ids" widget="many2many_tags" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="label_ids" widget="many2many_tags" optional="hide"/>
+                <field name="interest_id" optional="hide"/>
+            </xpath>
+            <xpath expr="//button[@name='%(crm.action_lead_mail_compose)d']" position="attributes">
+                <attribute name="string"> </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_case_lead_view_tree_inherit" model="ir.ui.view">
+        <field name="name">crm.case.lead.view.tree.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_leads" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="action_link" widget="html"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_kanban_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.view.kanban.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads" />
+        <field name="arch" type="xml">
+            <!-- Fix: Use hasclass instead of @class -->
+            <xpath expr="//div[hasclass('oe_kanban_content', 'flex-grow-1')]/div[hasclass('oe_kanban_details')]" position="before">
+                <div class="oe_kanban_bottom_left">
+                    <field name="create_date_formatted" />
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_kanban_footer')]/div[hasclass('o_kanban_record_bottom')]/div[hasclass('oe_kanban_bottom_right')]/field[@name='user_id']" position="before">
+                <field name="action_link" widget="html"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_crm_case_my_opportunities_filter" model="ir.ui.view">
+        <field name="name">inherit.crm.lead.search.opportunities</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="create_uid" string="Created by" filter_domain="[('create_uid', 'ilike', self)]"/>            
+                <field name="pi_no" string="Lead No." filter_domain="[('pi_no', 'ilike', self)]"/>            
+                <field name="partner_vat" string="GST No." filter_domain="[('partner_vat', 'ilike', self)]"/>            
+                <field name="email_from" string="Email" filter_domain="[('email_from', 'ilike', self)]"/>            
+            </xpath>
+            <xpath expr="//filter[@name='open_opportunities']" position="after">
+                <filter string="Bulk Requirement" name="bulk_requirement" domain="[('bulk_requirement', '=', True)]" help="Bulk Requirement"/>
+                <filter string="Remarks not added" name="create_lead" domain="[('last_update', '=', False)]" help="No Edit Lead"/>
+                <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
+            </xpath>
+            <xpath expr="//filter[@name='source']" position="after">
+                <filter string="Created by" name="create_uid" domain="[]" context="{'group_by':'create_uid'}"/>
+            </xpath>
+            <xpath expr="//filter[@name='saleschannel']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='lost']" position="attributes">
+                <attribute name="domain">[('lost_reason_id', '!=', False)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_crm_case_my_activities_filter" model="ir.ui.view">
+        <field name="name">inherit.crm.lead.search.myactivities</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_my_activities_filter"/>
+        <field name="arch" type="xml">
+            <!-- <xpath expr="//filter[@name='activities_overdue']" position="replace">
+                <filter string="Late Activities" name="activities_overdue"
+                    domain="[('create_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                    help="Show all opportunities for which the next action date is before today"/>
+            </xpath>
+            <xpath expr="//filter[@name='activities_today']" position="replace">
+                <filter string="Today Activities" name="activities_today"
+                    domain="[('create_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+            </xpath>
+            <xpath expr="//filter[@name='activities_upcoming_all']" position="replace">
+                <filter string="Future Activities" name="activities_upcoming_all"
+                    domain="[('create_date', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+            </xpath> -->
+            <xpath expr="//filter[@name='activities_overdue']" position="replace">
+                <filter string="Late Activities" name="activities_overdue"
+                    domain="[('activity_state', '=', 'overdue')]"
+                    help="Show all opportunities for which the next action date is before today"/>
+            </xpath>
+            <xpath expr="//filter[@name='activities_today']" position="replace">
+                <filter string="Today Activities" name="activities_today"
+                    domain="[('activity_state', '=', 'today')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='activities_upcoming_all']" position="replace">
+                <filter string="Future Activities" name="activities_upcoming_all"
+                    domain="[('activity_state', '=', 'planned')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='source']" position="after">
+                <filter string="Created by" name="create_uid" domain="[]" context="{'group_by':'create_uid'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_case_lead_activities_view_tree_inherit" model="ir.ui.view">
+        <field name="name">crm.case.lead.activities.view.tree.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_list_activities" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email_from']" position="after">
+                <field name="activity_date_deadline" />
+                <field name="activity_ids" widget="list_activity" />
+                <field name="user_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm.crm_lead_action_pipeline_view_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="act_window_id" ref="crm.crm_lead_action_pipeline"/>
+    </record>
+
+    <record id="crm.crm_lead_action_pipeline_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="0"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="act_window_id" ref="crm.crm_lead_action_pipeline"/>
+    </record>
+
+    <menuitem id="utm.menu_utm_source"
+        parent="crm.menu_crm_config_lead"
+        name="Sources"
+        sequence="2"/>
+
+    <menuitem id="crm.menu_crm_lead_categ"
+        active="False"/>
+    
+
+    <!-- sale team -->
+    <record id="crm_team_view_form_inherit" model="ir.ui.view">
+        <field name="name">crm.team.view.form.inherit</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_assign_leads']" position="after">
+                <button name="update_sale_team_in_user" type="object" string="Update Sale Team" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- crm stage -->
+
+    <record id="crm_stage_view_form_inherit" model="ir.ui.view">
+        <field name="name">crm.stage.view.form.inherit</field>
+        <field name="model">crm.stage</field>
+        <field name="inherit_id" ref="crm.crm_stage_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_won']" position="after">
+                <field name="is_lost" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

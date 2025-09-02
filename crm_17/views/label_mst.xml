@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="label_mst_view_form" model="ir.ui.view">
+        <field name="name">label.mst.view.form</field>
+        <field name="model">label.mst</field>
+        <field name="arch" type="xml">
+            <form string="Label Master">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>    
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="label_mst_view_tree" model="ir.ui.view">
+        <field name="name">label.mst.view.tree</field>
+        <field name="model">label.mst</field>
+        <field name="arch" type="xml">
+            <tree string="Label Master" sample="1">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="label_mst_action" model="ir.actions.act_window">
+        <field name="name">Label Master</field>
+        <field name="res_model">label.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="label_mst_menu"
+        name="Label Master"
+        action="label_mst_action"
+        parent="crm.menu_crm_config_lead"
+        sequence="6"/>
+
+    <!-- main home -->
+    <menuitem
+        id="main_home_menu"
+        name="Home"
+        sequence="-1"/>
+
+    <record id="action_contacts_home" model="ir.actions.act_window">
+        <field name="name">Contacts</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,kanban,form,activity</field>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <field name="context">{'default_is_company': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Create a Contact in your address book
+            </p><p>
+            Odoo helps you track all activities related to your contacts.
+            </p>
+        </field>
+    </record>
+    
+    <menuitem id="res_partner_menu_contacts_home"
+        name="Contacts"
+        action="action_contacts_home"
+        parent="main_home_menu"
+        sequence="2"/>
+
+    <menuitem id="menu_crm_opportunities_home"
+        name="Opportunity"
+        action="crm.action_your_pipeline"
+        parent="main_home_menu"
+        sequence="1"/>
+
+    <menuitem id="menu_action_quotations_home"
+        name="Quotations"
+        action="sale.action_quotations"
+        parent="main_home_menu"
+        sequence="3"/>
+
+    <menuitem id="menu_action_move_out_invoice_type_home"
+        name="PI"
+        action="account.action_move_out_invoice_type"
+        parent="main_home_menu"
+        sequence="4"/>
+
+    <record id="product_template_action_product_home" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="stock.product_template_search_form_view_stock"/>
+        <field name="context">{"search_default_consumable": 1, 'default_detailed_type': 'product'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No product found. Let's create one!
+            </p><p>
+                Track your stock quantities by creating storable products.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_product_template_action_product_home"
+        name="Products"
+        action="product_template_action_product_home"
+        parent="main_home_menu"
+        sequence="5"/>
+
+    <record id="open_view_project_all_group_stage_home" model="ir.actions.act_window">
+        <field name="name">Projects</field>
+        <field name="res_model">project.project</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="view_id" ref="project.view_project"/>
+        <field name="search_view_id" ref="project.view_project_project_filter"/>
+        <field name="target">main</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No projects found. Let's create one!
+            </p>
+            <p>
+                Projects contain tasks on the same topic, and each has its own dashboard.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_open_view_project_all_group_stage_home"
+        name="Projects"
+        action="open_view_project_all_group_stage_home"
+        parent="main_home_menu"
+        groups="project.group_project_stages"
+        sequence="6"/>
+
+</odoo>

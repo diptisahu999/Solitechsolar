@@ -1,0 +1,69 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_saleperson_crm_wiz,saleperson_crm_wiz,model_saleperson_crm_wiz,,1,1,1,1
+access_crm_lead_sale_line,crm_lead_sale_line,model_crm_lead_sale_line,,1,1,1,1
+access_techv_product_pricelist,techv_product_pricelist,model_techv_product_pricelist,,1,0,0,0
+erp_manager_access_techv_product_pricelist,techv_product_pricelist,model_techv_product_pricelist,base.group_erp_manager,1,1,1,1
+system_access_techv_product_pricelist,techv_product_pricelist,model_techv_product_pricelist,base.group_system,1,1,1,1
+access_techv_product_pricelist_line,techv_product_pricelist_line,model_techv_product_pricelist_line,,1,1,1,1
+access_sale_order_hike,sale_order_hike,model_sale_order_hike,,1,1,1,1
+access_interest_mst,interest_mst,model_interest_mst,,1,0,0,0
+access_interest_mst_admin,interest_mst,model_interest_mst,base.group_erp_manager,1,1,1,1
+access_account_move_hike,account_move_hike,model_account_move_hike,,1,1,1,1
+access_import_adjustment_wiz,import_adjustment_wiz,model_import_adjustment_wiz,,1,1,1,1
+access_stock_exel_wiz,stock_exel_wiz,model_stock_exel_wiz,,1,1,1,1
+access_account_payment_line,account_payment_line,model_account_payment_line,,1,1,1,1
+access_tds_tcs_report,tds_tcs_report,model_tds_tcs_report,,1,1,1,1
+access_lot_product_line,lot_product_line,model_lot_product_line,,1,1,1,1
+access_lot_details,lot_details,model_lot_details,,1,1,1,1
+access_courier_mst,courier_mst,model_courier_mst,,1,1,1,1
+access_label_mst,label_mst,model_label_mst,,1,0,0,0
+access_label_mst_admin,label_mst,model_label_mst,base.group_erp_manager,1,1,1,1
+access_sale_order_repair_wiz,sale_order_repair_wiz,model_sale_order_repair_wiz,,1,1,1,1
+access_spare_parts_production,spare_parts_production,model_spare_parts_production,,1,1,1,1
+access_spare_parts_production_line,spare_parts_production_line,model_spare_parts_production_line,,1,1,1,1
+access_crm_details_wiz,crm_details_wiz,model_crm_details_wiz,,1,1,1,1
+access_old_product_serial_wiz,old_product_serial_wiz,model_old_product_serial_wiz,,1,1,1,1
+access_crm_lead_lost_stage,crm_lead_lost_stage,model_crm_lead_lost_stage,,1,1,1,1
+access_purchase_stock_exel_wiz,crm_purchase_stock_exel_wiz,model_purchase_stock_exel_wiz,,1,1,1,1
+access_partner_details_wiz,partner_details_wiz,model_partner_details_wiz,,1,1,1,1
+access_upcoming_stock_admin,upcoming_stock,model_upcoming_stock,crm_17.security_group_upcoming_stock,1,1,1,1
+access_upcoming_stock_user,upcoming_stock,model_upcoming_stock,,1,0,0,0
+access_reserved_stock,reserved_stock,model_reserved_stock,,1,1,1,0
+access_account_move_validation,account_move_validation,model_account_move_validation,,1,1,1,0
+
+mrp.access_product_template_mrp_manager,product.template mrp_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+mrp.access_product_template_user,product.template user,product.model_product_template,,1,0,0,0
+purchase.access_product_template_purchase_manager,product.template purchase_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+purchase.access_product_template_purchase_user,product.template purchase_user,product.model_product_template,,1,0,0,0
+sale.access_product_template_sale_manager,product.template salemanager,model_product_template,crm_17.group_product_price,1,1,1,1
+sale.access_product_template_sale_user,product.template sale use,product.model_product_template,,1,0,0,0
+stock.access_product_template_stock_manager,product.template stock_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+stock.access_product_template_stock_user,product.template stock user,product.model_product_template,,1,0,0,0
+account.access_product_template_account_manager,product.template.account.manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+
+crm.access_crm_lead_manager,crm.lead.manager,model_crm_lead,sales_team.group_sale_manager,1,1,1,0
+sale.access_sale_order_manager,sale.order.manager,model_sale_order,sales_team.group_sale_manager,1,1,1,0
+access_sale_order_erp_manager,sale.order.erp_manager,model_sale_order,base.group_erp_manager,1,1,1,1
+purchase.access_account_move,account.move,account.model_account_move,purchase.group_purchase_user,1,1,1,0
+account.access_account_move_uinvoice,account.move,model_account_move,account.group_account_invoice,1,1,1,0
+access_account_move_erp_manager,account.move.erp_manager,model_account_move,base.group_erp_manager,1,1,1,1
+purchase.access_purchase_order,purchase.order,model_purchase_order,purchase.group_purchase_user,1,1,1,0
+access_purchase_order_erp_manager,purchase.order.erp_manager,model_purchase_order,base.group_erp_manager,1,1,1,1
+purchase.access_purchase_order_manager,purchase.order,model_purchase_order,purchase.group_purchase_manager,1,1,1,0
+sales_team.access_crm_team_manager,crm.team.manager,model_crm_team,base.group_erp_manager,1,1,1,1
+"base.access_res_partner_category_group_partner_manager","res_partner_category group_partner_manager","model_res_partner_category",base.group_erp_manager,1,1,1,1
+crm.access_res_partner_category,res.partner.category.crm.user,base.model_res_partner_category,base.group_erp_manager,1,1,1,0
+"base.access_res_partner_title_group_user","base.res_partner_title group_partner_manager","base.model_res_partner_title","base.group_erp_manager",1,1,1,1
+"base.access_res_country_group_user","base.res_country group_user","base.model_res_country","base.group_partner_manager",1,0,0,0
+"base.access_res_country_state_group_user","base.res_country_state group_user","base.model_res_country_state","base.group_partner_manager",1,0,0,0
+"base.access_res_bank_group_partner_manager","base.res_bank_group_partner_manager","base.model_res_bank","base.group_partner_manager",1,0,0,0
+"base.access_res_partner_bank_group_partner_manager","base.res_partner_bank group_partner_manager","base.model_res_partner_bank","base.group_erp_manager",1,1,1,1
+sales_team.access_crm_team_member_manager,access.crm.team.member.manager,sales_team.model_crm_team_member,base.group_erp_manager,1,1,1,1
+project.access_mail_activity_type_project_manager,mail.activity.type.project.manager,mail.model_mail_activity_type,project.group_project_manager,1,0,0,0
+sale.access_mail_activity_type_sale_manager,mail.activity.type.sale.manager,mail.model_mail_activity_type,sales_team.group_sale_manager,1,0,0,0
+crm.access_mail_activity_type_sale_manager,mail.activity.type.sale.manager,mail.model_mail_activity_type,sales_team.group_sale_manager,1,0,0,0
+mail.access_mail_activity_type_system,mail.activity.type.system,mail.model_mail_activity_type,base.group_erp_manager,1,1,1,1
+crm.access_crm_stage_manager,crm.stage,crm.model_crm_stage,base.group_erp_manager,1,1,1,1
+utm.access_utm_source,access_utm_source,utm.model_utm_source,base.group_portal,1,0,0,0
+crm.access_crm_lost_reason_manager,crm.lost.reason.manager,crm.model_crm_lost_reason,sales_team.group_sale_manager,1,0,0,0
+access_crm_lost_reason_admin,crm.lost.reason.admin,crm.model_crm_lost_reason,base.group_erp_manager,1,1,1,1

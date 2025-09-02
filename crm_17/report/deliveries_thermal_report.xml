@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <data>
+        <template id="deliveries_thermal_report">
+            <t t-call="web.html_container">
+                <style>
+                    tr,td{
+                        font-family: "Times New Roman" !important;
+                        border:none;
+                    }
+                    table{
+                        border:none;
+                    }
+                </style>
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <table width="100%" >
+                            <tr>
+                                <td style="text-align: center;padding-top:5px;padding-bottom:5px;font-size:20px;color: #696e74;">
+                                    <b><span t-esc="o.company_id.name"/></b>
+                                </td>
+                            </tr>    
+                        </table>
+                        <table width="100%" style="border-top: 1px #696e74;">
+                            <tr>
+                                <td>
+                                    <b><span>Outward No :</span>
+                                    <span  t-esc="o.name"/></b>
+                                    <br/>
+                                    <t t-set="now" t-value="datetime.datetime.now()"/>
+                                    <t t-set="delta" t-value="datetime.timedelta(hours=5, minutes=30)"/>
+                                    <t t-set="india_time" t-value="now + delta"/>
+                                    <span>Date :</span>
+                                    <span t-esc="india_time.strftime('%d/%m/%Y %I:%M %p')"/>
+                                    <br/>
+                                    <span>Party :</span>
+                                    <span  t-esc="o.partner_id.name"/>
+                                    <br/>
+                                    <span>Invoice No :</span>
+                                    <t t-if="o.get_account_move().is_commerce == True">
+                                        <span  t-esc="o.get_account_move().po_number"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span  t-esc="o.pi_chr"/>
+                                    </t>
+                                    <br/>
+                                    <span>Type : </span>
+                                    <t t-if="o.sample_type == 'sample'">
+                                        <span>Sample</span>
+                                    </t>
+                                    <t t-elif="o.sample_type == 'gift'">
+                                        <span>Gift</span>
+                                    </t>
+                                    <t t-elif="o.return_ids">
+                                        <span>Return</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Sale</span>
+                                    </t>
+                                    <br/>
+                                    <span>Courier : </span>
+                                    <b><span  t-esc="o.courier_id.name"/></b>
+                                </td>
+                            </tr>  
+                        </table>
+                        <table width="100%" style="">
+                            <tr>
+                                <td>
+                                    <span style="color: #696e74; ">------------------------------------------------</span><br/>
+                                </td>
+                            </tr>  
+                        </table>
+
+                        <table width="100%">
+                            <tr>
+                                <th style="width:65%;background-color: #eeeeee;text-align:left;">Godown/<br/>Product</th>
+                                <th style="width:35%;background-color: #eeeeee;text-align:left;">Qty</th>
+                            </tr>
+                            <t t-foreach="o.get_report_view()" t-as="item">
+                                <tr>
+                                    <td>
+                                        <span t-esc="item.get('location_name')"></span><br/>
+                                        <b><span t-esc="item.get('barcode')"></span></b><br/>
+                                    </td>
+                                    <td>
+                                        <b><span t-esc="item.get('quantity')"></span></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom: 1px solid black;" colspan="2">
+                                        <b><span style="font-size:14px;" t-esc="item.get('lot_name')"></span></b>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                        <table width="100%" style="padding-top:10px;">
+                            <t>
+                                <td>
+                                    <span><b>Remarks : <span  t-esc="o.remarks"/></b></span>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    .<br/>
+                                </td>
+                            </t>
+                        </table>
+                        
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+
+</odoo>

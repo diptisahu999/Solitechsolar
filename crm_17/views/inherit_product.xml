@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_product_template_form_inherit" model="ir.ui.view">
+        <field name="name">Product Template (form)</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <div name="options" position="inside">
+                <span class="d-inline-block">
+                    <field name="sampling_ok"/>
+                    <label for="sampling_ok"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="returnable_ok"/>
+                    <label for="returnable_ok"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="print_ok"/>
+                    <label for="print_ok"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="no_discount_ok"/>
+                    <label for="no_discount_ok"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="ecommerce_ok"/>
+                    <label for="ecommerce_ok"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="shortly_discontinue"/>
+                    <label for="shortly_discontinue"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="dead_stock"/>
+                    <label for="dead_stock"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_recommended"/>
+                    <label for="is_recommended"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_order"/>
+                    <label for="is_order"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_customization"/>
+                    <label for="is_customization"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_color_coating"/>
+                    <label for="is_color_coating"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_discontinue"/>
+                    <label for="is_discontinue"/>
+                </span>
+            </div>
+            <widget name="web_ribbon" position="after">
+                <widget name="web_ribbon" title="Dead stock" bg_color="text-bg-danger" invisible="not dead_stock"/>
+            </widget>
+            <label for="standard_price" position="attributes">
+                <attribute name="groups">sales_team.group_sale_manager</attribute>
+            </label>
+            <div name="standard_price_uom" position="attributes">
+                <attribute name="groups">sales_team.group_sale_manager</attribute>
+            </div>
+            <field name="categ_id" position="before">
+                <field name="width" invisible="is_width != True"/>
+                <field name="is_width" invisible="1"/>
+            </field>
+            <field name="categ_id" position="after">
+                <field name="last_seq" invisible="0"/>
+            </field>
+            <field name="tracking" position="after">
+                <field name="is_not_check_stock" />
+                <field name="is_tile" />
+                <field name="tile_width" invisible="is_tile != True"/>
+                <field name="tile_length" invisible="is_tile != True"/>
+                <field name="tiles_per_box" invisible="is_tile != True"/>
+            </field>
+            <button name="action_open_label_layout" position="after">
+                <button string="Update last seq" type="object" name="update_last_seq" invisible="0"/>
+            </button>
+            <xpath expr="//field[@name='uom_id']" position="before">
+                <field name="minimum_stock" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_only_form_inherit" model="ir.ui.view">
+        <field name="name">Product Template Only (form)</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="barcode" position="attributes">
+                <attribute name="required">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_template_tree_inherit" model="ir.ui.view">
+        <field name="name">Product Template (tree)</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <button name="action_open_label_layout" position="after">
+                <button string="Print Products Details" type="object" name="action_print_products_details" />
+            </button>
+            <field name="default_code" position="replace">
+                <field name="barcode" />
+            </field>
+            <field name="standard_price" position="attributes">
+                <attribute name="groups">sales_team.group_sale_manager</attribute>
+            </field>
+            <xpath expr="//field[@name='uom_id']" position="after">
+                <field name="action_link" widget="html"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_kanban_inherit" model="ir.ui.view">
+        <field name="name">Product Template kanban</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <field name="uom_id" position="after">
+                <button type="object" string="Stock" name="action_update_quantity_on_hand" invisible="not show_on_hand_qty_status_button" class="oe_stat_button" icon="fa-cubes"></button>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_template_kanban_stock_inherit" model="ir.ui.view">
+        <field name="name">Product Template stock kanban</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.product_template_kanban_stock_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@t-if='record.show_on_hand_qty_status_button.raw_value']" position="after">
+                <!-- <div>Free to Use : <field name="reserved_qty"/></div> -->
+                <div>Up Qty : <field name="upstock_qty"/></div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_category_form_inherit" model="ir.ui.view">
+        <field name="name">Product category (form) inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <field name="parent_id" position="after">
+                <field name="is_width" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_product_template_search_inherit" model="ir.ui.view">
+        <field name="name">Product Template search Inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="favorites" position="after">
+                <filter string="Shortly Discontinue" name="shortly_discontinue" domain="[('shortly_discontinue' ,'=', True)]"/>
+                <filter string="Dead stock" name="dead_stock" domain="[('dead_stock' ,'=', True)]"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>

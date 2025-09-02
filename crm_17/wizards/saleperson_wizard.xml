@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="saleperson_crm_wiz_form" model="ir.ui.view">
+        <field name="name">Assign Other Saleperson</field>
+        <field name="model">saleperson.crm.wiz</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <field name="user_id" options="{'no_create': True,'no_open': True}" required="1"/>
+                        <field name="type_model" required="1" invisible="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Assign" name="action_confirm" type="object" class="oe_highlight" invisible="type_model == 'partner'"/>
+                    <button string="Assign" name="action_confirm_partner" type="object" class="oe_highlight" invisible="type_model == 'crm'"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_saleperson_crm_wiz" model="ir.actions.act_window">
+        <field name="name">Assign Other Saleperson</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">saleperson.crm.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="proforma_invoice_report">
+            <t t-call="web.basic_layout">
+                
+                <t t-foreach="docs" t-as="o">
+                    <style>
+                        div {
+                            font-size:19px;
+                        }
+                        table {
+                            font-size:14px;
+                        }
+                        td {
+                            padding-top:5px;
+                            font-size:10px;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-9">
+                                <div style="font-size:12px;">
+                                    <left>
+                                        <strong><b><span style="color: green;font-size:14px;" t-esc="o.company_id.name"/></b></strong>
+                                        <br/>
+                                        <t t-if="o.company_id.street">
+                                        <span t-esc="o.company_id.street" style="font-size:12px;"/>,
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <span t-esc="o.company_id.street2" style="font-size:12px;"/>,
+                                    </t>
+                                    <t t-if="o.company_id.city">
+                                        <br/><span t-esc="o.company_id.city" style="font-size:12px;"/>, <span t-esc="o.company_id.state_id.name" style="font-size:12px;"/>, <span t-esc="o.company_id.zip" style="font-size:12px;"/>
+                                    </t>
+                                    <br/><span style="font-size:12px;">GST NO : </span><span t-esc="o.company_id.vat" style="font-size:12px;"/><span style="font-size:12px;"> | PAN No : </span><span t-esc="o.company_id.company_registry" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">India Offices : </span><span t-esc="o.company_id.india_offices" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">Overseas Offices : </span><span t-esc="o.company_id.overseas_offices" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">(An ISO 9001:2015 Certified Company)</span>
+                                </left>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div style="text-align: right;">
+                                    <br/>
+                                    <right>
+                                        <t t-if="o.company_id.logo">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.logo)" width="120" height="80" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                    <div style="font-size:12px;padding-left:15px;text-align: right;">
+                                        <span>PI No. : </span>
+                                        <span t-esc="o.pi_chr"/>
+                                    </div>
+                                    
+                                    <div style="font-size:12px;padding-left:15px;text-align: right;">
+                                        <span>PI Date. : </span>
+                                        <t t-if="o.pi_date">
+                                            <span t-esc="o.pi_date.strftime('%d-%m-%Y')"/>
+                                        </t>
+                                    </div>
+                                    
+                                    <div style="font-size:12px;padding-left:15px;text-align: right;">
+                                        <span>PO No. : </span>
+                                        <span t-esc="o.po_number"/>
+                                    </div>
+                                    
+                                    <div style="font-size:12px;padding-left:15px;text-align: right;">
+                                        <span>PO Date. : </span>
+                                        <t t-if="o.po_date">
+                                            <span t-esc="o.po_date.strftime('%d-%m-%Y')"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <tr>
+                            <strong><center><b>Proforma Invoice</b></center></strong>
+                        </tr>
+                        <hr style="border: 1px solid black;"/>
+                        <div class="row">
+                            <div class="col-6">
+                                <div style="border-top:none;border-bottom:none;font-size:10px;">
+                                    <b><span>Bill To,</span></b>
+                                </div>
+                                <div style="font-size:10px;padding-right:15px;">
+                                    <span t-esc="o.partner_id.name"/>
+                                    <t t-if="o.partner_id.street">
+                                        <br/><span t-esc="o.partner_id.street"/>,<span t-esc="o.partner_id.street2"/>
+                                    </t>
+                                    <t t-if="o.partner_id.city or o.partner_id.state_id">
+                                        <br/><t t-if="o.partner_id.city">
+                                            <span t-esc="o.partner_id.city"/>,</t><t t-if="o.partner_id.state_id">
+                                                <span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>
+                                            
+                                        </t>
+                                    </t>
+                                    <br/><span t-esc="o.partner_id.phone"/><t t-if="o.partner_id.mobile">
+                                        - <span t-esc="o.partner_id.mobile"/>
+                                    </t>
+                                    <t t-if="o.partner_id.l10n_in_pan">
+                                        <br/>Pan No : <span t-esc="o.partner_id.l10n_in_pan"/>
+                                    </t>
+                                    <t t-if="o.partner_id.vat">
+                                        <br/>Gst No : <span t-esc="o.partner_id.vat"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="border-top:none;border-bottom:none;text-align:left;font-size:10px;">
+                                    <b><span>Ship To,</span></b>
+                                </div>
+                                <t t-if="o.partner_shipping_id">
+                                    <div style="text-align:left;font-size:10px;">
+                                        <t t-if="o.partner_shipping_id.company_name_delivery">
+                                            <span t-esc="o.partner_shipping_id.company_name_delivery"/>
+                                        </t>
+                                        <t t-if="o.partner_shipping_id.name">
+                                            <span t-esc="o.partner_shipping_id.name"/>
+                                        </t>
+                                        <t t-if="o.partner_shipping_id.street">
+                                            <br/><span t-esc="o.partner_shipping_id.street"/>,<span t-esc="o.partner_shipping_id.street2"/>
+                                        </t>
+                                        <t t-if="o.partner_shipping_id.city or o.partner_shipping_id.state_id">
+                                            <br/><t t-if="o.partner_shipping_id.city">
+                                                <span t-esc="o.partner_shipping_id.city"/>,</t><t t-if="o.partner_shipping_id.state_id">
+                                                    <span t-esc="o.partner_shipping_id.state_id.name"/>,<span t-esc="o.partner_shipping_id.zip"/>
+                                                
+                                            </t>
+                                        </t>
+                                        <br/><span t-esc="o.partner_shipping_id.phone"/><t t-if="o.partner_shipping_id.mobile">
+                                             - <span t-esc="o.partner_shipping_id.mobile"/>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div style="width: 50%;text-align:left;font-size:10px;">
+                                        <span t-esc="o.partner_id.name"/>
+                                        <t t-if="o.partner_id.street">
+                                            <br/><span t-esc="o.partner_id.street"/>,<span t-esc="o.partner_id.street2"/>
+                                        </t>
+                                        <br/><t t-if="o.partner_id.city">
+                                            <span t-esc="o.partner_id.city"/>,</t><t t-if="o.partner_id.state_id">
+                                                <span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>
+                                            
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <br/>
+                        <t t-set="order_line" t-value="o.invoice_line_ids"/>
+                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type not in ['feet','inch','mm','tile'] and line.display_type not in ['line_section','line_note'] for line in order_line)">
+                            <table style="width: 100%;">
+                                
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Rate</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
+                                    <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                        <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:6%;text-align:center;">GST</th>
+                                    </t>
+                                    </tr>
+                                    <t t-foreach="order_line" t-as="line">
+                                    <t t-if=" not line.product_id.extra_charges and line.inch_feet_type not in ['feet','inch','mm','tile'] and line.display_type not in ['line_section','line_note']">
+                                        <tr>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <img t-if="line.product_id.image_128" t-att-src="image_data_uri(line.product_id.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.l10n_in_hsn_code"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.quantity"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <!-- <span t-field="line.price_unit"/> -->
+                                                 <span t-esc="'%.2f'% (line.price_unit)"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-if="line.discount > 0">
+                                                    <span t-esc="'%d' % line.discount"/><span style="padding-top:2px;">%</span>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.price_subtotal"/>
+                                            </td>
+                                            <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                                <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                    <span t-field="line.gst_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </table>
+                            <br/>
+                        </t>
+                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'feet' and line.display_type not in ['line_section','line_note'] for line in order_line)">
+                            <table style="width: 100%;">
+                                
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
+                                    <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                        <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:6%;text-align:center;">GST</th>
+                                    </t>
+                                    </tr>
+                                    <t t-foreach="order_line" t-as="feet_line">
+                                    <t t-if=" not feet_line.product_id.extra_charges and feet_line.inch_feet_type == 'feet' and feet_line.display_type not in ['line_section','line_note']">
+                                        <tr>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <img t-if="feet_line.product_id.image_128" t-att-src="image_data_uri(feet_line.product_id.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.product_id.l10n_in_hsn_code"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.quantity"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.height_length"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.width"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-set="sqft" t-value="feet_line.sqft * feet_line.quantity"/>
+                                                <span t-esc="sqft"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.sqft_rate"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-if="feet_line.discount > 0">
+                                                    <span t-esc="'%d' % feet_line.discount"/><span style="padding-top:2px;">%</span>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="feet_line.price_subtotal"/>
+                                            </td>
+                                            <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                                <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                    <span t-field="feet_line.gst_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </table>
+                            <br/>
+                        </t>
+                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'inch' and line.display_type not in ['line_section','line_note'] for line in order_line)">
+                            <table style="width: 100%;">
+                                
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
+                                    <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                        <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:6%;text-align:center;">GST</th>
+                                    </t>
+                                    </tr>
+                                    <t t-foreach="order_line" t-as="inch_line">
+                                    <t t-if=" not inch_line.product_id.extra_charges and inch_line.inch_feet_type == 'inch' and inch_line.display_type not in ['line_section','line_note']">
+                                        <tr>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <img t-if="inch_line.product_id.image_128" t-att-src="image_data_uri(inch_line.product_id.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.product_id.l10n_in_hsn_code"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.quantity"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.height_length"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.width"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-set="sqft" t-value="inch_line.sqft * inch_line.quantity"/>
+                                                <span t-esc="sqft"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.sqft_rate"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-if="inch_line.discount > 0">
+                                                    <span t-esc="'%d' % inch_line.discount"/><span style="padding-top:2px;">%</span>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="inch_line.price_subtotal"/>
+                                            </td>
+                                            <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                                <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                    <span t-field="inch_line.gst_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </table>
+                            <br/>
+                        </t>
+                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'mm' and line.display_type not in ['line_section','line_note']       for line in order_line)">
+                            <table style="width: 100%;">
+                                
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
+                                    <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                        <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:6%;text-align:center;">GST</th>
+                                    </t>
+                                    </tr>
+                                    <t t-foreach="order_line" t-as="mm_line">
+                                    <t t-if=" not mm_line.product_id.extra_charges and mm_line.inch_feet_type == 'mm' and mm_line.display_type not in ['line_section','line_note']">
+                                        <tr>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <img t-if="mm_line.product_id.image_128" t-att-src="image_data_uri(mm_line.product_id.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.product_id.l10n_in_hsn_code"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.quantity"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.height_length"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.width"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-set="sqft" t-value="mm_line.sqft * mm_line.quantity"/>
+                                                <span t-esc="sqft"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.sqft_rate"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-if="mm_line.discount > 0">
+                                                    <span t-esc="'%d' % mm_line.discount"/><span style="padding-top:2px;">%</span>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="mm_line.price_subtotal"/>
+                                            </td>
+                                            <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                                <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                    <span t-field="mm_line.gst_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </table>
+                            <br/>
+                        </t>
+                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'tile' and line.display_type not in ['line_section','line_note']       for line in order_line)">
+                            <table style="width: 100%;">
+                                
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:7%;"><center>Total Tiles</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:7%;"><center>Sqft Rate</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
+                                    <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                        <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:6%;text-align:center;">GST</th>
+                                    </t>
+                                    </tr>
+                                    <t t-foreach="order_line" t-as="tile_line">
+                                    <t t-if=" not tile_line.product_id.extra_charges and tile_line.inch_feet_type == 'tile' and tile_line.display_type not in ['line_section','line_note']">
+                                        <tr>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <img t-if="tile_line.product_id.image_128" t-att-src="image_data_uri(tile_line.product_id.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.product_id.l10n_in_hsn_code"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.quantity"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.height_length"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.width"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.sqft"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.tile_final"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.sqft_rate"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <t t-if="tile_line.discount > 0">
+                                                    <span t-esc="'%d' % tile_line.discount"/><span style="padding-top:2px;">%</span>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="tile_line.price_subtotal"/>
+                                            </td>
+                                            <t t-if="o.l10n_in_gst_treatment != 'overseas'">
+                                                <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                    <span t-field="tile_line.gst_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </table>
+                            <br/>
+                        </t>
+                        <t t-set="tot_service_amt" t-value="0"/>
+                        <t t-foreach="order_line" t-as="service_amt">
+                            <t t-if="service_amt.product_id.extra_charges">
+                                <tr>
+                                    <t t-set="tot_service_amt" t-value="tot_service_amt + service_amt.price_subtotal"/>
+                                </tr>
+                            </t>
+                        </t>
+                        <table style="width: 100%;border: 1px solid black;">
+                            <tr>
+                                <td style="width: 80%;border: 1px solid black;text-align: right;">
+                                    <b><span style="padding:6px;" >Total value</span></b>
+                                </td>
+                                <td style="width: 20%;border: 1px solid black;padding-right:7px;text-align: right;">
+                                    <!-- <span style="">₹ <span t-esc="'%.2f'% (o.amount_untaxed - tot_service_amt)" /></span> -->
+                                    <t t-if="o.currency_id.position == 'before'">
+                                        <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (o.amount_untaxed - tot_service_amt)" />
+                                    </t>
+                                    <t t-if="o.currency_id.position == 'after'">
+                                        <span t-esc="'%.2f' % (o.amount_untaxed - tot_service_amt)" /> <span t-esc="o.currency_id.symbol" />
+                                    </t>
+                                </td>
+                            </tr>
+                            <t t-foreach="order_line" t-as="service">
+                                <t t-if="service.product_id.extra_charges">
+                                    <tr>
+                                        <td style="border: 1px solid black;text-align: right;">
+                                            <b><span style="padding:6px;" ><span t-field="service.product_id.name"/></span></b>
+                                        </td>
+                                        <td style="border: 1px solid black;padding-right:7px;text-align: right;">
+                                            <t t-if="o.currency_id.position == 'before'">
+                                                <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (service.price_subtotal)" />
+                                            </t>
+                                            <t t-if="o.currency_id.position == 'after'">
+                                                <span t-esc="'%.2f' % (service.price_subtotal)" /> <span t-esc="o.currency_id.symbol" />
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-set="tax_totals" t-value="o.tax_totals"/>
+                                <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+                                    <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
+                                    <t t-foreach="tax_totals['groups_by_subtotal'][subtotal_to_show]" t-as="amount_by_group">
+                                        <tr>
+                                            <td style="width: 80%;border: 1px solid black;text-align: right;" class="text-end"><b><span style="padding-right:7px;" class="text-nowrap" t-esc="amount_by_group['tax_group_name']"/></b></td>
+                                            <td class="text-end o_price_total" style="width: 20%;border: 1px solid black;padding-right:7px;">
+                                                <span  t-esc="amount_by_group['formatted_tax_group_amount']" />
+                                            </td>
+                                            <!-- <t t-if="tax_totals['display_tax_base']">
+                                                <td class="text-end">
+                                                    <span t-esc="amount_by_group['tax_group_name']"/>
+                                                </td>
+                                                <td class="text-end o_price_total">
+                                                    <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']"/>
+                                                </td>
+                                            </t>
+                                            <t t-else="">
+                                                <td class="text-end"><span class="text-nowrap" t-esc="amount_by_group['tax_group_name']"/></td>
+                                                <td class="text-end o_price_total">
+                                                    <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']" />
+                                                </td>
+                                            </t> -->
+                                        </tr>
+                                    </t>
+
+                                </t>
+                            <tr>
+                                <td style="border: 1px solid black;text-align: right;">
+                                    <b><span style="padding:6px;" >Total</span></b>
+                                </td>
+                                <t t-set="amount_total" t-value="round(o.amount_total)" />
+                                <td style="border: 1px solid black;padding-right:7px;text-align: right;">
+                                    <t t-if="o.currency_id.position == 'before'">
+                                        <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (amount_total)" />
+                                    </t>
+                                    <t t-if="o.currency_id.position == 'after'">
+                                        <span t-esc="'%.2f' % (amount_total)" /> <span t-esc="o.currency_id.symbol" />
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <br/>
+                        <b><span style="font-size:15px;">Amount in words : </span><span style="font-size:15px;" t-esc="o.amount_to_text((o.amount_total), 'INR')"/> <span style="padding-left:4px;font-size:15px;">Only</span></b>
+                        
+                        <br/>
+                        <t t-if="o._check_note() == False">
+                            <span style="font-size:13px;color: red;"><b>Notes :</b></span><span style="font-size:13px;color: red;" t-esc="o.narration"/>
+                        </t>
+                        <t t-else="">
+                            <br/>
+                        </t>
+                        <div class="row">
+                            <div class="col-5">
+                                <td style="border-top:none;border-bottom:none;width:50%;">
+                                    <b><span style="font-size:15px;">BANK DETAILS :</span></b>
+                                    <br/><span style="font-size:14px;">Bank Name : </span><span t-esc="o.company_id.bank_name" style="font-size:14px;"/>
+                                    <br/><span style="font-size:14px;">Bank A/C Name : </span><span t-esc="o.company_id.bank_ac_name" style="font-size:14px;"/>
+                                    <br/><span style="font-size:14px;">Bank A/C No : </span><span t-esc="o.company_id.bank_ac_no" style="font-size:14px;"/>
+                                    <br/><span style="font-size:14px;">Bank Branch IFSC : </span><span t-esc="o.company_id.bank_branch_ifsc" style="font-size:14px;"/>
+                                </td>
+                            </div>
+                            <div class="col-7" style="font-size:14px;">
+                                <td style="border-top:none;border-bottom:none;width:50%;text-align:left;">
+                                    <p>
+                                        <span t-esc="o.company_id.conditions" />
+                                    </p>
+                                </td>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row" style="page-break-inside: avoid;">
+                            <div class="col-6">
+                                <div style="font-size:17px;">
+                                    <span style="font-size:17px;">Best Regards</span>
+                                    <!-- <br/><b><span t-esc="user.signature" style="font-size:14px;"/></b> -->
+                                    <br/><b><span t-esc="o.user_id.signature" style="font-size:14px;"/></b>
+                                </div> 
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <right>
+                                        <t t-if="o.company_id.iso_img">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.iso_img)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                </div>                        
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <right>
+                                        <t t-if="o.company_id.sing">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.sing)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                </div>                        
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+            </t>
+        </template>
+    </data>
+</odoo>

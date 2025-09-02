@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="spare_parts_production_view_form" model="ir.ui.view">
+        <field name="name">spare.parts.production.view.form</field>
+        <field name="model">spare.parts.production</field>
+        <field name="arch" type="xml">
+            <form string="Spare Parts">
+                <header>
+                    <field name="stage" widget="statusbar" force_save="True"/>
+                    <button string="Done" name="action_done_spare" type="object" class="oe_highlight" invisible="stage == 'done'"
+                            confirm="Are you sure you want to mark this as Done ?"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1 class="d-flex">
+                            <field name="name" invisible="name == 'New'"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id" readonly="stage == 'done'" domain="[('tracking', '=', 'serial'),('type', '=', 'product')]" required="1" options="{'no_create': True}"/>
+                            <field name="product_uom" readonly="1" force_save="1" options="{'no_open': True}"/>
+                            <field name="qty" readonly="stage == 'done'"/>
+                            <field name="lot_ids" readonly="stage == 'done'" domain="[('id', 'in', available_lot_ids)]" widget="many2many_tags" options="{'no_open': True,'no_create': True}"/>
+                            <field name="available_lot_ids" invisible="1" force_save="1" widget="many2many_tags" />
+                        </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="date" readonly="stage == 'done'"/>
+                            <field name="pro_des_location_id" required="1" options="{'no_create': True}" readonly="stage == 'done'"/>
+                            <field name="spa_des_location_id" required="1" options="{'no_create': True}" readonly="stage == 'done'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="spare_parts_line" string="Spare Parts Line">
+                            <field name="line_ids" readonly="stage == 'done'" >
+                                <tree editable="1" >
+                                    <field name="product_id" required="1" options="{'no_create': True}" domain="[('tracking', '=', 'none'),('type', '=', 'product')]"/>
+                                    <field name = "product_uom" readonly="1" force_save="1" options="{'no_open': True}"/>
+                                    <field name = "qty" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="spare_parts_production_view_tree" model="ir.ui.view">
+        <field name="name">spare.parts.production.view.tree</field>
+        <field name="model">spare.parts.production</field>
+        <field name="arch" type="xml">
+            <tree string="Spare Parts" sample="1">
+                <field name="name" />
+                <field name="product_id" />
+                <field name="qty" />
+                <field name="lot_ids" widget="many2many_tags" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="spare_parts_production_search" model="ir.ui.view">
+        <field name="name">spare.parts.production.search</field>
+        <field name="model">spare.parts.production</field>
+        <field name="arch" type="xml">
+            <search string="Spare Parts">
+                <field name="name" filter_domain="['|',('name','ilike',self),('product_id','ilike',self)]" string="Search"/>
+                <field name="product_id" />
+                <field name="lot_ids" filter_domain="[('lot_ids','ilike',self)]"/>
+
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <filter string="Create Date" name="filter_create_date" date="create_date"/>
+                <filter string="Draft" name="draft_stage" domain="[('stage', '=', 'draft')]"/>
+                <filter string="Done" name="done_stage" domain="[('stage', '=', 'done')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Date" name="group_by_date" domain="[]" context="{'group_by': 'date'}"/>
+                    <filter string="Stage" name="group_by_stage" domain="[]" context="{'group_by': 'stage'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="spare_parts_production_action" model="ir.actions.act_window">
+        <field name="name">Spare Parts</field>
+        <field name="res_model">spare.parts.production</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="spare_parts_production_menu"
+        name="Spare Parts"
+        action="spare_parts_production_action"
+        parent="stock.menu_stock_transfers"
+        sequence="26"/>
+
+
+</odoo>

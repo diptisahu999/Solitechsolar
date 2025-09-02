@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_details_wiz_form" model="ir.ui.view">
+        <field name="name">Assign Details</field>
+        <field name="model">crm.details.wiz</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="type_details" required="1"/>
+                            <field name="label_ids" widget="many2many_tags" options="{'no_quick_create': True,'no_open': True}" invisible="type_details != 'Label'"/>
+                            <field name="source_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'Source'"/>
+                            <field name="stage_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'Stage'"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'no_create': True,'no_open': True}" invisible="type_details != 'Tags'"/>
+                            <field name="team_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'Sales_Team'"/>
+                            <field name="city" invisible="1"/>
+                            <field name="city_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'City'"/>
+                            <field name="state_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'State'"/>
+                            <field name="interest_id" options="{'no_create': True,'no_open': True}" invisible="type_details != 'Interest'"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Assign" name="action_confirm" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_crm_details_wiz" model="ir.actions.act_window">
+        <field name="name">Assign Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">crm.details.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- Get Lost Reason Stage -->
+
+    <record id="crm_lead_lost_stage_wiz_form" model="ir.ui.view">
+        <field name="name">Lost</field>
+        <field name="model">crm.lead.lost.stage</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <field name="lost_reason_id" options="{'no_create': True,'no_open': True}"/>
+                    </group>
+                    <footer>
+                        <button name="action_lost_reason_apply" string="Mark as Lost" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_crm_lead_lost_stage_wiz" model="ir.actions.act_window">
+        <field name="name">Lost</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">crm.lead.lost.stage</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Partner Details Wizard -->
+
+    <record id="crm_partner_details_wiz_form" model="ir.ui.view">
+        <field name="name">Assign Details</field>
+        <field name="model">partner.details.wiz</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <field name="city_id" options="{'no_create': True,'no_open': True}"/>
+                    </group>
+                    <footer>
+                        <button name="action_confirm" string="Assign" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_partner_details_wiz" model="ir.actions.act_window">
+        <field name="name">Assign Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">partner.details.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

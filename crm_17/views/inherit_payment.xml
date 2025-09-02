@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_payment_view_form_inherit" model="ir.ui.view">
+        <field name="name">account.payment.view.form.inherit</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='mark_as_sent']" position="after">
+                <button string="Apply" name="action_apply_payment" type="object" class="oe_highlight" invisible="state != 'posted' or due_amount == 0"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id'][2]" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='ref']" position="after" >
+                <field name="pay_amount" readonly="1" force_save="1"/>
+                <field name="due_amount" readonly="1" force_save="1"/>
+                <!-- <field name="invoice_pay_is" invisible="1" /> -->
+            </xpath>
+            <xpath expr="//group[@name='main_group']" position="after" >
+                <notebook invisible="state != 'posted'">
+                    <page string="Customer Invoice" invisible="payment_type == 'outbound' or due_amount == 0">
+                        <field name="payment_line_ids" >
+                            <tree create="0" delete="0" editable="botton">
+                                <field name="invoice_id" string="Invoices" readonly="1"  force_save="1"/>
+                                <field name="date" readonly="1"  force_save="1"/>
+                                <field name="amount_total" readonly="1"  force_save="1"/>
+                                <field name="amount_residual" readonly="1"  force_save="1"/>
+                                <!-- <field name="bill_amt" readonly="1" invisible="1"/> -->
+                                <field name="adjustment" widget="boolean_toggle"/>
+                                <field name="adjustment_amt" readonly="1" force_save="1" sum="Total Adjustment Amount"/>
+                                <button string="View" type="object" name="action_open_invoice" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Vendor Bill" invisible="payment_type == 'inbound' or due_amount == 0">
+                        <field name="payment_line_ids" >
+                            <tree create="0" delete="0" editable="botton">
+                                <field name="invoice_id" string="Bills" readonly="1"  force_save="1"/>
+                                <field name="date" readonly="1"  force_save="1"/>
+                                <field name="amount_total" readonly="1"  force_save="1"/>
+                                <field name="amount_residual" readonly="1"  force_save="1"/>
+                                <!-- <field name="bill_amt" readonly="1" invisible="1"/> -->
+                                <field name="adjustment" widget="boolean_toggle"  force_save="1"/>
+                                <field name="adjustment_amt" readonly="1" force_save="1" sum="Total Adjustment Amount"/>
+                                <button string="View" type="object" name="action_open_invoice" />
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+                <group class="oe_subtotal_footer oe_right" colspan="4" name="remaining_amt" invisible="payment_type == 'outbound' or due_amount == 0">
+                    <field name="remaining_amt" widget='monetary' force_save='1'/>    
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="import_adjustment_wiz_view" model="ir.ui.view">
+        <field name="name">import.adjustment.wiz.form.view</field>
+        <field name="model">import.adjustment.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Import Inventory Adjustments">
+                <group>
+                    <group>
+                        <field name="import_file"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Import" name="action_import_file" type="object" class="oe_highlight" />
+                    <button string="Cancel" class="btn btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_adjustment_wiz" model="ir.actions.act_window">
+        <field name="name">Import Inventory Adjustments</field>
+        <field name="res_model">import.adjustment.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        action="action_import_adjustment_wiz" 
+        id="menu_import_adjustment_wiz"  
+        parent="stock.menu_stock_inventory_control"
+        sequence="103"/>
+
+</odoo>

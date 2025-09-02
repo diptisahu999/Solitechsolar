@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_move_view_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.view.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="before" >
+                <field name = "inch_feet_type" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "height_length" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "width" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "tile_width" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "tile_length" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "layout" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "tiles_per_box" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "sqft" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "tile_final" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "sqft_rate" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide" column_invisible="parent.move_type not in ('out_invoice','out_refund')"/>
+                <field name = "discount" />
+                <field name = "gst_tax" column_invisible="1"/>
+                <field name = "is_group_price" column_invisible="1"/>
+                <field name="product_type" invisible="1"/> 
+            </xpath>
+            <xpath expr="//field[@name='invoice_payment_term_id']" position="attributes" >
+                <attribute name="required">move_type == 'out_invoice' and state == 'draft'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="attributes" >
+                <attribute name="readonly">state not in ('draft','discount_approval')</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True,'no_open': True}</attribute>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info" role="alert" name="warning_shortly_dis_text" invisible="shortly_dis_text == False" >
+                    <strong>Shortly Discontinue Products : </strong>
+                    <field name="shortly_dis_text" readonly="1" nolabel="1"/>
+                </div>
+                <div class="alert alert-danger text-danger" role="alert" name="warning_minimum_stock_text" invisible="minimum_stock_text == False">
+                    <strong>Please note that the available quantity is low. Kindly verify with the inventory team before finalizing the product posting Products : </strong>
+                    <field name="minimum_stock_text" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//button[@name='action_update_fpos_values']" position="after" >
+                <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user" invisible="move_type != 'out_invoice'"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="attributes" >
+                <attribute name="context">{'default_type':'delivery', 'show_address': 1, 'show_vat': 1}</attribute>
+                <attribute name="options">{'no_create': True,'no_open': True}</attribute>
+                </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="attributes" >
+                <attribute name="readonly">is_group_price == False and product_type != 'service'</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after" >
+                <field name = "actual_price" readonly="1" force_save="1"/>
+                <field name = "diff_amount" column_invisible="1" force_save="1"/>
+                <field name = "diff_per" readonly="1" force_save="1"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='tax_ids']" position="attributes" >
+                <attribute name="readonly">parent.move_type in ('out_invoice','out_refund')</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//div[@name='journal_div']" position="after" >
+                <field name = "sample_type" />
+                <field name = "source_id"/>
+                <field name="project_id"  options="{'no_create': True,'no_open': True}" invisible="move_type != 'out_invoice'"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="after" >
+                <field name = "remarks" />
+                <field name = "inventory_approval" column_invisible="1"/>
+                <field name = "inventory_approval_type" optional="hide" readonly="1" force_save="1"/>
+            </xpath> 
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='analytic_distribution']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_uom_id']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//control/create[@name='add_section_control']" position="replace"/>
+            <xpath expr="//control/create[@name='add_note_control']" position="replace"/>
+            <xpath expr="//field[@name='name']" position="after" >
+                <field name="pi_chr" readonly="1" force_save="1"/>
+                <field name="pi_no" invisible="1" force_save="1"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="attributes" >
+                <attribute name="required">True</attribute>
+            </xpath>
+            <xpath expr="//label[@for='invoice_date']" position="before" >
+                <field name = "po_number" />
+                <field name = "po_date" />
+                <field name="pi_date" readonly="1" force_save="1"/>
+                <field name="is_manager" invisible="1" />
+                <field name="is_group_admin" invisible="1" />
+                <field name="is_button_approval" invisible="1" />
+                <field name="inventory_approval_type" invisible="1" />
+                <field name="inventory_approval" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='invoice_user_id']" position="attributes">
+                <attribute name="readonly">is_group_admin == True</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="options">{'no_open': True}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_sent']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_sent'][1]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_post'][2]" position="attributes">
+                <attribute name="confirm">Kindly ensure stock availability before confirming the Proforma Invoice.</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft']" position="after">
+                <button string="Approve discount" name="action_discount_user" type="object" groups="account.group_account_invoice" invisible="state != 'draft' or is_manager == True"/>
+                <button string="Approved discount" name="action_discount_manager" type="object" groups="account.group_account_manager,account.group_account_user" invisible="is_manager == True or state in ['posted','cancel'] or state != 'discount_approval'"/>
+                <button string="Generate PI Number" name="genrate_pi_number" type="object" invisible="1"/>
+                <button string="PI Print" name="%(crm_17.action_proforma_invoice_report)d" type="action" class="oe_highlight"/>
+                <button string="Send for Booking" name="button_inventory_approval" class="oe_highlight" type="object" invisible="state != 'draft' or is_button_approval != True or inventory_approval_type != False"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="class">o_list_renderer .o_list_table thead</attribute>
+                <attribute name="readonly">state not in ['draft','discount_approval']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']" position="after">
+                <div class="float-end d-flex gap-1 mb-2 ms-1" name="so_button_below_order_lines">
+                    <button string="Hike" name="action_open_hike_wizard" type="object" class="btn btn-secondary" invisible="state != 'draft'"/>
+                    <button string="Qty Update" name="action_open_qty_wizard" type="object" class="btn btn-secondary" invisible="state != 'draft'"/>             
+                </div>
+            </xpath>
+            <xpath expr="//page[@name='other_info']//field[@name='delivery_date']" position="after" >
+                <field name = "irn_no" invisible="move_type != 'out_invoice'"/>
+                <field name = "ank_no" invisible="move_type != 'out_invoice'"/>
+                <field name = "einv_date" invisible="move_type != 'out_invoice'"/>
+                <field name = "project_name" invisible="move_type != 'out_invoice'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_account_move_filter_sale" model="ir.ui.view">
+        <field name="name">inherit.account.move.search.sale</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="sale.account_invoice_groupby_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='sales_channel']" position="after">
+                <filter string="Created by" name="create_uid" domain="[]" context="{'group_by':'create_uid'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_move_view_from_inherit_sale" model="ir.ui.view">
+        <field name="name">account.move.view.from.inherit.sale</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="sale.account_invoice_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='source_id']" position="after" >
+                <field name="tag_ids" widget="many2many_tags" options="{'no_create' : True}" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_move_view_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.view.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before" >
+                <field name="create_date" optional="hide"/>
+                <field name="pi_chr" decoration-bf="1"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="action_link" widget="html"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_state']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_account_move_filter" model="ir.ui.view">
+        <field name="name">inherit.account.move.search</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="partner_id" string="Customer"/>
+                <field name="create_uid" string="Created by" filter_domain="[('create_uid', 'ilike', self)]"/>         
+                <field name="pi_chr" string="PI Number" filter_domain="[('pi_chr', 'ilike', self)]"/>    
+                <field name="amount_untaxed" string="Untaxed Amount" filter_domain="[('amount_untaxed', 'ilike', self)]"/>         
+                <field name="amount_total" string="Total Amount" filter_domain="[('amount_total', 'ilike', self)]"/>      
+                <field name="po_number" string="PO Number" filter_domain="[('po_number', 'ilike', self)]"/>      
+            </xpath>
+            <xpath expr="//filter[@name='late']" position="after">
+                <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_button_cancel_all_ser" model="ir.actions.server">
+        <field name="name">Cancel</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]"/>
+        <field name="code">
+            if records:
+                action = records.action_button_cancel_all()
+        </field>
+    </record>
+
+    <record id="account_move_line_invoice_inventory_approval_view_tree" model="ir.ui.view">
+        <field name="name">account.move.line.invoice.inventory.approval.view.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <tree create="0" editable="bottom" delete="0">
+                <field name="move_id" column_invisible="True"/>
+                <field name="pi_chr" decoration-bf="1" readonly="1" force_save="1"/>
+                <field name="partner_id" string="Customer" readonly="1" force_save="1"/>
+                <field name="invoice_user_id" string="Salesperson" readonly="1" force_save="1"/>
+                <field name="barcode" string="code" readonly="1" force_save="1"/>
+                <field name="quantity" string="Require Quantity" readonly="1" force_save="1"/>
+                <field name="free_qty" string="Book Quantity" column_invisible="True"/>
+                <field name="book_qty" string="Book Quantity" readonly="1" force_save="1"/>
+                <field name="upcoming_date" />
+                <field name="remark_inv" />
+                <field name="inventory_approval_type" column_invisible="False" readonly="1" force_save="1"/>
+                <button string="Approve" name="button_inventory_approve" type="object" class="oe_highlight" invisible="inventory_approval_type == 'approve'" groups="crm_17.security_group_upcoming_button"/>
+                <button string="Reject" name="button_inventory_reject" type="object" class="oe_highlight" invisible="inventory_approval_type == 'approve' or inventory_approval_type == 'reject'" groups="crm_17.security_group_upcoming_button"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="account_move_line_invoice_inventory_approval_search" model="ir.ui.view">
+        <field name="name">account.move.line.invoice.inventory.approval.search</field>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="pi_chr" filter_domain="['|','|',('pi_chr','ilike',self),('product_id','ilike',self),('invoice_user_id','ilike',self)]" string="Search"/>
+                <field name="product_id" />
+                <field name="invoice_user_id" />
+
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Approval Status" name="group_by_inventory_approval_type" domain="[]" context="{'group_by': 'inventory_approval_type'}"/>
+                    <filter string="Product" name="group_by_product_id" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Approx Upcoming Date" name="group_by_upcoming_date" domain="[]" context="{'group_by': 'upcoming_date'}"/>
+                <separator/>
+                <filter name="approve_pending" string="Approval Pending" domain="['|',('inventory_approval_type', '=', 'approve_pending'),('inventory_approval_type', '=', 'reject')]"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_move_line_out_invoice_type_inventory_approval" model="ir.actions.act_window">
+        <field name="name">Book Invoices</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="account_move_line_invoice_inventory_approval_view_tree"/>
+        <field name="search_view_id" ref="account_move_line_invoice_inventory_approval_search"/>
+        <field name="domain">['|', '|',('inventory_approval_type', '=', 'approve_pending'), ('inventory_approval_type', '=', 'approve'), ('inventory_approval_type', '=', 'reject')]</field>
+        <field name="context">{'create': False, 'search_default_approve_pending': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('account_move_line_invoice_inventory_approval_view_tree')})]"/>
+    </record>     
+
+    <menuitem
+        id="invoice_type_inventory_approval_menu"
+        name="Book Invoices"
+        action="action_move_line_out_invoice_type_inventory_approval"
+        parent="stock.menu_stock_transfers"
+        sequence="27"/>
+
+</odoo>

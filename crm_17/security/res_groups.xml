@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_other_custom" model="ir.module.category">
+        <field name="name">Specification</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="security_group_specification" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_other_custom" />
+    </record>
+
+    <record id="module_category_product_price" model="ir.module.category">
+        <field name="name">Product price change</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_product_price" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_product_price"/>
+    </record>
+
+    <record id="module_category_so_inv_price" model="ir.module.category">
+        <field name="name">SO &amp; PI price change</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_so_inv_price" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_so_inv_price"/>
+    </record>
+
+    <record id="module_category_tag_remove" model="ir.module.category">
+        <field name="name">Tags Remove</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_tag_remove" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_tag_remove"/>
+    </record>
+
+    <record id="module_category_upcoming_stock" model="ir.module.category">
+        <field name="name">Upcoming stock</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="security_group_upcoming_stock" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_upcoming_stock" />
+    </record>
+
+    <record id="module_category_upcoming_button" model="ir.module.category">
+        <field name="name">Upcoming Approve/Reject</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="security_group_upcoming_button" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_upcoming_button" />
+    </record>
+    
+</odoo>

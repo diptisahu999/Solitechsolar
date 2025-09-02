@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="inherit_account_invoice_report_form_report" model="ir.ui.view">
+        <field name="name">inherit.account.invoice.report.form.report</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.account_invoice_report_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_id']" position="replace">
+                <field name="pi_chr" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_account_invoice_report_search" model="ir.ui.view">
+        <field name="name">inherit.account.invoice.report.search</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='creditnote']" position="after">
+                <separator/>
+                <filter string="Post Entry" name="is_post_entry" domain="[('is_post_entry','=', True)]"/>
+                <filter string="Process Done" name="is_process_done" domain="[('is_process_done','=',True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

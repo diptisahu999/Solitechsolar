@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="tds_accounting_192A" model="tds.accounting">
+            <field name="name">192A</field>
+            <field name="nature_of_payment">Payment of accumulated balance of provident fund which is taxable in the hands of an employee</field>
+            <field name="individual_huf">10.00</field>
+            <field name="companies">0.00</field>
+            <field name="no_pan">10.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+        <record id="tds_accounting_193" model="tds.accounting">
+            <field name="name">193</field>
+            <field name="nature_of_payment">Internet on Securities</field>
+            <field name="individual_huf">0.00</field>
+            <field name="companies">10.00</field>
+            <field name="no_pan">10.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+        <record id="tds_accounting_194" model="tds.accounting">
+            <field name="name">194</field>
+            <field name="nature_of_payment">Dividends</field>
+            <field name="individual_huf">10.00</field>
+            <field name="companies">10.00</field>
+            <field name="no_pan">20.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_194a" model="tds.accounting">
+            <field name="name">194A</field>
+            <field name="nature_of_payment">Income by Way of interest other than "Interest on Securities"</field>
+            <field name="individual_huf">10.00</field>
+            <field name="companies">10.00</field>
+            <field name="no_pan">0.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_194b" model="tds.accounting">
+            <field name="name">194B</field>
+            <field name="nature_of_payment">Winning From Lotteries</field>
+            <field name="individual_huf">30.00</field>
+            <field name="companies">30.00</field>
+            <field name="no_pan">0.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_194bb" model="tds.accounting">
+            <field name="name">194BB</field>
+            <field name="nature_of_payment">Winning From Horse Races</field>
+            <field name="individual_huf">30.00</field>
+            <field name="companies">30.00</field>
+            <field name="no_pan">30.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_194c" model="tds.accounting">
+            <field name="name">194C</field>
+            <field name="nature_of_payment">Constructor-Single Transaction</field>
+            <field name="individual_huf">1.00</field>
+            <field name="companies">2.00</field>
+            <field name="no_pan">20.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_15gc" model="tds.accounting">
+            <field name="name">194D</field>
+            <field name="nature_of_payment">Insurance Commission(15G-15H Allowed)</field>
+            <field name="individual_huf">5.00</field>
+            <field name="companies">0.00</field>
+            <field name="no_pan">0.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_15gcA" model="tds.accounting">
+            <field name="name">194DA</field>
+            <field name="nature_of_payment">Life Insurance Policy</field>
+            <field name="individual_huf">1.00</field>
+            <field name="companies">1.00</field>
+            <field name="no_pan">0.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+
+        <record id="tds_accounting_14E" model="tds.accounting">
+            <field name="name">194E</field>
+            <field name="nature_of_payment">Non-Resident Sportsmen of sports Association</field>
+            <field name="individual_huf">20.00</field>
+            <field name="companies">20.00</field>
+            <field name="no_pan">0.00</field>
+            <field name="company">Apps Comp</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_feedback_record_user,Feedback record access,model_feedback_record,feedback_manager.group_feedback_user,1,1,1,0
+access_mail_message_feedback_user,mail.message for feedback users,mail.model_mail_message,feedback_manager.group_feedback_user,1,1,1,0
+access_feedback_record_manager,Feedback record manager access,model_feedback_record,feedback_manager.group_feedback_manager,1,1,1,1

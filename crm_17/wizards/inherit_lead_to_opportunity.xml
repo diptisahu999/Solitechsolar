@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherit_crm_lead2opportunity_partner_form" model="ir.ui.view">
+        <field name="name">inherit.crm.lead2opportunity.partner.form</field>
+        <field name="model">crm.lead2opportunity.partner</field>
+        <field name="inherit_id" ref="crm.view_crm_lead2opportunity_partner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after" >
+                <field name = "referred" readonly="1" force_save="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

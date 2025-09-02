@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- First inheritance from base.view_company_form -->
+    <record id="res_company_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.company.view.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Change label of company_registry -->
+            <xpath expr="//field[@name='company_registry']" position="attributes">
+                <attribute name="string">PAN No</attribute>
+            </xpath>
+
+            <!-- Add multiple new pages after the 'branches' page -->
+            <xpath expr="//page[@name='branches']" position="after">
+                <page name="bank_details" string="Bank details">
+                    <group name="connector_kpis">
+                        <group>
+                            <field name="bank_name"/>
+                            <field name="bank_ac_name"/>
+                        </group>
+                        <group>
+                            <field name="bank_ac_no"/>
+                            <field name="bank_branch_ifsc"/>
+                        </group>
+                    </group>
+                </page>
+                <page name="conditions" string="Terms &amp; Conditions">
+                    <group>
+                        <field name="conditions"/>
+                    </group>
+                </page>
+                <page name="warehouse_address" string="Warehouse Address">
+                    <group>
+                        <field name="warehouse_address"/>
+                    </group>
+                </page>
+                <page name="bank_details_export" string="Export Bank details &amp; Terms/Conditions">
+                    <group>
+                        <field name="export_bank"/>
+                        <field name="export_terms"/>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Add images after color field -->
+            <xpath expr="//field[@name='color']" position="after">
+                <field name="iso_img" widget="image" class="oe_avatar"/>
+                <field name="sing" widget="image" class="oe_avatar"/>
+            </xpath>
+
+            <!-- Place these 4 fields after color instead of non-existent 'note' -->
+            <xpath expr="//field[@name='color']" position="after">
+                <field name="msme_no"/>
+                <field name="accounts"/>
+                <field name="service"/>
+                <field name="inquiry"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Second inheritance from l10n_in.view_company_form -->
+    <record id="res_company_upi_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.company.upi.view.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="l10n_in.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_in_upi_id']" position="after">
+                <field name="india_offices" />
+                <field name="overseas_offices" />
+                <field name="note" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

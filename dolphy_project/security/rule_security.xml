@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- Project rule -->
+    <record id="project_project_user_rule" model="ir.rule">
+        <field name="name">User Project</field>
+        <field ref="project.model_project_project" name="model_id"/>
+        <field name="domain_force">['|',('assign_ids','in',user.id),('assign_ids','=',False)]</field>
+        <field name="groups" eval="[(4, ref('project.group_project_user'))]"/>
+    </record>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'project'), ('name','=','project_public_members_rule')] "/>
+        </function>
+        <value eval ="{'noupdate': False}"/>
+    </function>
+
+    <record model="ir.rule" id="project_public_members_rule">
+        <field name="name">Project: employees: following required for follower-only projects</field>
+        <field name="model_id" ref="model_project_project"/>
+        <field name="domain_force">['|',
+                                        ('privacy_visibility', '!=', 'followers'),
+                                        ('message_partner_ids', 'in', [user.partner_id.id])
+                                    ]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="active">0</field>
+    </record>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'project'), ('name','=','project.project_public_members_rule')] "/>
+        </function>
+        <value eval ="{'noupdate': True}"/>
+    </function>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'project'), ('name','=','project_project_rule_portal')] "/>
+        </function>
+        <value eval ="{'noupdate': False}"/>
+    </function>
+
+    <record id="project_project_rule_portal" model="ir.rule">
+        <field name="name">Project: portal users: portal and following</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="domain_force">[
+            '&amp;',
+                ('privacy_visibility', '=', 'portal'),
+                ('message_partner_ids', 'child_of', [user.partner_id.commercial_partner_id.id]),
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="active">0</field>
+    </record>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'project'), ('name','=','project.project_project_rule_portal')] "/>
+        </function>
+        <value eval ="{'noupdate': True}"/>
+    </function>
+
+</odoo>

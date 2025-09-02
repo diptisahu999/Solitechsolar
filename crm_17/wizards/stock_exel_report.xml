@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_exel_wiz_form" model="ir.ui.view">
+        <field name="name">Stock Reporting</field>
+        <field name="model">stock.exel.wiz</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <field name="select"  required="1"/>
+                        <field name="product_ids" invisible="select == 'All'" required="select == 'Select'" widget="many2many_tags" options="{'no_open': True, 'no_create': True}"/>
+                        <field name="rpt_xls_file" invisible="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Generate" name="stock_xls_report" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_exel_wiz" model="ir.actions.act_window">
+        <field name="name">Stock Reporting</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.exel.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="stock_exel_wiz_menu"
+        name="Stock Repoting"
+        action="action_stock_exel_wiz"
+        parent="stock.menu_warehouse_report"
+        sequence="261"/>
+
+    <!-- Purchase Stock -->
+    <record id="purchase_stock_exel_wiz_form" model="ir.ui.view">
+        <field name="name">Purchase Stock Reporting</field>
+        <field name="model">purchase.stock.exel.wiz</field>
+        <field name="arch" type="xml">
+            <form >
+                <sheet>
+                    <group>
+                        <field name="purchase_ids" widget="many2many_tags" options="{'no_open': True, 'no_create': True}" domain="[('state', '=', 'purchase')]"/>
+                        <field name="rpt_xls_file" invisible="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Generate" name="purchase_stock_xls_report" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purchase_stock_exel_wiz" model="ir.actions.act_window">
+        <field name="name">Purchase Stock Reporting</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.stock.exel.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="purchase_stock_exel_wiz_menu"
+        name="Purchase Stock Repoting"
+        action="action_purchase_stock_exel_wiz"
+        parent="stock.menu_warehouse_report"
+        sequence="262"/>
+
+</odoo>

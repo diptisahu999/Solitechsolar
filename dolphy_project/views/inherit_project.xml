@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="project_project_view_form_inherit" model="ir.ui.view">
+        <field name="name">project.project.view.form.inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="stage_type" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" />
+            </xpath>
+            <xpath expr="//button[@name='%(project.project_share_wizard_action)d'][2]" position="after">
+                <button string="Stage Assign" name="stage_assign_action" class="oe_highlight" type="object" invisible="1"/>
+                <!-- invisible="is_stage_assign == True" -->
+                <button name="action_create_sale" type="object" string="Create Quotation" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_sale"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="dol_sale_order_count == 0">
+                    <field name="dol_sale_order_count" widget="statinfo" string="Quotations"/>
+                </button>
+            </xpath>
+            <xpath expr="//button[@name='project_update_all_action']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(project.project_collaborator_action)d']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(project.project_share_wizard_action)d']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(project.project_share_wizard_action)d'][2]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='label_tasks']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="city_id" options="{'no_create' : True}" required="1"/>
+            </xpath>
+            <xpath expr="//field[@name='date_start']" position="after">
+                <field name="state_id" options="{'no_create' : True}" required="1"/>
+                <field name="is_stage_assign" invisible="1"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='description']" position="before">
+                <page string="Project Details">
+                    <group>
+                        <group>
+                            <field name="source_id" options="{'no_create' : True}" required="1"/>
+                            <field name="approval_type" required="1"/>
+                            <field name="recevied_date"/>
+                            <field name="washroom_num" required="1"/>
+                            <field name="received_type" />
+
+                            <field name="project_value"/>
+                            <field name="site_add" />
+                            <field name="interior_start_date"/>
+                            <field name="invoice"/>
+                            <field name="mockup_date"/>
+                            <field name="latest_status_id" options="{'no_create' : True}"/>
+                            <field name="construction_area"/>
+                            <field name="key_account"/>
+                        </group>
+                        <group>
+                            <field name="project_type_id" options="{'no_create' : True}" required="1"/>
+                            <field name="boq_type" required="1"/>
+                            <field name="boq_file"/>
+                            <field name="priority" required="1" widget="priority"/>
+                            <field name="assign_ids" widget="many2many_tags" options="{'no_create' : True}" />
+
+                            <field name="discount"/>
+                            <field name="landmark" />
+                            <field name="pincode" />
+                            <field name="rating"/>
+                            <field name="completion_date"/>
+                            <field name="latest_status_date"/>
+                            <field name="construction_cost"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="MNC Company/ Hotel Brand">
+                    <field name="mnc_line_ids" domain="[('postion_type', '=', 'mnc_company_hotel_brand')]" context="{'default_postion_type': 'mnc_company_hotel_brand'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="designation" readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Developer/Owner">
+                    <field name="developer_line_ids" domain="[('postion_type', '=', 'developer_owner')]" context="{'default_postion_type': 'developer_owner'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="designation" readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="contact" readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Architect">
+                    <field name="architect_line_ids" domain="[('postion_type', '=', 'architect')]" context="{'default_postion_type': 'architect'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name"  readonly="1"/>
+                            <field name="designation"  readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="MEP Consultant">
+                    <field name="mep_line_ids" domain="[('postion_type', '=', 'mep_consultant')]" context="{'default_postion_type': 'mep_consultant'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name"  readonly="1"/>
+                            <field name="designation"  readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Civil Contractor">
+                    <field name="civil_line_ids" domain="[('postion_type', '=', 'civil_contractor')]" context="{'default_postion_type': 'civil_contractor'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name"  readonly="1"/>
+                            <field name="designation"  readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Interior Contractor">
+                    <field name="interior_line_ids" domain="[('postion_type', '=', 'interior_contractor')]" context="{'default_postion_type': 'interior_contractor'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name"  readonly="1"/>
+                            <field name="designation"  readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="PMC">
+                    <field name="pmc_line_ids" domain="[('postion_type', '=', 'pmc')]" context="{'default_postion_type': 'pmc'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name"  readonly="1"/>
+                            <field name="designation"  readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email"  readonly="1"/>
+                            <field name="contact"  readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Facility Management">
+                    <field name="facility_line_ids" domain="[('postion_type', '=', 'facility_management')]" context="{'default_postion_type': 'facility_management'}">
+                        <tree editable="1" >
+                            <field name="postion_type" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="designation" readonly="1"/>
+                            <field name="source_id" options="{'no_create' : True}" readonly="1"/>
+                            <field name="company_id" options="{'no_quick_create' : True}" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="contact" readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_project_tree_inherit" model="ir.ui.view">
+        <field name="name">project project (tree) inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_config"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="state_id" />
+                <field name="developer_line_ids" widget="many2many_tags" string="Developer" optional="show"/>
+                <field name="boq_type" string="BOQ" optional="show"/>
+                <field name="architect_line_ids" widget="many2many_tags" string="Architect" optional="show"/>
+                <field name="approval_type" optional="show"/>
+                <field name="stage_id" optional="show" widget="badge"/>
+                <field name="priority" widget="priority"/>
+            </field>
+            <field name="partner_id" position="replace">
+                <field name="city_id" column_invisible="True"/>
+            </field>
+            <button name="action_view_tasks" position="replace">
+                <field name="action_link" widget="html"/>
+            </button>
+        </field>
+    </record>
+
+    <record id="view_project_project_tree_inherit_main" model="ir.ui.view">
+        <field name="name">project project (tree) inherit main</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="assign_ids" widget="many2many_tags" />
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </field>
+            <field name="last_update_status" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </field>
+            <field name="display_name" position="before">
+                <field name="create_date" string="Date" />
+            </field>
+            <field name="display_name" position="attributes">
+                <attribute name="string">Project Name</attribute>
+            </field>
+        </field>
+    </record>
+    
+    <record id="view_project_project_search_inherit" model="ir.ui.view">
+        <field name="name">project project (search) inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_project_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="state_id" />
+                <field name="developer_line_ids" string="Developer"/>
+                <field name="architect_line_ids" string="Architect"/>
+            </field>
+            <filter name="Manager" position="after">
+                <filter string="Project Type" name="project_type_id" context="{'group_by': 'project_type_id'}"/>
+                <filter string="State" name="state_id" context="{'group_by': 'state_id'}"/>
+                <filter string="Developer" name="developer_line_ids" context="{'group_by': 'developer_line_ids'}"/>
+                <filter string="Architect" name="architect_line_ids" context="{'group_by': 'architect_line_ids'}"/>
+                <filter string="Date" name="create_date" context="{'group_by': 'create_date'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="project.open_view_project_all" model="ir.actions.act_window">
+        <field name="name">Projects</field>
+        <field name="res_model">project.project</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_id" ref="project.view_project_config"/>
+        <field name="search_view_id" ref="project.view_project_project_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No projects found. Let's create one!
+            </p>
+            <p>
+                Create projects to organize your tasks. Define a different workflow for each project.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_project_assign_other_details_ser" model="ir.actions.server">
+        <field name="name">Assign Details</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="binding_model_id" ref="project.model_project_project"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_assign_other_details()
+        </field>
+    </record>
+
+</odoo>

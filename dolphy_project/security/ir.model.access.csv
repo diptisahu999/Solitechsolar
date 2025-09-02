@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_city_mst,city_mst,model_city_mst,base.group_erp_manager,1,1,1,1
+access_city_mst_user,city_mst,model_city_mst,,1,0,0,0
+access_latest_status_mst,latest_status_mst,model_latest_status_mst,,1,1,1,1
+access_company_mst,company_mst,model_company_mst,,1,1,1,1
+access_project_contact_mst,project_contact_mst,model_project_contact_mst,,1,1,1,1
+project.access_project_project,project.project,model_project_project,project.group_project_user,1,1,1,1
+access_project_details_wiz,project_details_wiz,model_project_details_wiz,,1,1,1,1

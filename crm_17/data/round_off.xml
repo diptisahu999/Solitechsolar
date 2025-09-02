@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="round_off_account" model="account.account">
+        <field name="name">Round Off</field>
+        <field name="code">111111</field>
+        <field name="account_type">expense</field>
+    </record>
+
+    <record id="round_off_account_cash_round_off" model="account.cash.rounding">
+        <field name="name">round off</field>
+        <field name="rounding">1.0</field>
+        <field name="strategy">add_invoice_line</field>
+        <field name="profit_account_id" ref="crm_17.round_off_account"/>
+        <field name="loss_account_id" ref="crm_17.round_off_account"/>
+        <field name="rounding_method">HALF-UP</field>
+    </record>
+
+    <record id="custom_duty_account" model="account.account">
+        <field name="name">Custom Duty</field>
+        <field name="code">121212</field>
+        <field name="account_type">expense</field>
+    </record>
+
+    <record forcecreate="True" id="decimal_price_for_import" model="decimal.precision">
+            <field name="name">Product Price For Import</field>
+            <field name="digits">12</field>
+        </record>
+
+         <record forcecreate="True" id="decimal_Freight_for_import" model="decimal.precision">
+            <field name="name">Freight</field>
+            <field name="digits">2</field>
+        </record>
+
+    <record id="sequence_spare_parts" model="ir.sequence">
+        <field name="name">Spare Parts</field>
+        <field name="code">spare.parts.production</field>
+        <field name="active">TRUE</field>
+        <field name="prefix">SP/</field>
+        <field name="padding">5</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <!-- <record id="sale_quotation_email_partner" model="res.partner">
+        <field name="name">Sale Quotation email</field>
+        <field name="email">quote@dolphy.in</field>
+    </record> -->
+
+</odoo>

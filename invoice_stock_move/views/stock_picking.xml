@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inv_view_stock_pickin_form_view_inherit" model="ir.ui.view">
+        <field name="name">inv.stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button type="object"
+                        name="action_view_invoices"
+                        class="oe_stat_button"
+                        invisible="invoices_count &lt; 1"
+                        icon="fa-file">
+                    <field name="invoices_count" string="Invoices"
+                        widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

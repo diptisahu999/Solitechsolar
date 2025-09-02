@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_order_line_hike_wizard_form" model="ir.ui.view">
+        <field name="name">sale.order.line.hike.wizard.form</field>
+        <field name="model">sale.order.hike</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="sale_order_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="hike_type" invisible="1"/>
+                    <group>
+                        <group invisible="hike_type == 'qty'">
+                            <field name="hike" string="Hike (%)" />
+                        </group>
+                        <group invisible="hike_type == 'hike'">
+                            <field name="qty" string="Qty"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button type="object" string="Apply" name="action_apply_hike_qty" class="btn btn-primary" data-hotkey="q"/>
+                    <button special="cancel" string="Discard" class="btn btn-secondary" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

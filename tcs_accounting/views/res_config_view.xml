@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="round_off_config" model="ir.ui.view">
+            <field name="name">res.config.settings.roundoff</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='languages']" position="after">
+                    <h2>TCS And TDS</h2>
+                    <div class="row mt16 o_settings_container" id="roundoff">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div name="round_off_conf">
+<!--                                <div>-->
+<!--                                    <label for="roundoff_account_id"/>-->
+<!--                                    <field name="roundoff_account_id" class="oe_inline"/>-->
+<!--                                </div>-->
+                                <div>
+                                    <label for="tcs_account_id"/>
+                                    <field name="tcs_account_id" class="oe_inline" required="1"/>
+                                </div>
+                                <div>
+                                    <label for="tds_account_id"/>
+                                    <field name="tds_account_id" class="oe_inline" required="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="round_off_config_hh" model="ir.ui.view">
+            <field name="name">res.company</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name='tcs_act_id'/>
+                    <field name='tds_act_id'/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

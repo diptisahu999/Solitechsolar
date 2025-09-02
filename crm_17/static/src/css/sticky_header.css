@@ -1,0 +1,55 @@
+.o_list_view .o_list_table thead {
+    position: sticky;
+    top: 0;
+    z-index:999;
+}
+.table-responsive{
+    overflow: visible;
+}
+
+@media only screen and (max-width: 600px) {
+    .table-responsive{ 
+        overflow: auto;    
+    }
+}
+
+.o_list_view .table-responsive .table thead{
+z-index: 1;
+}
+
+element.style {
+}
+.o_list_renderer .o_list_table thead {
+    position: sticky;
+    top: 0;
+    z-index:999;
+}
+
+.o-mail-Chatter-sendMessage{
+    display: none !important;
+}
+
+.o-mail-Message-moreMenu {
+    display: none !important;
+}
+
+.o-mail-Chatter-follow {
+    display: none !important;
+}
+
+.o_thread_message_content.comment-green {
+    color: green;
+    font-weight: bold;
+}
+
+.o-mail-Chatter-attachFiles{
+    display: none !important;
+}
+
+button[aria-label="Search Messages"] {
+    display: none !important;
+}
+
+.dropdown-toggle.o-mail-Followers-button.btn.btn-link.d-flex.align-items-center.text-action.px-1.my-2 {
+    display: none !important;
+}

@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <record id="view_tds_accounting_form" model="ir.ui.view">
+            <field name="name">TDS Section</field>
+            <field name="model">tds.accounting</field>
+            <field name="arch" type="xml">
+                <form string="Delivery Method">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="tds_reversal"/>
+                                <field name="tds_payable"/>
+                                <field name="nature_of_payment"/>
+                                <field name="company"/>
+                            </group>
+                            <group>
+                                <field name="companies"/>
+                                <field name="individual_huf"/>
+                                <field name="no_pan"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_tds_accounting_tree" model="ir.ui.view">
+            <field name="name">TDS Section</field>
+            <field name="model">tds.accounting</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="nature_of_payment"/>
+                    <field name="individual_huf"/>
+                    <field name="companies"/>
+                    <field name="no_pan"/>
+                    <field name="tds_reversal"/>
+                    <field name="tds_payable"/>
+                    <field name="company"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_tds_accounting_action" model="ir.actions.act_window">
+            <field name="name">TDS Section</field>
+            <field name="res_model">tds.accounting</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem
+                id="menu_tds_main_new_section"
+                name="TDS Account"
+                parent="account.root_payment_menu"
+                sequence="5"/>
+        <menuitem
+                id="menu_tds_main_new"
+                name="TDS Section"
+                parent="menu_tds_main_new_section"
+                action="view_tds_accounting_action"
+                sequence="10"/>
+    </data>
+</odoo>

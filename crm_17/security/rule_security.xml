@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'crm'), ('name','=','crm_rule_all_lead')] "/>
+        </function>
+        <value eval ="{'noupdate': False}"/>
+    </function>
+
+    <record id="crm_rule_all_lead" model="ir.rule">
+        <field name="name">All Leads</field>
+        <field ref="crm.model_crm_lead" name="model_id"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'crm'), ('name','=','crm.crm_rule_all_lead')] "/>
+        </function>
+        <value eval ="{'noupdate': True}"/>
+    </function>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'sale'), ('name','=','sale_order_see_all')] "/>
+        </function>
+        <value eval ="{'noupdate': False}"/>
+    </function>
+
+    <record id="sale.sale_order_see_all" model="ir.rule">
+        <field name="name">All Orders</field>
+        <field ref="sale.model_sale_order" name="model_id"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'sale'), ('name','=','sale.sale_order_see_all')] "/>
+        </function>
+        <value eval ="{'noupdate': True}"/>
+    </function>
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'sale'), ('name','=','account_invoice_rule_see_all')] "/>
+        </function>
+        <value eval ="{'noupdate': False}"/>
+    </function>
+
+    <record id="sale.account_invoice_rule_see_all" model="ir.rule">
+        <field name="name">All Invoices</field>
+        <field name="model_id" ref="sale.model_account_move"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+
+    <function name = "write" model = "ir.model.data">
+        <function name = "search" model = "ir.model.data">
+            <value eval = "[('module', '=', 'sale'), ('name','=','sale.account_invoice_rule_see_all')] "/>
+        </function>
+        <value eval ="{'noupdate': True}"/>
+    </function>
+
+    <!-- repair.order rule -->
+    <record id="repair_order_personal_rule" model="ir.rule">
+        <field name="name">Personal Repair Orders</field>
+        <field ref="repair.model_repair_order" name="model_id"/>
+        <field name="domain_force">['|',('user_id','=',user.id),('user_id','=',False)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+
+    <record id="repair_order_see_all" model="ir.rule">
+        <field name="name">All Repair Orders</field>
+        <field ref="repair.model_repair_order" name="model_id"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'),ref('sales_team.group_sale_manager'))]"/>
+    </record>
+
+</odoo>

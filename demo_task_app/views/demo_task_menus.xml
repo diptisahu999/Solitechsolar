@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level Menu -->
+    <menuitem 
+        id="menu_demo_task_root"
+        name="Demo App"
+        sequence="10"
+        groups="demo_task_app.group_demo_task_user"/>
+
+    <!-- Sub-menu -->
+    <menuitem
+        id="menu_demo_task"
+        name="Tasks"
+        parent="menu_demo_task_root"
+        action="action_demo_task_main" 
+        sequence="10"
+        groups="demo_task_app.group_demo_task_user"/>
+</odoo>

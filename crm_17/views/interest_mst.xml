@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="interest_mst_view_form" model="ir.ui.view">
+        <field name="name">interest.mst.view.form</field>
+        <field name="model">interest.mst</field>
+        <field name="arch" type="xml">
+            <form string="Interest Master">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>    
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="interest_mst_view_tree" model="ir.ui.view">
+        <field name="name">interest.mst.view.tree</field>
+        <field name="model">interest.mst</field>
+        <field name="arch" type="xml">
+            <tree string="Interest Master" sample="1">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="interest_mst_action" model="ir.actions.act_window">
+        <field name="name">Interest Master</field>
+        <field name="res_model">interest.mst</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="interest_mst_menu"
+        name="Interest Master"
+        action="interest_mst_action"
+        parent="crm.menu_crm_config_lead"
+        groups="base.group_erp_manager"
+        sequence="5"/>
+
+</odoo>

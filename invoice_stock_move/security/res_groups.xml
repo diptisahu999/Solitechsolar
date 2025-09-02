@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_is_direct_delivery" model="ir.module.category">
+        <field name="name">Is Direct Delivery</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_is_direct_delivery" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_is_direct_delivery"/>
+    </record>
+    
+</odoo>

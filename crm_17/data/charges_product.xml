@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="product.template" id="freight_charges">
+        <field name="name">Freight Charges</field>
+        <field name="detailed_type">service</field>
+        <field name="extra_charges">True</field>
+    </record>
+
+    <record model="product.template" id="packing_charges">
+        <field name="name">Packing Charges</field>
+        <field name="detailed_type">service</field>
+        <field name="extra_charges">True</field>
+    </record>
+
+    <record model="product.template" id="installalltion_charges">
+        <field name="name">Installalltion</field>
+        <field name="detailed_type">service</field>
+        <field name="extra_charges">True</field>
+    </record>
+
+    <record model="product.template" id="service_charges">
+        <field name="name">Service Charges</field>
+        <field name="detailed_type">service</field>
+        <field name="extra_charges">True</field>
+    </record>
+
+    <record model="product.template" id="extra_charges">
+        <field name="name">Extra Charges</field>
+        <field name="detailed_type">product</field>
+        <field name="extra_charges">False</field>
+    </record>
+
+</odoo>

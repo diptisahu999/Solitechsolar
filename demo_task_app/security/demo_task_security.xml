@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 
+            Creates a new category for our app's permissions to appear under 
+            on the user form. 
+        -->
+        <record id="module_category_demo_task" model="ir.module.category">
+            <field name="name">Demo App</field>
+            <field name="description">Permissions for the Demo Task Application</field>
+        </record>
+
+        <!-- 
+            Creates the actual "User" permission group.
+            It implies base.group_user, meaning anyone in this group is also an internal user.
+        -->
+        <record id="group_demo_task_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="demo_task_app.module_category_demo_task"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>

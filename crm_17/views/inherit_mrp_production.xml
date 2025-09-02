@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mrp_production_view_form_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.view.form.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='bom_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_producing_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_finished_ids']/tree/field[@name='product_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_finished_ids']/tree/field[@name='operation_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_finished_ids']/tree/field[@name='byproduct_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_finished_ids']/tree/field[@name='picking_type_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_finished_ids']/tree/field[@name='location_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_byproduct_ids']/tree/field[@name='product_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_byproduct_ids']/tree/field[@name='operation_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_byproduct_ids']/tree/field[@name='byproduct_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_byproduct_ids']/tree/field[@name='picking_type_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_byproduct_ids']/tree/field[@name='location_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='product_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='operation_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='picking_type_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='location_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='miscellaneous']//group/field[@name='picking_type_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

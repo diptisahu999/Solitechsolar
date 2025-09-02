@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_view_sale_order_form" model="ir.ui.view">
+        <field name="name">inherit.repair.order.form</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="is_serial_gen" invisible="1" force_save="1"/>
+                <label for="product_type" string="Product Type" invisible="tracking not in ['serial', 'lot']"/>
+                <div class="o_row g-0 d-flex" invisible="tracking not in ['serial', 'lot']">
+                    <field name="product_type" readonly="state != 'draft'" nolabel="1" />
+                    <button string="Serial Generate" name="action_old_product_serial_genrate" type="object" class="btn btn-secondary oe_inline"   invisible="product_type != 'old' or is_serial_gen == True"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="required">tracking in ['serial', 'lot'] and product_type != 'old'</attribute>
+                <attribute name="readonly">state == 'done' or tracking not in ['serial', 'lot'] or product_type == 'old'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_sale_order_repair_wiz_open_ser" model="ir.actions.server">
+        <field name="name">Sale Quotations</field>
+        <field name="model_id" ref="repair.model_repair_order"/>
+        <field name="binding_model_id" ref="repair.model_repair_order"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_sale_order_repair_wiz_open()
+        </field>
+    </record>
+
+</odoo>

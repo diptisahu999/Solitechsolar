@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function name = "write" model = "ir.model.data"> 
+        <function name = "search" model = "ir.model.data"> 
+            <value eval = "[('module', '=', 'sale'), ('name','=','email_template_edi_sale')] "/> 
+        </function> 
+        <value eval ="{'noupdate': False}"/> 
+    </function>
+
+    <record id="sale.email_template_edi_sale" model="mail.template">
+        <field name="report_template_ids" eval="[(6,0, [ref('crm_17.action_sale_quotation')])]"/>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px; color: black; font-weight: normal;">
+                <p style="margin: 0px; padding: 0px; font-size: 13px; color: black; font-weight: normal;">
+                    <t t-set="doc_name" t-value="'quotation' if object.state in ('draft', 'sent') else 'order'"/>
+                    Hello <b><t t-out="object.partner_id.name or ''"></t></b>,
+                    <br/><br/>
+                    Greetings from Dolphy.
+                    <br/><br/>
+                    I hope you all are doing well. <br/>
+                    Kindly please find the attached PI for your requirement.
+                    <br/><br/>
+                    Thank you so much for showing the interest in our product range and providing an opportunity to serve our best. We have wide range of hygienic products for washrooms as well entrances products. Looking forward to build a long term relationship.
+                    <br/><br/>
+                    Absolutely, a quick response or a prompt turnaround can significantly enhance your serviceability and improve customer satisfaction. We will assure you about best quality products and services from our more than 20 offices across India.
+                    <br/><br/>
+                    Don’t hesitate to reach out if you have any questions.
+                    <br/><br/>
+                </p>
+                <t t-raw="user.email_signature"/>
+            </div>
+        </field>
+    </record>
+
+     <function name = "write" model = "ir.model.data"> 
+        <function name = "search" model = "ir.model.data"> 
+            <value eval = "[('module', '=', 'sale'), ('name','=','email_template_edi_sale')] "/> 
+        </function> 
+        <value eval ="{'noupdate': True}"/> 
+    </function>
+
+    <function name = "write" model = "ir.model.data"> 
+        <function name = "search" model = "ir.model.data"> 
+            <value eval = "[('module', '=', 'sale'), ('name','=','mail_template_sale_confirmation')] "/> 
+        </function> 
+        <value eval ="{'noupdate': False}"/> 
+    </function>
+
+    <record id="sale.mail_template_sale_confirmation" model="mail.template">
+        <field name="report_template_ids" eval="[(6,0, [ref('crm_17.action_sale_quotation')])]"/>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px; color: black; font-weight: normal;">
+                <p style="margin: 0px; padding: 0px; font-size: 13px; color: black; font-weight: normal;">
+                    Hello <b><t t-out="object.partner_id.name or ''"></t></b>,
+                    <br/><br/>
+                    Greetings from Dolphy.
+                    <br/><br/>
+                    I hope you all are doing well. <br/>
+                    Kindly please find the attached PI for your requirement.
+                    <br/><br/>
+                    Thank you so much for showing the interest in our product range and providing an opportunity to serve our best. We have wide range of hygienic products for washrooms as well entrances products. Looking forward to build a long term relationship.
+                    <br/><br/>
+                    Absolutely, a quick response or a prompt turnaround can significantly enhance your serviceability and improve customer satisfaction. We will assure you about best quality products and services from our more than 20 offices across India.
+                    <br/><br/>
+                    Don’t hesitate to reach out if you have any questions.
+                    <br/><br/>
+                </p>
+                <t t-raw="user.email_signature"/>
+            </div>
+        </field>
+    </record>
+
+     <function name = "write" model = "ir.model.data"> 
+        <function name = "search" model = "ir.model.data"> 
+            <value eval = "[('module', '=', 'sale'), ('name','=','mail_template_sale_confirmation')] "/> 
+        </function> 
+        <value eval ="{'noupdate': True}"/> 
+    </function>
+
+</odoo>

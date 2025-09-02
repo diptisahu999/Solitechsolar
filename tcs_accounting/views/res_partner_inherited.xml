@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="res_partner_inherit_new" model="ir.ui.view">
+            <field name="name">res.partner</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <div>
+                        <field name="pan_no" placeholder="e.g. ENTER PAN NUMBER"/>
+                    </div>
+                    <field name="tan_no"/>
+                </xpath>
+                <xpath expr="//page[3]" position="inside">
+                    <group string="TcS Information">
+                        <group>
+                            <field name="tcs_applicable" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="tcs_applicable" widget="boolean_toggle"/>
+                            <field name="tcs_percentage" invisible="tcs_applicable != True"/>
+                            <field name="tcs_sec" invisible="tcs_applicable != True"/>
+                        </group>
+                    </group>
+                </xpath>
+                <xpath expr="//page[3]" position="inside">
+                    <group string="TDS Information">
+                        <group>
+                            <field name="tds_applicable" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="tds_sec" invisible="tds_applicable != True"/>
+                            <field name="address_type" invisible="tds_applicable != True"/>
+                            <field name="tds_percentage" invisible="tds_applicable != True"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

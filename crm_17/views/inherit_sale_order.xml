@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_product_image" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_invoice_id']" position="before" >
+                <field name = "price_list_id" options="{'no_create': True}" readonly="state == 'sale'"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before" >
+                <field name = "image_128" widget="image" class="oe_avatar"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after" >
+                <field name = "remarks" />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace" >
+                <label for="partner_id" string="Customer" style="font-weight:bold;" />
+                <div class="o_col" >
+                    <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True,'no_open': True}" nolabel="1" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" placeholder="Type to find a customer..." readonly="state in ['cancel', 'sale']"/>
+                    <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user" />
+                </div>
+            </xpath>
+            <!-- <xpath expr="//field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute> -->
+                <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
+            <!-- </xpath> -->
+            <xpath expr="//field[@name='project_id']" position="attributes" >
+                <attribute name="invisible">0</attribute>
+                <attribute name="options">{'no_create': True,'no_open': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_invoice_id']" position="attributes" >
+                <attribute name="options">{'no_create': True,'no_open': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="attributes" >
+                <attribute name="context">{'default_type':'delivery', 'show_address': 1, 'show_vat': 1}</attribute>
+                <attribute name="options">{'no_create': True,'no_open': True}</attribute>
+                <!-- <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id), '|', ('company_id', '=', False), ('company_id', 'child_of', company_id)]</attribute> -->
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="class">o_list_renderer .o_list_table thead</attribute>
+                <attribute name="readonly">state == 'cancel' or locked or invoice_status != 'upselling' and state == 'sale'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='tax_id']" position="attributes" >
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="attributes" >
+                <attribute name="column_invisible">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom'][2]" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
+                <attribute name="domain">[('sale_ok', '=', True),('ecommerce_ok', '!=', True)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="attributes" >
+                <attribute name="readonly">no_discount_ok == True</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="after" >
+                <field name = "up_after_disc_amt" readonly="1" force_save="1" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes" >
+                <attribute name="readonly">is_group_price == False and is_service != True</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//control/create[@name='add_section_control']" position="replace"/>
+            <!-- <xpath expr="//control/create[@name='add_note_control']" position="replace"/> -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after" >
+                <field name = "actual_price" readonly="1" force_save="1" optional="hide"/>
+                <field name = "diff_amount" column_invisible="1" force_save="1"/>
+                <field name = "diff_per" readonly="1" force_save="1" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after" >
+                <field name = "inch_feet_type" />
+                <field name = "height_length" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide"/>
+                <field name = "width" readonly="inch_feet_type == 'basic' or is_categ_widht == True" force_save="1" optional="hide"/>
+                <field name = "tile_width" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile' or is_tile == True and inch_feet_type == 'tile'" force_save="1" optional="hide"/>
+                <field name = "tile_length" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile' or is_tile == True and inch_feet_type == 'tile'" force_save="1" optional="hide"/>
+                <field name = "layout" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide"/>
+                <field name = "tiles_per_box" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile' or is_tile == True and inch_feet_type == 'tile'" force_save="1" optional="hide"/>
+                <field name = "sqft" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide"/>
+                <field name = "tile_final" readonly="inch_feet_type == 'basic' or inch_feet_type != 'tile'" force_save="1" optional="hide"/>
+                <field name = "sqft_rate" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide"/>
+                <!-- <field name = "discount" /> -->
+                <field name = "is_tile" column_invisible="1"/>
+                <field name = "is_categ_widht" column_invisible="1"/>
+                <field name = "is_service" column_invisible="1"/>
+                <field name = "is_group_price" column_invisible="1"/>
+                <field name = "no_discount_ok" column_invisible="1"/>
+                <field name = "gst_tax" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="replace">
+                <button id="create_invoice" string="Create Proforma Invoice" name="create_invoice_direct" invisible="invoice_status != 'to invoice'" type="object" class="oe_highlight"
+                        confirm="Please verify all details: supply items, billing &amp; delivery addresses, GST, and terms before proceeding."/>
+            </xpath>
+            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d'][1]" position="replace">
+                <button id="create_invoice_percentage" string="Create Proforma Invoice" name="create_invoice_direct" invisible="invoice_status != 'no' or state != 'sale'" type="object" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="confirm">Congratulations on receiving the order! If not confirmed, please do not proceed.</attribute>
+            </xpath>	
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="confirm">Congratulations on receiving the order! If not confirmed, please do not proceed.</attribute>
+            </xpath>	
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Approve discount" name="action_discount_user" type="object" groups="sales_team.group_sale_salesman" invisible="state != 'draft' or is_manager == True"/>
+                <button string="Approved discount" name="action_discount_manager" type="object" groups="sales_team.group_sale_manager,sales_team.group_sale_salesman_all_leads" invisible="is_manager == True or state in ['sent','sale','cancel'] or state != 'discount_approval'"/>
+                <button string="Quotation Print" name="sale_quotation_report" type="object" class="oe_highlight" invisible="not order_line"/>
+                <button string="Send Whatsapp" name="send_whatsapp_message" type="object" class="oe_highlight"/>
+                <button string="Update Product Price" name="update_product_price" type="object" class="oe_highlight" groups="base.group_no_one"/>
+                <button string="Download Document" name="action_download_product_doc" type="object" class="oe_highlight" invisible="1"/>
+                <button string="Final Quotation" name="action_final_quotation" type="object" class="oe_highlight" invisible="1"/>
+                <!-- invisible="state != 'sale' or final_quotation == True" -->
+            </xpath>
+            <xpath expr="//button[@name='action_open_discount_wizard']" position="after">
+                <button string="Hike" name="action_open_hike_wizard" type="object" class="btn btn-secondary" />
+                <button string="Qty Update" name="action_open_qty_wizard" type="object" class="btn btn-secondary" />
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name = "final_quotation" force_save="1" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='action_preview_sale_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="is_manager" invisible="1"/>
+                <field name="partner_vat" invisible="1"/>
+                <field name="is_partner_vat" invisible="1"/>
+                <field name="is_group_admin" invisible="1"/>
+                <!-- <field name="sale_amount_total" invisible="1"/> -->
+                <field name="create_uid" />
+                <field name="sample_type" />
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="readonly">is_group_admin == True</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="options">{'no_open': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- <record id="view_sale_tree_view_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="action_link" widget="html"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="view_sale_tree_view_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <!-- <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="sale_amount_total" />
+            </xpath> -->
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="final_quotation" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sale_crm_tree_view_inherit" model="ir.ui.view">
+        <field name="name">sale.crm.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="action_link" widget="html"/>
+                <field name="final_quotation" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="decoration-warning">state == 'sale'</attribute>
+                <attribute name="decoration-success">invoice_status == 'invoiced' or state == 'pi'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="sale_amount_total" />
+            </xpath> -->
+        </field>
+    </record>
+
+    <record id="inherit_view_sale_order_filter" model="ir.ui.view">
+        <field name="name">inherit.sale.order.search</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="create_uid" string="Created by" filter_domain="[('create_uid', 'ilike', self)]"/>            
+                <field name="partner_vat" string="GST No." filter_domain="[('partner_vat', 'ilike', self)]"/>            
+                <field name="amount_untaxed" string="Untaxed Amount" filter_domain="[('amount_untaxed', 'ilike', self)]"/>            
+                <field name="amount_total" string="Total Amount" filter_domain="[('amount_total', 'ilike', self)]"/>            
+            </xpath>
+            <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Created by" name="create_uid" domain="[]" context="{'group_by':'create_uid'}"/>
+            </xpath>
+            <xpath expr="//filter[@name='sales']" position="after">
+                <filter string="Final Quotation" name="final_quotation" domain="[('final_quotation', '=', True)]"/>
+                <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_sale_order_filter_order" model="ir.ui.view">
+        <field name="name">inherit.sale.order.search.order</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='upselling']" position="after">
+                <filter string="Final Quotation" name="final_quotation" domain="[('final_quotation', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_sale_order_report_filter_order" model="ir.ui.view">
+        <field name="name">inherit.sale.report.search.order</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='fully_invoiced']" position="after">
+                <filter string="Final Quotation" name="final_quotation" domain="[('final_quotation', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- action in Share remove -->
+    <record id="sale.model_sale_order_action_share" model="ir.actions.server">
+        <field name="name">Share</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_share()</field>
+    </record>
+
+    <!-- cancel sale wiz -->
+    <record id="inherit_view_form_sale_order_cancel" model="ir.ui.view">
+        <field name="name">inherit.sale.order.cancel.form</field>
+        <field name="model">sale.order.cancel</field>
+        <field name="inherit_id" ref="sale.sale_order_cancel_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_send_mail_and_cancel']" position="attributes" >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+
+    <!-- templates menu -->
+
+    <record model="ir.actions.act_window" id="action_email_template_tree_all_sale">
+        <field name="name">Email Templates</field>
+        <field name="res_model">mail.template</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="mail.email_template_tree" />
+        <field name="search_view_id" ref="mail.view_email_template_search"/>
+        <field name="context">{'search_default_base_templates': 1,'default_model':'sale.order'}</field>
+        <field name="domain">[('model', '=', 'sale.order')]</field>
+    </record>
+
+    <menuitem id="menu_email_templates_sale"
+        parent="sale.menu_sale_config"
+        action="action_email_template_tree_all_sale"
+        groups="base.group_erp_manager"
+        sequence="71"/>
+</odoo>

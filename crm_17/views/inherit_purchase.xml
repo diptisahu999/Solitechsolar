@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="purchase_order_view_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.view.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_cancel']" position="after">
+                <button string="Generate Serial" type="object" name="generate_serail_number" invisible="state not in ['purchase','done'] or is_contener != True or is_gen_lot == True"/>
+                <button string="Print Labels" type="object" name="xlsx_report_lot" invisible="state not in ['purchase','done'] or is_contener != True or is_gen_lot == False"/>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="after" >
+               <field name="is_contener" readonly="state in ['purchase','done','cancel']"/>
+               <field name="is_gen_lot" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="class">o_list_renderer .o_list_table thead</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_received']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_received'][1]" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_received']" position="attributes" >
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_received'][1]" position="attributes" >
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom'][2]" position="attributes" >
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after" >
+                <field name = "image_128" widget="image" class="oe_avatar"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='taxes_id']" position="after" >
+                <field name = "remark_1" />
+                <field name = "remark_2" />
+                <field name = "remark_3" />
+                <field name = "attachment" />
+            </xpath>
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                <page string="Lot Details" name="lot_details" invisible="is_contener != True">
+                    <field name="lot_line_ids" context="{'form_view_ref': 'crm_17.view_lot_product_line_form'}">
+                        <tree editable="0" create="0" edit="0" delete="0" widget="section_and_note_one2many">
+                            <field name="product_id" string="Product" />
+                            <field name="qty" string="Quantity" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_lot_product_line_form" model="ir.ui.view">
+        <field name="name">lot.product.line.form</field>
+        <field name="model">lot.product.line</field>
+        <field name="arch" type="xml">
+            <form string="Lines" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                        </group>
+                        <group>
+                            <field name="qty" />
+                        </group>
+                    </group>
+                    <field name="line_ids" string="Details" >
+                        <tree editable="1">
+                            <field name="lot_name" string="Lot Name" />
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_partner_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.view.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="before">
+                <field name="person_contacts" required="is_company" invisible="not is_company"/>
+                <field name="supplier_rank" invisible="1"/>
+                <field name="customer_rank" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="required">is_company</attribute>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="required">supplier_rank == 0</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']" position="attributes">
+                <attribute name="context">{'default_parent_id': id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group/field[@name='name']" position="after">
+                <field name="company_name_delivery" required="type == 'delivery'" invisible="type != 'delivery'"/>
+            </xpath>
+            <xpath expr="//field[@name='street2']" position="after">
+                <field name="city_id" placeholder="City" class="o_address_street" options="{'no_open': True, 'no_create': True}"/>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group//div/field[@name='street2']" position="after">
+                <field name="city_id" placeholder="City" class="o_address_street" options="{'no_open': True, 'no_create': True}"/>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group/field[@name='title']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="after">
+                <field name="company_name_delivery" invisible="type != 'delivery'"/>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="id" invisible="1"/>
+                <field name="contact_type" groups="base.group_erp_manager"/>
+            </xpath>
+            <xpath expr="//field[@name='street']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street2']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='country_id']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']//group/label[@for='street']" position="attributes" >
+                <attribute name="invisible">False</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']//group/div" position="attributes" >
+                <attribute name="invisible">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_type']" position="attributes" >
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']//group/field[@name='mobile']" position="after" >
+                <field name="l10n_in_gst_treatment" invisible="0"/>
+                <field name="vat" invisible="0"/>
+                <field name="l10n_in_pan" invisible="0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_view_form_inherit_property" model="ir.ui.view">
+        <field name="name">res.partner.view.form.property.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">
+                <attribute name="invisible">customer_rank == 0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='property_account_payable_id']" position="attributes">
+                <attribute name="invisible">supplier_rank == 0</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_view_form_inherit_l10n" model="ir.ui.view">
+        <field name="name">res.partner.view.form.l10n.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="l10n_in.l10n_in_view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_in_pan']" position="after">
+                <field name="msme_type" />
+                <field name="msme_no" invisible="msme_type != 'Yes'"/>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='l10n_in_gst_treatment']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='l10n_in_pan']" position="attributes" >
+                <attribute name="readonly">False</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_view_tree_inherit" model="ir.ui.view">
+        <field name="name">res.partner.view.tree.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_name']" position="attributes">
+                <attribute name="string">Company Name</attribute>
+            </xpath>
+            <xpath expr="//field[@name='display_name']" position="after">
+                <field name="contact_type" groups="base.group_erp_manager"/>
+            </xpath>
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="id" column_invisible="1"/>
+                <field name="email_color" column_invisible="1"/>
+                <field name="action_link" widget="html"/>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="attributes">
+                <attribute name="decoration-success">email_color == 'green'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_res_partner_filter" model="ir.ui.view">
+        <field name="name">inherit.res.partner.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="vat" string="GST No." filter_domain="[('vat', 'ilike', self)]"/>
+                <field name="city" string="City" filter_domain="[('city', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_assign_other_saleperson_partner" model="ir.actions.server">
+        <field name="name">Assign Other Saleperson</field>
+        <field name="model_id" ref="crm.model_res_partner"/>
+        <field name="binding_model_id" ref="crm.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_assign_other_saleperson()
+        </field>
+    </record>
+
+    <record id="action_assign_other_details_ser_partner" model="ir.actions.server">
+        <field name="name">Assign City</field>
+        <field name="model_id" ref="crm.model_res_partner"/>
+        <field name="binding_model_id" ref="crm.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_assign_other_details()
+        </field>
+    </record>
+
+</odoo>

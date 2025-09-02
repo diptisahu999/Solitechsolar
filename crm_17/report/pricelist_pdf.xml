@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="pricelist_pdf">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <style>
+                        div {
+                            font-size:13px;
+                        }
+                        table {
+                            font-size:15px;
+                        }
+                        td {
+                            padding-top:4px;
+                            font-size:10px;
+                        }
+                    </style>
+                    <div class="page">
+                            <table style="width: 100%;">
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sr.no</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Product Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Product Code</th> 
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:20%;text-align:center;">Product Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:20%;text-align:center;">Product Specification</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Product Rates</center></th>
+                                    </tr>
+                                    <t t-set="srl" t-value="0" />
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                    <t t-set="srl" t-value="srl + 1" />
+                                        <tr>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span><span t-esc="srl"></span></span>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <img t-if="line.image_128" t-att-src="image_data_uri(line.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <t t-if="line.product_id.description_sale">
+                                                    <span t-field="line.product_id.description_sale"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="line.product_id.name"/>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.list_price"/>
+                                            </td>
+                                        </tr>
+                                </t>
+                            </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

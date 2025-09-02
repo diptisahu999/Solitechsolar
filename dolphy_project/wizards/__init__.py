@@ -1,0 +1,1 @@
+from . import project_details_wiz

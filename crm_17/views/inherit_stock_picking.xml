@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_stock_pickin_form_view_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_label_type']" position="replace">
+                <button string="Print Labels" type="object" name="print_report_lot" invisible="state == 'draft' or picking_type_code not in ('incoming','outgoing')"/>
+                <button string="Set Quantity Zero" type="object" name="action_quantity_zero" invisible="1"/>
+                <button string="All State Cancel" type="object" name="action_picking_cancel" invisible="1"/>
+                <!-- invisible="is_contener != True or state in ('done','cancel')" -->
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes" >
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Generate Serial/Number" type="object" name="generate_serail_number" invisible="state != 'assigned' or picking_type_code != 'incoming' or is_gen_lot != False or is_contener != False"/>
+            </xpath>
+            <xpath expr="//button[@name='button_validate'][1]" position="attributes">
+                <attribute name="invisible">state in ('draft', 'confirmed', 'done', 'cancel')</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="invisible">state not in ('assigned', 'confirmed', 'draft', 'waiting')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='backorder_id']" position="after">
+                <field name="pi_chr" readonly="1" force_save="1" invisible="picking_type_code != 'outgoing'"/>
+                <field name="e_commerce_deliverie" invisible="picking_type_code != 'outgoing'"/>
+                <field name="is_contener" readonly="0" invisible="picking_type_code != 'incoming'"/>
+                <field name="is_return" invisible="picking_type_code != 'incoming'"/>
+                <field name="remark_text" invisible="picking_type_code != 'incoming'"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="courier_id" options="{'no_create': True}" invisible="picking_type_code != 'outgoing'" />
+                <field name="invoice_no" invisible="picking_type_code not in ('incoming','outgoing')" readonly="state in ('done', 'cancel')"/>
+                <field name="company_name" invisible="1" force_save="1"/>
+                <field name="company_type" invisible="picking_type_code not in ('incoming','outgoing')" readonly="state in ('done', 'cancel')"/>
+                <field name="inward_date" invisible="picking_type_code not in ('incoming','outgoing')" readonly="state in ('done', 'cancel')"/>
+                <field name="contener_no" invisible="picking_type_code not in ('incoming','outgoing')" readonly="state in ('done', 'cancel')"/>
+                <field name="is_lot_name" invisible="1"/>
+                <field name="is_gen_lot" invisible="1"/>
+                <field name="is_stock" invisible="1"/>
+                <field name="spare_parts_id" invisible="1"/>
+                <field name="sample_type" force_save="1" invisible="picking_type_code != 'outgoing'"/>
+                <!-- <field name="is_last_seq" invisible="1"/> -->
+            </xpath>
+            <xpath expr="//field[@name='location_id'][2]" position="after">
+                <field name="remarks" invisible="picking_type_code != 'outgoing'"/>
+            </xpath>
+            <xpath expr="//field[@name='location_id'][1]" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='location_id'][2]" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='location_dest_id'][1]" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="attributes">
+                <attribute name="invisible">picking_type_code == 'outgoing'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='do_print_picking']" position="attributes">
+                <attribute name="invisible">picking_type_code == 'outgoing'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="after">
+                <button name="%(crm_17.action_thermal_deliveries_print_view)d" string="Print" invisible="state != 'done' or picking_type_code != 'outgoing'" type="action" groups="base.group_user" data-hotkey="o"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="before">
+                <field name = "image_128" widget="image" class="oe_avatar" column_invisible="parent.picking_type_code != 'outgoing'"/>
+                <field name="location_dest_id" options="{'no_create': True}" column_invisible="parent.picking_type_code == 'outgoing'" readonly="state == 'done' and is_locked" force_save="1"/>
+                <field name="location_id" options="{'no_create': True}" column_invisible="1" readonly="state == 'done' and is_locked" force_save="1"/>
+                <field name="location_ids" column_invisible="parent.picking_type_code == 'incoming'" readonly="1" force_save="1" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="purchase_id" column_invisible="parent.picking_type_code != 'incoming'"  options="{'no_create': True,'no_open': True}" domain="[('state', '=', 'purchase')]" readonly="state == 'done' and is_locked or (state != 'draft' and not additional) or move_lines_count &gt; 0"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="after">
+                <button name="action_view_po_lot" string="View" invisible="parent.picking_type_code != 'incoming'" type="object" />
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="print_ok" column_invisible="parent.picking_type_code != 'outgoing'"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/button[@name='action_assign_serial']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity']" position="after">
+                <field name="number_box" column_invisible="parent.picking_type_code != 'outgoing'"/>
+                <field name="box_qty" column_invisible="parent.picking_type_code != 'outgoing'"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked or (state != 'draft' and not additional) or move_lines_count &gt; 0</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='description_picking']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='date']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='date_deadline']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_packaging_id']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked or not product_id</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked or not is_initial_demand_editable</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='forecast_availability']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked or not is_quantity_done_editable</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked or state != 'draft' and not additional</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='picked']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='lot_ids']" position="attributes">
+                <attribute name="readonly">state == 'done' and is_locked</attribute>
+                <attribute name="force_save">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='lot_ids']" position="after">
+                <field name="remarks" column_invisible="parent.picking_type_code != 'outgoing'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_view_production_picking_tree_view_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="default_order">create_date desc</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="create_date"/>
+                <field name="pi_chr"/>
+                <field name="po_number"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="invoice_no"/>
+                <field name="contener_no"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <button string="Pi Print" type="object" name="print_pi_report" class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_view_production_lot_form_form_view_inherit" model="ir.ui.view">
+        <field name="name">stock.lot.form.inherit</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_lot_open_transfers']" position="replace">
+                <button string="Print Excel" type="object" name="print_report_lot" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='location_id']" position="after">
+                <field name="inward_date"/>
+                <field name="contener_no"/>
+            </xpath>
+            <xpath expr="//field[@name='ref']" position="before">
+                <field name="rate"/>
+                <field name="e_commerce_deliverie" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_view_production_lot_tree_view_inherit" model="ir.ui.view">
+        <field name="name">stock.lot.tree.inherit</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button name="action_delete_lot" type="object" string="Delete Lot" class="btn-danger" confirm="Are you sure you want to delete the selected lots?"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_stock_move_operations" model="ir.ui.view">
+        <field name="name">stock_move_operations_inherit</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_stock_move_operations"/>
+        <field name="arch" type="xml">
+            <xpath expr="//widget[@name='generate_serials']" position="after">
+                <button name="generate_serial_numbers_last_seq" type="object" class="btn btn-link btn-group" string="Custom Generate" invisible="not display_assign_serial or parent.is_contener != False or parent.is_return == True"/>
+                <field name="tracking" invisible="1"/>
+                <field name="raw_material_production_id" invisible="1"/>
+                <button name="action_lot_number" type="object" class="btn btn-link btn-group" string="Add Lot Number" invisible="tracking != 'serial' or not raw_material_production_id"/>
+            </xpath>
+            <xpath expr="//widget[@name='generate_serials']" position="attributes">
+                <attribute name="invisible">not display_assign_serial or parent.is_contener != True and parent.is_return != True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_operation_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.inherit</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- report  view-->
+
+    <record id="view_move_line_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.line.tree.inherit</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="replace">
+                <tree string="Move Lines" create="0" default_order="id desc" action="action_open_reference" type="object" duplicate="0">
+                    <field name="stock_type"/>
+                    <field name="lot_id" optional="show" groups="stock.group_production_lot" string="Batch No"/>
+                    <field name="location_id"/>
+                    <field name="location_dest_id"/>
+                    <field name="company_type" />
+                    <field name="pi_chr" string="Invoice No"/>
+                    <field name="contener_no" />
+                    <field name="remarks" />
+                    <field name="location_usage" column_invisible="True"/>
+                    <field name="location_dest_usage" column_invisible="True"/>
+                    <field name="date" optional="hide"/>
+                    <field name="reference" string="Reference" column_invisible="context.get('no_reference', False)" optional="hide"/>
+                    <field name="barcode"/>
+                    <field name="product_id"/>
+                    <field name="package_id" optional="hide" groups="stock.group_tracking_lot"/>
+                    <field name="result_package_id" optional="hide" groups="stock.group_tracking_lot"/>
+                    <field name="company_id" optional="hide" groups="base.group_multi_company" force_save="1"/>
+                    <field name="quantity" string="Quantity" decoration-danger="(location_usage in ('internal','transit')) and (location_dest_usage not in ('internal','transit'))" decoration-success="(location_usage not in ('internal','transit')) and (location_dest_usage in ('internal','transit'))"/>
+                    <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" string="Unit" groups="uom.group_uom" optional="hide"/>
+                    <field name="state" widget="badge" optional="hide" decoration-danger="state=='cancel'" decoration-info="state== 'assigned'" decoration-muted="state == 'draft'" decoration-success="state == 'done'" decoration-warning="state not in ('draft','cancel','done','assigned')"/>
+                    <field name="create_uid" string="Done By" widget="many2one_avatar_user" optional="hide"/>
+                </tree>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_view_stock_move_line_filter" model="ir.ui.view">
+        <field name="name">inherit.stock.move.line.search</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reference']" position="before">
+                <field name="pi_chr" string="Invoice No" filter_domain="[('pi_chr', 'ilike', self)]"/>
+                <field name="contener_no" filter_domain="[('contener_no', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_view_location_form_view_inherit" model="ir.ui.view">
+        <field name="name">stock.location.form.inherit</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='replenish_location']" position="after">
+                <field name="sequence"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="actions_print_report_lot" model="ir.actions.server">
+        <field name="name">Print Excel</field>
+        <field name="model_id" ref="stock.model_stock_lot"/>
+        <field name="binding_model_id" ref="stock.model_stock_lot"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+         <field name="code">
+            if records:
+                for record in records:
+                    action = record.print_report_lot()
+        </field>
+    </record>
+
+    <record id="actions_delete_lot_ser" model="ir.actions.server">
+        <field name="name">Delete Lot</field>
+        <field name="model_id" ref="stock.model_stock_lot"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+         <field name="code">
+            if records:
+                for record in records:
+                    action = record.action_delete_lot()
+        </field>
+    </record>
+
+    <record id="inherit_view_stock_picking_filter" model="ir.ui.view">
+        <field name="name">inherit.stock.picking.search</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="pi_chr" filter_domain="[('pi_chr', 'ilike', self)]"/>
+                <field name="po_number" filter_domain="[('po_number', 'ilike', self)]"/>
+                <field name="contener_no" filter_domain="[('contener_no', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- action -->
+
+    <record id="stock.action_picking_tree_incoming" model="ir.actions.act_window">
+        <field name="name">Receipts</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="domain">[('location_dest_id', '!=', 'Repair Location')]</field>
+        <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0], 'restricted_picking_type_code': 'incoming', 'search_default_reception': 1}</field>
+        <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No receipt found. Let's create one!
+            </p><p>
+                Receipts allow you to get products from a partner.
+            </p>
+        </field>
+    </record>
+
+    <record id="stock.action_picking_tree_outgoing" model="ir.actions.act_window">
+        <field name="name">Deliveries</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="domain">[('location_dest_id', '!=', 'Repair Location')]</field>
+        <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0], 'restricted_picking_type_code': 'outgoing', 'search_default_delivery': 1}</field>
+        <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No delivery found. Let's create one!
+            </p><p>
+                Deliveries allow you to send products from your stock to a partner.
+            </p>
+        </field>
+    </record>
+
+    <record id="stock.action_picking_tree_internal" model="ir.actions.act_window">
+        <field name="name">Internal Transfers</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,kanban,form,calendar</field>
+        <field name="domain">[('location_dest_id', '!=', 'Repair Location')]</field>
+        <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0], 'restricted_picking_type_code': 'internal', 'search_default_internal': 1}</field>
+        <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No internal transfer found. Let's create one!
+            </p><p>
+                Internal transfers allow you to move products from one location to another.
+            </p>
+        </field>
+    </record>
+
+</odoo>

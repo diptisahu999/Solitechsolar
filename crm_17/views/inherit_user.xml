@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_users_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.view.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.view_users_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button string="User Left" name="action_button_left" type="object" invisible="state == 'left' or is_left == True"/>
+                <button string="User Active" name="action_button_active" type="object" invisible="is_left != True or state == 'new'"/>
+            </xpath>
+            <xpath expr="//field[@name='login']" position="after">
+                <label for="mobile" string="Mobile No"/>
+                <field name="is_left" invisible="1"/>
+                <field name="mobile" />
+                <field name="dol_team_id" force_save="1" invisible="1"/>
+            </xpath>
+            <!-- <xpath expr="//field[@name='team_id']" position="before">
+                <field name="user_type" />
+            </xpath>
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="dis_per" />
+            </xpath> -->
+            <xpath expr="//field[@name='signature']" position="attributes">
+                <attribute name="string">Signature</attribute>
+            </xpath>
+            <xpath expr="//field[@name='signature']" position="after">
+                <field name="email_signature" options="{'style-inline': true, 'codeview': true}"/>
+            </xpath>
+        </field>
+    </record>
+
+    
+    <record id="res_users_preferences_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.preferences.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='signature']" position="attributes">
+                <attribute name="string">Signature</attribute>
+            </xpath>
+            <xpath expr="//field[@name='signature']" position="after">
+                <field name="email_signature" options="{'style-inline': true, 'codeview': true}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

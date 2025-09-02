@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="reserved_stock_view_tree" model="ir.ui.view">
+        <field name="name">reserved.stock.view.tree</field>
+        <field name="model">reserved.stock</field>
+        <field name="arch" type="xml">
+            <tree string="Reserved Stock" create="0" edit="0">
+                <field name="account_id" column_invisible="1"/>
+                <field name="pi_chr" />
+                <field name="user_id" options="{'no_create': True,'no_open': True}"/>
+                <field name="product_id" />
+                <field name="reserved_qty" />
+                <field name="reserved_type" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="reserved_stock_search" model="ir.ui.view">
+        <field name="name">reserved.stock.search</field>
+        <field name="model">reserved.stock</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="pi_chr" filter_domain="['|','|',('pi_chr','ilike',self),('product_id','ilike',self),('user_id','ilike',self)]" string="Search"/>
+                <field name="product_id" />
+                <field name="user_id" />
+
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="PI Number" name="group_by_pi_chr" domain="[]" context="{'group_by': 'pi_chr'}"/>
+                    <filter string="Product" name="group_by_product_id" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Reservation Status" name="group_by_reserved_type" domain="[]" context="{'group_by': 'reserved_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="reserved_stock_action" model="ir.actions.act_window">
+        <field name="name">Reserved Stock</field>
+        <field name="res_model">reserved.stock</field>
+        <field name="view_id" ref="reserved_stock_view_tree"/>
+        <field name="context">{'search_default_group_by_pi_chr': 1,'search_default_group_by_product_id': 1}</field>
+    </record>
+
+    <record id="action_unreserved_qty_ser" model="ir.actions.server">
+        <field name="name">Unreserved</field>
+        <field name="model_id" ref="model_reserved_stock"/>
+        <field name="binding_model_id" ref="model_reserved_stock"/>
+        <field name="groups_id" eval="[(4, ref('base.group_erp_manager'))]"/>
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            if records:
+                action = records.action_unreserved_qty()
+        </field>
+    </record>
+
+    <menuitem
+        id="reserved_stock_menu"
+        name="Reserved Stock"
+        action="reserved_stock_action"
+        parent="stock.menu_stock_transfers"
+        sequence="28"/>
+
+</odoo>

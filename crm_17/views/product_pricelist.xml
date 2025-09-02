@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="techv_product_pricelist_view_form" model="ir.ui.view">
+        <field name="name">techv.product.pricelist.view.form</field>
+        <field name="model">techv.product.pricelist</field>
+        <field name="arch" type="xml">
+            <form string="Pricelist for combo Product">
+                <header>
+                    <button string="Excel Report" name="action_xlxs_report" type="object" />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>    
+                    </group>
+                    <notebook>
+                        <page name="product" string="Product">
+                            <field name="line_ids" >
+                                <tree editable="1" >
+                                    <field name="product_id" required="1" options="{'no_create': True}" domain="[('type', '=', 'product')]"/>
+                                    <field name = "image_128" widget="image" class="oe_avatar"/>
+                                    <field name = "inch_feet_type" />
+                                    <field name = "height_length" readonly="inch_feet_type == 'basic'"/>
+                                    <field name = "width" readonly="inch_feet_type == 'basic'"/>
+                                    <field name = "sqft" readonly="inch_feet_type == 'basic'"/>
+                                    <field name = "sqft_rate" readonly="inch_feet_type == 'basic'"/>
+                                    <field name = "qty" />
+                                    <field name = "disc_per" readonly="is_service == True"/>
+                                    <field name = "is_service" column_invisible="1"/>
+                                    <field name = "amount" column_invisible="1"/>
+                                    <field name = "disc_amt" column_invisible="1"/>
+                                    <field name = "price_unit" column_invisible="1"/>
+                                    <field name = "tax_ids" widget="many2many_tags" options="{'no_create': True}" column_invisible="1"/>
+                                    <field name = "price_tax" column_invisible="1"/>
+                                    <field name = "price_subtotal" readonly="1" force_save="1" column_invisible="1"/>
+                                    <field name = "price_total" readonly="1" force_save="1" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="techv_product_pricelist_view_tree" model="ir.ui.view">
+        <field name="name">techv.product.pricelist.view.tree</field>
+        <field name="model">techv.product.pricelist</field>
+        <field name="arch" type="xml">
+            <tree string="Pricelist for combo Product" sample="1">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="techv_product_pricelist_action" model="ir.actions.act_window">
+        <field name="name">Pricelist for combo Product</field>
+        <field name="res_model">techv.product.pricelist</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="techv_product_pricelist_menu"
+        name="Product Pricelist"
+        action="techv_product_pricelist_action"
+        parent="sale.product_menu_catalog"
+        sequence="30"/>
+
+    <record id="product_pricelist_report_xls" model="ir.actions.server">
+        <field name="name">Pricelist Excel / xls</field>
+        <field name="model_id" ref="model_techv_product_pricelist"/>
+        <field name="binding_model_id" ref="model_techv_product_pricelist"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_xlxs_report()
+        </field>
+    </record>
+
+</odoo>

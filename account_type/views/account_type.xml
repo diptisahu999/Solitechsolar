@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_account_type_view_tree" model="ir.ui.view">
+         <field name="name">account.account.list.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="replace">
+                <field name="account_type" widget="custonm_account_type_selection"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="inherit_init_accounts_tree" model="ir.ui.view">
+       <field name="name">account.setup.opening.move.line.tree.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.init_accounts_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="replace">
+                <field name="account_type" widget="custonm_account_type_selection"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="inherit_view_account_form" model="ir.ui.view">
+        <field name="name">account.account.form.inherit</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="replace">
+                <field name="account_type" widget="custonm_account_type_selection"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

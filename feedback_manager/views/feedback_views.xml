@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ====================================================== -->
+    <!-- Actions                                                -->
+    <!-- ====================================================== -->
+
+    <!-- Main Window Action for Feedback Records -->
+    <record id="action_feedback_records" model="ir.actions.act_window">
+        <field name="name">Feedback</field>
+        <field name="res_model">feedback.record</field>
+        <field name="view_mode">tree,form,graph,pivot,calendar,activity</field>
+        <field name="context">{'search_default_unresolved': 0}</field>
+    </record>
+
+    <!-- Client Action to launch our OWL Dashboard -->
+    <record id="action_feedback_dashboard" model="ir.actions.client">
+        <field name="name">Feedback Dashboard</field>
+        <field name="tag">feedback_manager.dashboard</field>
+    </record>
+
+
+    <!-- ====================================================== -->
+    <!-- Views                                                  -->
+    <!-- ====================================================== -->
+
+    <!-- Tree View -->
+    <record id="view_feedback_tree" model="ir.ui.view">
+        <field name="name">feedback.record.tree</field>
+        <field name="model">feedback.record</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="is_current_user_manager" invisible="1" column_invisible="1"/>
+                <field name="sr_no" string="Sr. No." readonly="not is_current_user_manager"/>
+                <field name="feedback_date" readonly="not is_current_user_manager"/>
+                <field name="partner_id" readonly="not is_current_user_manager"/>
+                <field name="category" readonly="not is_current_user_manager"/>
+                <field name="state" string="Status" />    
+                <field name="assigned_user_ids" string="Salesperson" widget="many2many_tags" readonly="not is_current_user_manager"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="not is_current_user_manager"/>
+            </tree>
+        </field>
+    </record>
+
+<record id="view_feedback_form" model="ir.ui.view">
+    <field name="name">feedback.record.form</field>
+    <field name="model">feedback.record</field>
+    <field name="arch" type="xml">
+        <form string="Feedback">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="new,in_review,resolved" options="{'clickable': False}"/>
+            </header>
+            <sheet>
+                <field name="is_current_user_manager" invisible="1"/>
+                <h1><field name="name" readonly="1"/></h1>
+                <group>
+                   <group>
+                        <!-- This new condition makes fields readonly if the user is NOT a manager -->
+                        <field name="feedback_date" readonly="not is_current_user_manager"/>
+                        <field name="partner_id" readonly="not is_current_user_manager"/>
+                        <field name="category" readonly="not is_current_user_manager"/>
+                        <field name="assigned_user_ids" widget="many2many_tags" readonly="not is_current_user_manager"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="not is_current_user_manager"/>
+                    </group>
+                    <group col="2">
+                        <label for="state" string="Status"/>
+                        <field name="state" nolabel="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Message">
+                        <field name="message" placeholder="Enter feedback details here..." nolabel="1" readonly="1" groups="feedback_manager.group_feedback_user"/>
+                        <field name="message" placeholder="Enter feedback details here..." nolabel="1" readonly="state != 'new'" groups="feedback_manager.group_feedback_manager"/>
+                    </page>
+                    <page string="Chatter">
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </div>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+    <!-- Search View -->
+    <record id="view_feedback_search" model="ir.ui.view">
+        <field name="name">feedback.record.search</field>
+        <field name="model">feedback.record</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter string="Last 7 Days" name="last7" domain="[('feedback_date', '>=', context_today() - relativedelta(days=7))]"/>
+                <filter string="This Month" name="this_month" domain="[('feedback_date', '>=', (context_today() + relativedelta(day=1)))]"/>
+                <separator/>
+                <filter string="Unresolved" name="unresolved" domain="[('state','in',('new','in_review'))]"/>
+                <separator/>
+                <filter string="Positive" name="cat_pos" domain="[('category','=','positive')]"/>
+                <filter string="Negative" name="cat_neg" domain="[('category','=','negative')]"/>
+                <filter string="Service Required" name="cat_srv" domain="[('category','=','service_required')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Feedback Date" name="grp_date" context="{'group_by':'feedback_date'}"/>
+                    <filter string="Category" name="grp_cat" context="{'group_by':'category'}"/>
+                    <filter string="State" name="grp_state" context="{'group_by':'state'}"/>
+                    <filter string="Assignee" name="grp_user" context="{'group_by':'assigned_user_ids'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_feedback_calendar" model="ir.ui.view">
+        <field name="name">feedback.record.calendar</field>
+        <field name="model">feedback.record</field>
+        <field name="arch" type="xml">
+            <calendar string="Feedback Calendar" date_start="feedback_date" color="category">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="category"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+
+    <!-- ====================================================== -->
+    <!-- Menu Items                                             -->
+    <!-- ====================================================== -->
+
+    <menuitem id="menu_feedback_root" name="Feedback" sequence="10" web_icon="feedback_manager,static/description/icon.png" groups="feedback_manager.group_feedback_user"/>
+    <menuitem id="menu_feedback_records" name="Feedback" parent="menu_feedback_root" action="action_feedback_records" sequence="10" groups="feedback_manager.group_feedback_user"/>
+</odoo>

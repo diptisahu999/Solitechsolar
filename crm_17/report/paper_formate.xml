@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_invoice_report" model="report.paperformat">
+        <field name="name">A4</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">30</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_proforma_invoice_report" model="ir.actions.report">
+        <field name="name">Proforma Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.proforma_invoice_report</field>
+        <field name="report_file">crm_17.proforma_invoice_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">'%s - %s' % ((object.pi_chr if object.pi_chr else '').replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_export_proforma_invoice_report" model="ir.actions.report">
+        <field name="name">Export Proforma Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.export_proforma_invoice_report</field>
+        <field name="report_file">crm_17.export_proforma_invoice_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">'%s - %s' % ((object.pi_chr if object.pi_chr else '').replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_proforma_invoice_specification_report" model="ir.actions.report">
+        <field name="name">Specification Proforma Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.specification_pi_invoice</field>
+        <field name="report_file">crm_17.specification_pi_invoice</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">'%s - %s' % ((object.pi_chr if object.pi_chr else '').replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('crm_17.security_group_specification'))]"/>
+    </record>
+
+    <record id="action_invoice_report" model="ir.actions.report">
+        <field name="name">Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.invoice_report</field>
+        <field name="report_file">crm_17.invoice_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="print_report_name">'%s - %s' % ((object.name if object.name else '').replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_invoice_recipient_report" model="ir.actions.report">
+        <field name="name">Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.invoice_recipient_report</field>
+        <field name="report_file">crm_17.invoice_recipient_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">'%s - %s' % ((object.name if object.name else '').replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_credit_notes_recipient_report" model="ir.actions.report">
+        <field name="name">Credit Note</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.credit_notes_recipient_report</field>
+        <field name="report_file">crm_17.credit_notes_recipient_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">'%s - %s' % ((object.name).replace('/',''), object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_sale_quotation" model="ir.actions.report">
+        <field name="name">Quotation</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.sale_quotation</field>
+        <field name="report_file">crm_17.sale_quotation</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="print_report_name">'%s - %s' % (object.name, object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>  
+
+    <record id="action_export_quotation_report" model="ir.actions.report">
+        <field name="name">Quotation Export</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.export_quotation_report</field>
+        <field name="report_file">crm_17.export_quotation_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="print_report_name">'%s - %s' % (object.name, object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>  
+
+    <record id="action_sale_specification_quotation" model="ir.actions.report">
+        <field name="name">Specification Print</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.sale_quotation_specification</field>
+        <field name="report_file">crm_17.sale_quotation_specification</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="print_report_name">'%s - %s' % (object.name, object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record> 
+
+    <record id="action_specification_quotation" model="ir.actions.report">
+        <field name="name">Quotation Specification Print</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.specification_quotation</field>
+        <field name="report_file">crm_17.specification_quotation</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="print_report_name">'%s - %s' % (object.name, object.partner_id.name)</field>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <record id="action_techv_product_pricelist" model="ir.actions.report">
+        <field name="name">Print</field>
+        <field name="model">techv.product.pricelist</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.pricelist_pdf</field>
+        <field name="report_file">crm_17.pricelist_pdf</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="crm_17.model_techv_product_pricelist"/>
+        <field name="print_report_name">object.name</field>
+        <field name="binding_type">report</field>
+    </record>  
+
+    <record id="action_techv_product_template_pricelist" model="ir.actions.report">
+        <field name="name">Products Details</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.product_pricelist_pdf</field>
+        <field name="report_file">crm_17.product_pricelist_pdf</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="crm_17.model_product_template"/>
+        <field name="print_report_name">'Products Details'</field>
+        <field name="binding_type">report</field>
+    </record> 
+
+    <record id="paperformat_tds_tcs_report" model="report.paperformat">
+        <field name="name">A4</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">25</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">20</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_tds_tcs_pdf_report" model="ir.actions.report">
+        <field name="name">TDS Report</field>
+        <field name="model">tds.tcs.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.tds_tcs_pdf_report</field>
+        <field name="report_file">crm_17.tds_tcs_pdf_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_tds_tcs_report"/>
+        <field name="binding_model_id" ref="crm_17.model_tds_tcs_report"/>
+        <field name="print_report_name">'TDS Report'</field>
+        <field name="binding_type">report</field>
+    </record>      
+
+    <record id="paperformat_serial_lot_report" model="report.paperformat">
+        <field name="name">Dayanamic Formate</field>
+        <field name="default" eval="True" />
+        <field name="format">custom</field>
+        <field name="page_height">20</field>
+        <field name="page_width">88</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">2</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- <record id="action_serial_lot_report" model="ir.actions.report">
+        <field name="name">Lot/Serial Number Dynamic (PDF)</field>
+        <field name="model">stock.lot</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.serial_lot_report</field>
+        <field name="report_file">crm_17.serial_lot_report</field>
+        <field name="paperformat_id" ref="paperformat_serial_lot_report"/>
+        <field name="print_report_name">'Lot-Serial - %s' % object.name</field>
+        <field name="binding_model_id" ref="stock.model_stock_lot"/>
+        <field name="binding_type">report</field>
+    </record>  -->
+
+    <record id="paper_format_thermal_deliveries" model="report.paperformat">
+        <field name="name">Thermal print Bill</field>
+        <field name="format">custom</field>
+        <field name="page_height">100</field>
+        <field name="page_width">74</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_thermal_deliveries_print_view" model="ir.actions.report">
+        <field name="name">Thermal Print</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.deliveries_thermal_report</field>
+        <field name="report_file">crm_17.deliveries_thermal_report</field>
+        <field name="paperformat_id" ref="crm_17.paper_format_thermal_deliveries" />
+        <field name="print_report_name">'%s (Deliveries) - %s' % ((object.partner_id.name),(object.name))</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="paper_format_deliveries_receipt" model="report.paperformat">
+        <field name="name">Receipt print Bill</field>
+        <field name="format">custom</field>
+        <field name="page_height">100</field>
+        <field name="page_width">74</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_thermal_deliveries_receipt_report" model="ir.actions.report">
+        <field name="name">Delivery Receipt</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.deliveries_receipt_report</field>
+        <field name="report_file">crm_17.deliveries_receipt_report</field>
+        <field name="paperformat_id" ref="crm_17.paper_format_deliveries_receipt" />
+        <field name="print_report_name">'%s (Deliveries) - %s' % ((object.partner_id.name),(object.name))</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_packing_list_report" model="ir.actions.report">
+        <field name="name">Packing List</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">crm_17.packing_list_report</field>
+        <field name="report_file">crm_17.packing_list_report</field>
+        <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
+        <field name="binding_model_id" ref="crm_17.model_stock_picking"/>
+        <field name="print_report_name">object.name</field>
+        <field name="binding_type">report</field>
+    </record>  
+
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="account.account_invoices_without_payment" model="ir.actions.report">
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="binding_model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="sale_pdf_quote_builder.action_report_saleorder_raw" model="ir.actions.report">
+        <field name="binding_model_id" ref="model_sale_order"/>
+        <field name="binding_model_id" ref=""/>
+        <field name="binding_type">report</field>
+    </record>
+
+        <record id="stock.action_report_lot_label" model="ir.actions.report">
+            <field name="binding_model_id" ref="stock.model_stock_lot"/>
+            <field name="binding_model_id" ref=""/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="stock.label_lot_template" model="ir.actions.report">
+            <field name="binding_model_id" ref="stock.model_stock_lot"/>
+            <field name="binding_model_id" ref=""/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="stock.action_report_picking" model="ir.actions.report">
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_model_id" ref=""/>
+            <field name="binding_type">report</field>        
+        </record>
+
+        <record id="stock.action_report_delivery" model="ir.actions.report">
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_model_id" ref=""/>
+            <field name="binding_type">report</field>        
+        </record>
+
+        <record id="stock.return_label_report" model="ir.actions.report">
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_model_id" ref=""/>
+            <field name="binding_type">report</field>        
+        </record>
+</odoo>

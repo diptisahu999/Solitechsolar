@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="sale_quotation_specification">
+            <t t-call="web.basic_layout">
+                
+                <t t-foreach="docs" t-as="o">
+                    <style>
+                        div {
+                            font-size:13px;
+                        }
+                        table {
+                            font-size:15px;
+                        }
+                        td {
+                            padding-top:4px;
+                            font-size:10px;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-9">
+                                <div style="font-size:13px;">
+                                    <left>
+                                        <strong><b><span style="color: green;font-size:14px;" t-esc="o.company_id.name"/></b></strong>
+                                        <br/>
+                                        <t t-if="o.company_id.street">
+                                        <span t-esc="o.company_id.street" style="font-size:12px;"/>,
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <span t-esc="o.company_id.street2" style="font-size:12px;"/>,
+                                    </t>
+                                    <t t-if="o.company_id.city">
+                                        <br/><span t-esc="o.company_id.city" style="font-size:12px;"/>, <span t-esc="o.company_id.state_id.name" style="font-size:12px;"/>, <span t-esc="o.company_id.zip" style="font-size:12px;"/>
+                                    </t>
+                                    <br/><span style="font-size:12px;">GST NO : </span><span t-esc="o.company_id.vat" style="font-size:12px;"/><span style="font-size:12px;"> | PAN No : </span><span t-esc="o.company_id.company_registry" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">India Offices : </span><span t-esc="o.company_id.india_offices" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">Overseas Offices : </span><span t-esc="o.company_id.overseas_offices" style="font-size:12px;"/>
+                                    <br/><span style="font-size:12px;">(An ISO 9001:2015 Certified Company)</span>
+                                </left>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div style="text-align: right;">
+                                    <br/>
+                                    <right>
+                                        <t t-if="o.company_id.logo">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.logo)" width="120" height="80" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border: 1px solid black;"/>
+                        <div class="row" >
+                            <div class="col-6">
+                                <div style="border-top:none;border-bottom:none;font-size:10px;">
+                                    <b><span>To,</span></b>
+                                </div>
+                                <div style="font-size:10px;">
+                                    <span t-esc="o.partner_id.name"/>
+                                    <t t-if="o.partner_id.street">
+                                        <br/><span t-esc="o.partner_id.street"/>,<span t-esc="o.partner_id.street2"/>
+                                    </t>
+                                    <t t-if="o.partner_id.city">
+                                        <br/><span t-esc="o.partner_id.city"/><t t-if="o.partner_id.state_id">
+                                            ,<span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>
+                                        </t>
+                                    </t>
+                                    <br/><span t-esc="o.partner_id.phone"/>
+                                    <t t-if="o.partner_id.l10n_in_pan">
+                                        <br/>Pan No : <span t-esc="o.partner_id.l10n_in_pan"/>
+                                    </t>
+                                    <t t-if="o.partner_id.vat">
+                                        <br/>Gst No : <span t-esc="o.partner_id.vat"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <table style="width: 100%;">
+                                <tr style="background-color:green">
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sr.no</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Product Image</center></th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Product Code</th> 
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:20%;text-align:center;">Product Name</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:20%;text-align:center;">Product Specification</th>
+                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Product Rates</center></th>
+                                    </tr>
+                                    <t t-set="srl" t-value="0" />
+                                    <t t-foreach="o.order_line" t-as="line">
+                                    <t t-set="srl" t-value="srl + 1" />
+                                        <tr>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span><span t-esc="srl"></span></span>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <img t-if="line.image_128" t-att-src="image_data_uri(line.image_128)" style="width: 70%;padding-bottom:2px;"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.barcode"/>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
+                                                <t t-if="line.product_id.description_sale">
+                                                    <span t-field="line.product_id.description_sale"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="line.product_id.name"/>
+                                                </t>
+                                            </td>
+                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
+                                                <span t-field="line.product_id.list_price"/>
+                                            </td>
+                                        </tr>
+                                </t>
+                            </table>
+                        
+                        <br/>
+                        <t t-if="o._check_note() == False">
+                            <span style="font-size:13px;color: red;"><b>Notes :</b></span><span style="font-size:13px;color: red;" t-esc="o.note"/>
+                        </t>
+                        <span style="font-size:13px;">
+                            <b>Terms &amp; Conditions :</b><br/>
+                            1. Taxes: 18% GST Extra<br/>
+                            2. Freight Extra<br/>
+                            3. Payment: 100% Advance with Purchase Order<br/>
+                            4. Installation Extra (If Required)<br/>
+                            5. Price Validity: 7 days from Quotation Date<br/>
+                            6. Goods Once Sold Can't be Returned or Exchanged<br/>
+                            7. Payment Mode RTGS/NEFT/IMPS<br/>
+                            8. Subject to SURAT Jurisdiction Only<br/>
+                            9. ⁠Warranty Applicable From Billing Date
+                        </span>
+                        
+                        <div class="row" style="page-break-inside: avoid;">
+                            <div class="col-6">
+                                <div style="font-size:17px;">
+                                    <br/><b><span t-esc="user.signature" style="font-size:13px;"/></b>
+                                </div> 
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <right>
+                                        <t t-if="o.company_id.iso_img">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.iso_img)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                </div>                        
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <right>
+                                        <t t-if="o.company_id.sing">
+                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.sing)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
+                                        </t>
+                                    </right>
+                                </div>                        
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+            </t>
+        </template>
+    </data>
+</odoo>

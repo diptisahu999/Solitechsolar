@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account move view form inherit-->
+    <record id="view_move_form" model="ir.ui.view">
+        <field name="name">account.move.view.form.inherit.invoice.stock.move</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_stock_move" string="Delivery"
+                        type="object" class="oe_highlight"
+                        invisible="state != 'posted' or picking_count > 0 or move_type != 'out_invoice'"
+                        groups="invoice_stock_move.group_is_direct_delivery"/>
+                        <!-- invisible="state == 'draft' or picking_count > 0 or move_type != 'out_invoice'" -->
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="picking_type_id"/>
+                <field name="invoice_picking_id" invisible="1"/>
+                <field name="is_commerce" groups="invoice_stock_move.group_is_direct_delivery" invisible="move_type != 'out_invoice'"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button type="object"
+                        name="action_view_picking"
+                        class="oe_stat_button"
+                        invisible="picking_count &lt; 1 or state == 'draft'"
+                        icon="fa-truck">
+                    <field name="picking_count" string="Delivery"
+                           widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

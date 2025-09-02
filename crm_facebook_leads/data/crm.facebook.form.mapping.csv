@@ -1,0 +1,11 @@
+id,facebook_field,odoo_field:id
+mapping_company_name,company_name,crm.field_crm_lead__partner_name
+mapping_full_name,full_name,crm.field_crm_lead__contact_name
+mapping_job_title,job_title,crm.field_crm_lead__function
+mapping_phone_number,phone_number,crm.field_crm_lead__phone
+mapping_email,email,crm.field_crm_lead__email_from
+mapping_city,city,crm.field_crm_lead__city
+mapping_mobile_number,mobile_number,crm.field_crm_lead__mobile
+mapping_post_code,post_code,crm.field_crm_lead__zip
+mapping_state,state,crm.field_crm_lead__state_id
+mapping_zip_code,zip_code,crm.field_crm_lead__zip

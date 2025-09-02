@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="tds_tcs_pdf_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="t">
+                    <style>
+                        td, th, table {
+                            padding: 5px;
+                            font-size: 11px;
+                            border: none !important;
+                            border-collapse: collapse !important;
+                        }
+                        th {
+                            font-weight: bold;
+                            text-align: left;
+                        }
+                        table {
+                            width: 100%;
+                        }
+                        thead {
+                            display: table-header-group;
+                        }
+                        tr {
+                            page-break-inside: avoid;
+                        }
+                        .no-border, .no-border td, .no-border th, .no-border table {
+                            border: none !important;
+                        }
+                        
+                    </style>
+                    
+                    <t t-foreach="t.generate_pdf_vals()" t-as="data">
+                        <div class="header" style="border: none !important;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="no-border" style="font-size: 15px;">
+                                        <b><span t-esc="data.get('company_name')" /></b>
+                                        <br/>TDS Register
+                                        <br/><b>TDS Register</b>
+                                        <br/>Period: From <span t-esc="data.get('from_date')" /> to <span t-esc="data.get('to_date')" />
+                                    </div>
+                                    <div style="position: absolute; top: 10px; right: 10px;font-size: 14px;">
+                                        <span>Page No: </span>
+                                        <span class="page" />
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+
+                        </div>
+                        <div class="page">
+                            <table class="no-border">
+                                <thead class="no-border">
+                                    <tr class="no-border">
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 14%;">Permanent Account <br/>Number (PAN)</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 30%; text-align: left;">Name of Party</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 13%;">Bill NO</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 11%; text-align: right;">Amount (credited)</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 11%; text-align: center;">Date Paid</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 10%; text-align: right;">Purchase</th>
+                                        <th style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;width: 11%; text-align: right;">TDS/TCS</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="no-border">
+                                    <t t-foreach="data.get('tds_data').items()" t-as="tds_entry">
+                                        <tr>
+                                            <td colspan="7" class="no-border" style="font-weight: bold; text-align: left; padding-top: 10px;">
+                                                <span t-esc="tds_entry[0]" />
+                                            </td>
+                                        </tr>
+                                        
+                                        <t t-set="tot_pur_amount" t-value="0"/>
+                                        <t t-set="tot_tds_amt" t-value="0"/>
+                                        
+                                        <t t-foreach="tds_entry[1]" t-as="line">
+                                            <t t-set="tot_pur_amount" t-value="tot_pur_amount + (line.get('pur_amount') or 0)" />
+                                            <t t-set="tot_tds_amt" t-value="tot_tds_amt + (line.get('tds_amt') or 0)" />
+
+                                            <tr class="no-border">
+                                                <td class="no-border"><span t-esc="line.get('pan_no', '')"/></td>
+                                                <td class="no-border"><span t-esc="line.get('partner', '')"/></td>
+                                                <td class="no-border"><span t-esc="line.get('bill_no', '')"/></td>
+                                                <td class="no-border" style="text-align:right;">
+                                                    <span t-esc="'%.2f' % (line.get('amount', 0))"/>
+                                                </td>
+                                                <td class="no-border" style="text-align:center;">
+                                                    <span t-esc="line.get('date', '')"/>
+                                                </td>
+                                                <td class="no-border" style="text-align:right;">
+                                                    <span t-esc="'%.2f' % (line.get('pur_amount', 0))"/>
+                                                </td>
+                                                <td class="no-border" style="text-align:right;">
+                                                    <span t-esc="'%.2f' % (line.get('tds_amt', 0))"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        
+                                        <tr class="no-border">
+                                            <td class="no-border" colspan="5" style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;text-align:right;">
+                                                <b>Total for <span t-esc="tds_entry[0]" />:</b>
+                                            </td>
+                                            <td class="no-border" style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;text-align:right;">
+                                                <b><span t-esc="'%.2f' % (tot_pur_amount)"/></b>
+                                            </td>
+                                            <td class="no-border" style="border-bottom: 1px solid black !important;border-top: 1px solid black !important;text-align:right;">
+                                                <b><span t-esc="'%.2f' % (tot_tds_amt)"/></b>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

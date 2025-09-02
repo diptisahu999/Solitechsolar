@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <!-- Module category -->
+    <record id="module_category_feedback_manager" model="ir.module.category">
+      <field name="name">Feedback Management</field>
+      <field name="description">Access levels for Feedback Manager</field>
+      <field name="sequence">20</field>
+    </record>
+
+    <!-- Assigned users: can see and update status & chatter only -->
+    <record id="group_feedback_user" model="res.groups">
+      <field name="name">Feedback User</field>
+      <field name="category_id" ref="module_category_feedback_manager"/>
+      <!-- gives ordinary Odoo user rights -->
+      <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>  
+
+    <!-- Managers: full access, bypass restrictions -->
+    <record id="group_feedback_manager" model="res.groups">
+      <field name="name">Feedback Manager</field>
+      <field name="category_id" ref="module_category_feedback_manager"/>
+      <!-- inherit both the Feedback User rights and System Admin rights -->
+      <field name="implied_ids" eval="[
+        (4, ref('feedback_manager.group_feedback_user')),
+        (4, ref('base.group_system'))
+      ]"/>
+    </record>
+  </data>
+</odoo>
