@@ -12,13 +12,13 @@
                 </div>
             </xpath>
             <xpath expr="//group[@name='lead_partner']/field[@name='partner_id']" position="attributes" >
-                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="options">{'no_create': False}</attribute>
                 <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
                 <attribute name="required">type == 'opportunity'</attribute>
                 <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
             </xpath>
             <xpath expr="//group[@name='opportunity_partner']/field[@name='partner_id']" position="attributes" >
-                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="options">{'no_create': False}</attribute>
                 <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
                 <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
             </xpath>
@@ -94,7 +94,7 @@
             <xpath expr="//field[@name='tag_ids']" position="attributes">
                 <!-- <attribute name="readonly">is_group_manager == False</attribute> -->
                 <attribute name="force_save">1</attribute>
-                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="options">{'no_create': False, 'no_open': False}</attribute>
                 <attribute name="required">type == 'opportunity'</attribute>
             </xpath>
             <xpath expr="//group[@name='lead_priority']/field[@name='tag_ids']" position="attributes">
