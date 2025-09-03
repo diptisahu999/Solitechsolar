@@ -3,610 +3,542 @@
     <data>
         <template id="export_quotation_report">
             <t t-call="web.basic_layout">
-                
                 <t t-foreach="docs" t-as="o">
                     <style>
-                        div {
-                            font-size:13px;
+                        .excel-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-family: Arial, sans-serif;
                         }
-                        table {
-                            font-size:15px;
+                        .excel-table td, .excel-table th {
+                            border: 1px solid #000;
+                            padding: 4px 8px;
+                            font-size: 11px;
                         }
-                        td {
-                            padding-top:4px;
-                            font-size:10px;
+                        .header-blue {
+                            background-color: #4472C4;
+                            color: white;
+                            font-weight: bold;
+                            text-align: center;
+                            font-size: 16px;
+                            padding: 10px;
+                        }
+                        .section-header {
+                            background-color: #D9D9D9;
+                            font-weight: bold;
+                            text-align: center;
+                            font-size: 12px;
+                        }
+                        .label-cell {
+                            background-color: #F2F2F2;
+                            font-weight: bold;
+                            width: 15%;
+                        }
+                        .value-cell {
+                            background-color: white;
+                        }
+                        .product-header {
+                            background-color: #626362ff;
+                            color: white;
+                            font-weight: bold;
+                            text-align: center;
+                        }
+                        .terms-header {
+                            background-color: #626362ff;
+                            font-weight: bold;
+                            text-align: center;
+                        }
+                        .signature-box {
+                            border: 1px solid #000;
+                            min-height: 80px;
+                            padding: 5px;
+                            margin-top: 20px;
+                        }
+                        .page-break {
+                            page-break-after: always;
+                        }
+                        .no-border {
+                            border: none !important;
+                        }
+                        .text-center {
+                            text-align: center;
+                        }
+                        .text-right {
+                            text-align: right;
+                        }
+                        .bold {
+                            font-weight: bold;
                         }
                     </style>
+
                     <div class="page">
-                        <div class="row">
-                            <div class="col-9">
-                                <div style="font-size:13px;">
-                                    <left>
-                                        <strong><b><span style="color: green;font-size:14px;" t-esc="o.company_id.name"/></b></strong>
-                                        <br/>
-                                        <t t-if="o.company_id.street">
-                                        <span t-esc="o.company_id.street" style="font-size:12px;"/>,
-                                    </t>
-                                    <t t-if="o.company_id.street2">
-                                        <span t-esc="o.company_id.street2" style="font-size:12px;"/>,
-                                    </t>
-                                    <t t-if="o.company_id.city">
-                                        <br/><span t-esc="o.company_id.city" style="font-size:12px;"/>, <span t-esc="o.company_id.state_id.name" style="font-size:12px;"/>, <span t-esc="o.company_id.zip" style="font-size:12px;"/>
-                                    </t>
-                                    <br/><span style="font-size:12px;">GST NO : </span><span t-esc="o.company_id.vat" style="font-size:12px;"/><span style="font-size:12px;"> | PAN No : </span><span t-esc="o.company_id.company_registry" style="font-size:12px;"/>
-                                    <br/><span style="font-size:12px;">India Offices : </span><span t-esc="o.company_id.india_offices" style="font-size:12px;"/>
-                                    <br/><span style="font-size:12px;">Overseas Offices : </span><span t-esc="o.company_id.overseas_offices" style="font-size:12px;"/>
-                                    <br/><span style="font-size:12px;">(An ISO 9001:2015 Certified Company)</span>
-                                </left>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div style="text-align: right;">
-                                    <br/>
-                                    <right>
-                                        <t t-if="o.company_id.logo">
-                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.logo)" width="120" height="80" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
-                                        </t>
-                                    </right>
-                                        <!-- <br/><span style="font-size:15px;padding-left:15px;text-align: right;">Order No. : </span><span t-esc="o.name" style="font-size:15px;"/>
-                                        <br/><span style="font-size:15px;padding-left:15px;text-align: right;">Date. : </span><t t-if="o.date_order">
-                                            <span t-esc="o.date_order.strftime('%d-%m-%Y')" style="font-size:15px;"/>
-                                        </t> -->
-                                </div>
-                                <div style="font-size:10px;text-align: right;">
-                                    <span style="padding-left:15px;"><b>Date: </b></span><t t-if="o.date_order">
-                                        <span t-esc="o.date_order.strftime('%d-%m-%Y')"/>
-                                    </t>
-                                    <br/><span style="padding-left:15px;"><b>Quotation No: </b></span><span t-esc="o.name"/>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <tr>
-                            <strong><center><b>Quotation</b></center></strong>
-                        </tr> -->
-                        <hr style="border: 1px solid black;"/>
-                        <div class="row" >
-                            <div class="col-8">
-                                <div style="border-top:none;border-bottom:none;font-size:10px;">
-                                    <b><span>To,</span></b>
-                                </div>
-                                <div style="font-size:10px;">
-                                    <span t-esc="o.partner_id.name"/>
-                                    <t t-if="o.partner_id.street">
-                                        <br/><span t-esc="o.partner_id.street"/>,<span t-esc="o.partner_id.street2"/>
-                                    </t>
-                                    <br/><t t-if="o.partner_id.city">
-                                        <span t-esc="o.partner_id.city"/>,</t><t t-if="o.partner_id.state_id">
-                                            <span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>
-                                        
-                                    </t>
-                                    <br/><span t-esc="o.partner_id.phone"/><t t-if="o.partner_id.mobile">
-                                        - <span t-esc="o.partner_id.mobile"/>
-                                    </t>
-                                    <t t-if="o.partner_id.l10n_in_pan">
-                                        <br/>Pan No : <span t-esc="o.partner_id.l10n_in_pan"/>
-                                    </t>
-                                    <t t-if="o.partner_id.vat">
-                                        <br/>Gst No : <span t-esc="o.partner_id.vat"/>
-                                    </t>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div style="border-top:none;border-bottom:none;width:50%;text-align:left;font-size:10px;">
-                                    <b><span>Ship To,</span></b>
-                                </div>
-                                <!-- <div style="width: 50%;text-align:left;font-size:13px;">
-                                    <span t-esc="o.partner_id.name"/>
-                                    <t t-if="o.partner_id.street">
-                                        <br/><span t-esc="o.partner_id.street"/>,<span t-esc="o.partner_id.street2"/>
-                                    </t>
-                                    <t t-if="o.partner_id.city">
-                                        <br/><span t-esc="o.partner_id.city"/><t t-if="o.partner_id.state_id">
-                                            ,<span t-esc="o.partner_id.state_id.name"/>,<span t-esc="o.partner_id.zip"/>
-                                        </t>
-                                    </t>
-                                </div> -->
-                                <div style="text-align:left;font-size:10px;">
-                                    <t t-if="o.partner_shipping_id.company_name_delivery">
-                                        <span t-esc="o.partner_shipping_id.company_name_delivery"/><br/>
-                                    </t>
-                                    <t t-else="">
-                                        <span t-esc="o.partner_shipping_id.name"/><br/>
-                                    </t>
-                                    <t t-if="o.partner_shipping_id.street">
-                                        <span t-esc="o.partner_shipping_id.street"/>,<span t-esc="o.partner_shipping_id.street2"/><br/>
-                                    </t>
-                                    <t t-if="o.partner_shipping_id.city">
-                                        <span t-esc="o.partner_shipping_id.city"/>,</t><t t-if="o.partner_shipping_id.state_id">
-                                            <span t-esc="o.partner_shipping_id.state_id.name"/>,<span t-esc="o.partner_shipping_id.zip"/><br/>
-                                        </t>
-                                    
-                                    <span t-esc="o.partner_shipping_id.phone"/><t t-if="o.partner_shipping_id.mobile">
-                                        - <span t-esc="o.partner_shipping_id.mobile"/>
-                                    </t>
-                                </div>
-                            </div>
-                            <!-- <div class="col-6" style="text-align: right;">
-                                <div style="border-top:none;border-bottom:none;text-align:left;font-size:17px;">
-                                </div>
-                                <div style="font-size:10px;">
-                                    <span style="padding-left:15px;"><b>Date: </b></span><t t-if="o.date_order">
-                                        <span t-esc="o.date_order.strftime('%d-%m-%Y')"/>
-                                    </t>
-                                    <br/><span style="padding-left:15px;"><b>Quotation No: </b></span><span t-esc="o.name"/>
-                                </div>
-                            </div> -->
-                        </div>
-                        <tr>
-                            <strong><center><b>Quotation Export</b></center></strong>
-                        </tr>
-                        <br/>
-                        <t t-set="order_line" t-value="o.order_line"/>
-                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type not in ['feet','inch','mm','tile'] and line.display_type not in ['line_section','line_note'] for line in order_line)">
-                            <table style="width: 100%;">
-                                
-                                <tr style="background-color:green">
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Rate</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
-                                    </tr>
-                                    <t t-foreach="order_line" t-as="line">
-                                    <t t-if=" not line.product_id.extra_charges and line.inch_feet_type not in ['feet','inch','mm','tile'] and line.display_type not in ['line_section','line_note']">
-                                        <tr>
-                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
-                                                <img t-if="line.image_128" t-att-src="image_data_uri(line.image_128)" style="width: 70%;padding-bottom:2px;"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.product_id.barcode"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.product_id.l10n_in_hsn_code"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.product_id.name"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.product_uom_qty"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.price_unit"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-if="line.discount > 0">
-                                                    <span t-esc="'%d' % line.discount"/><span style="padding-top:2px;">%</span>
-                                                </t>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                        <!-- <t t-if="line.display_type in ['line_section','line_note']">
-                                            <tr>
-                                                <t t-if="line.display_type == 'line_section'">
-                                                    <td style="padding-left:4px;vertical-align: top;text-align:left;border: 1px solid black;" colspan="9">
-                                                        <span t-field="line.name"/>
-                                                    </td>
-                                                </t>
-                                                <t t-if="line.display_type == 'line_note'">
-                                                    <td style="padding-left:4px;vertical-align: top;text-align:left;border: 1px solid black;" colspan="9">
-                                                        <span>Notes : </span><span t-field="line.name"/>
-                                                    </td>
-                                                </t>
-                                            </tr>
-                                        </t> -->
-                                    </t>
-                                </t>
-                            </table>
-                            <br/>
-                        </t>
-                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'feet' and line.display_type not in ['line_section','line_note'] for line in order_line)">
-                            <table style="width: 100%;">
-                                
-                                <tr style="background-color:green">
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
-                                    </tr>
-                                    <t t-foreach="order_line" t-as="feet_line">
-                                    <t t-if=" not feet_line.product_id.extra_charges and feet_line.inch_feet_type == 'feet' and feet_line.display_type not in ['line_section','line_note']">
-                                        <tr>
-                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
-                                                <img t-if="feet_line.image_128" t-att-src="image_data_uri(feet_line.image_128)" style="width: 70%;padding-bottom:2px;"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.product_id.barcode"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.product_id.l10n_in_hsn_code"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.product_id.name"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.product_uom_qty"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.height_length"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.width"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-set="sqft" t-value="feet_line.sqft * feet_line.product_uom_qty"/>
-                                                <span t-esc="sqft"/>                                            
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.sqft_rate"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-if="feet_line.discount > 0">
-                                                    <span t-esc="'%d' % feet_line.discount"/><span style="padding-top:2px;">%</span>
-                                                </t>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="feet_line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </table>
-                            <br/>
-                        </t>
-                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'inch' and line.display_type not in ['line_section','line_note'] for line in order_line)">
-                            <table style="width: 100%;">
-                                
-                                <tr style="background-color:green">
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
-                                    </tr>
-                                    <t t-foreach="order_line" t-as="inch_line">
-                                    <t t-if=" not inch_line.product_id.extra_charges and inch_line.inch_feet_type == 'inch' and inch_line.display_type not in ['line_section','line_note']">
-                                        <tr>
-                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
-                                                <img t-if="inch_line.image_128" t-att-src="image_data_uri(inch_line.image_128)" style="width: 70%;padding-bottom:2px;"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.product_id.barcode"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.product_id.l10n_in_hsn_code"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.product_id.name"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.product_uom_qty"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.height_length"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.width"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-set="sqft" t-value="inch_line.sqft * inch_line.product_uom_qty"/>
-                                                <span t-esc="sqft"/>    
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.sqft_rate"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-if="inch_line.discount > 0">
-                                                    <span t-esc="'%d' % inch_line.discount"/><span style="padding-top:2px;">%</span>
-                                                </t>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="inch_line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </table>
-                            <br/>
-                        </t>
-                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'mm' and line.display_type not in ['line_section','line_note'] for line in order_line)">
-                            <table style="width: 100%;">
-                                
-                                <tr style="background-color:green">
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Sqft Rate</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
-                                    </tr>
-                                    <t t-foreach="order_line" t-as="mm_line">
-                                    <t t-if=" not mm_line.product_id.extra_charges and mm_line.inch_feet_type == 'mm' and mm_line.display_type not in ['line_section','line_note']">
-                                        <tr>
-                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
-                                                <img t-if="mm_line.image_128" t-att-src="image_data_uri(mm_line.image_128)" style="width: 70%;padding-bottom:2px;"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.product_id.barcode"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.product_id.l10n_in_hsn_code"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.product_id.name"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.product_uom_qty"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.height_length"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.width"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-set="sqft" t-value="mm_line.sqft * mm_line.product_uom_qty"/>
-                                                <span t-esc="sqft"/>                                                 
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.sqft_rate"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-if="mm_line.discount > 0">
-                                                    <span t-esc="'%d' % mm_line.discount"/><span style="padding-top:2px;">%</span>
-                                                </t>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="mm_line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </table>
-                            <br/>
-                        </t>
-                        <t t-if="any(len(line) > 0 and not line.product_id.extra_charges and line.inch_feet_type == 'tile' and line.display_type not in ['line_section','line_note'] for line in order_line)">
-                            <table style="width: 100%;">
-                                
-                                <tr style="background-color:green">
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;"><center>Image</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">HSN Code</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:15%;text-align:center;">Name</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Qty</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Height</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Width</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;"><center>Sqft</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:7%;"><center>Total Tiles</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:7%;"><center>Sqft Rate</center></th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:5%;text-align:center;">Discount</th>
-                                    <th style="padding:3px;font-size:10px;color: white;border: 1px solid black;width:10%;text-align:center;">Taxable Amount</th>
-                                    </tr>
-                                    <t t-foreach="order_line" t-as="tile_line">
-                                    <t t-if=" not tile_line.product_id.extra_charges and tile_line.inch_feet_type == 'tile' and tile_line.display_type not in ['line_section','line_note']">
-                                        <tr>
-                                            <td style="vertical-align: top;text-align:center;border: 1px solid black;">
-                                                <img t-if="tile_line.image_128" t-att-src="image_data_uri(tile_line.image_128)" style="width: 70%;padding-bottom:2px;"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.product_id.barcode"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.product_id.l10n_in_hsn_code"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.product_id.name"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.product_uom_qty"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.height_length"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.width"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.sqft"/>                                          
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.tile_final"/>                                          
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.sqft_rate"/>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <t t-if="tile_line.discount > 0">
-                                                    <span t-esc="'%d' % tile_line.discount"/><span style="padding-top:2px;">%</span>
-                                                </t>
-                                            </td>
-                                            <td style="vertical-align: middle;text-align:center;border: 1px solid black;">
-                                                <span t-field="tile_line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </table>
-                            <br/>
-                        </t>
-                        <t t-set="tot_service_amt" t-value="0"/>
-                        <t t-foreach="order_line" t-as="service_amt">
-                            <t t-if="service_amt.product_id.extra_charges">
-                                <tr>
-                                    <t t-set="tot_service_amt" t-value="tot_service_amt + service_amt.price_subtotal"/>
-                                </tr>
-                            </t>
-                        </t>
-                        <table style="width: 100%;border: 1px solid black;">
+                        <!-- Header with Company Name and Logo -->
+                        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                            <!-- Row 1 -->
                             <tr>
-                                <td style="width: 80%;border: 1px solid black;text-align: right;">
-                                    <b><span style="padding:6px;" >Total value</span></b>
+                                <!-- Column 1: Logo spanning 3 rows -->
+                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 5px;" rowspan="3">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 60px;"/>
                                 </td>
-                                <td style="width: 20%;border: 1px solid black;padding-right:7px;text-align: right;" name="td_subtotal" class="text-end o_price_total">
-                                    <!-- <span style="">₹ <span t-esc="'%.2f'% (o.amount_untaxed - tot_service_amt)" t-field-options='{"widget": "monetary", "display_currency": o.currency_id}' /></span> -->
-                                    <t t-if="o.currency_id.position == 'before'">
-                                        <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (o.amount_untaxed - tot_service_amt)" />
+
+                                <!-- Column 2: Company Name spanning 2 rows -->
+                                <td style="width: 55%; text-align: center; vertical-align: middle; background-color: #002060; color: white; font-weight: bold; font-size: 18px; padding: 8px;" rowspan="2">
+                                    <span t-esc="o.company_id.name"/>
+                                </td>
+
+                                <!-- Column 3: Document No -->
+                                <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
+                                <td style="width: 13%; font-size: 10px; border: 1px solid black; padding: 4px;">
+                                    <span t-esc="o.name"/>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2 -->
+                            <tr>
+                                <!-- Column 3: Issue Date -->
+                                <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
+                                <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
+                                    <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr>
+                                <!-- Column 2: Quotation Heading -->
+                                <td style="text-align: center; font-size: 12px; font-weight: bold; border: 1px solid black; padding: 6px;">
+                                    Quotation
+                                </td>
+
+                                <!-- Column 3: Effective Date -->
+                                <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
+                                <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
+                                    <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/>
+                                </td>
+                            </tr>
+                        </table>
+
+
+                        <!-- Company Details Section -->
+                        <table class="excel-table" style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td colspan="6" class="section-header">Company Details</td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">Name</td>
+                                <td class="value-cell"><t t-esc="o.company_id.name"/></td>
+
+                                <td class="label-cell">GSTIN No</td>
+                                <td class="value-cell"><t t-esc="o.company_id.vat or ''"/></td>
+
+                                <td class="label-cell">Quotation #</td>
+                                <td class="value-cell"><t t-esc="o.name"/></td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell" rowspan="3">Address</td>
+                                <td class="value-cell" rowspan="3">
+                                    <t t-if="o.company_id.street"><t t-esc="o.company_id.street"/>, </t>
+                                    <t t-if="o.company_id.street2"><t t-esc="o.company_id.street2"/>, </t>
+                                    <br/>
+                                    <t t-if="o.company_id.city"><t t-esc="o.company_id.city"/>, </t>
+                                    <t t-if="o.company_id.state_id"><t t-esc="o.company_id.state_id.name"/>, </t>
+                                    <t t-if="o.company_id.zip"><t t-esc="o.company_id.zip"/></t>
+                                </td>
+
+                                <td class="label-cell">Sales Person</td>
+                                <td class="value-cell"><t t-esc="o.user_id.name if o.user_id else ''"/></td>
+
+                                <td class="label-cell">Quotation Date</td>
+                                <td class="value-cell"><t t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/></td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">Contact No</td>
+                                <td class="value-cell"><t t-esc="o.company_id.phone or ''"/></td>
+
+                                <td class="label-cell" rowspan="2">Customer Reference</td>
+                                <td class="value-cell" rowspan="2"><t t-esc="o.client_order_ref or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">Email ID</td>
+                                <td class="value-cell"><t t-esc="o.company_id.email or ''"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- Customer Details Section -->
+                        <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
+                            <tr>
+                                <td colspan="6" class="section-header">Customer Details</td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">Bill To</td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-esc="o.partner_id.name"/>
+                                </td>
+                                <td class="label-cell">Ship To</td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-esc="o.partner_shipping_id.name if o.partner_shipping_id else o.partner_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="value-cell">
+                                    <t t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</t>
+                                    <t t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</t><br/>
+                                    <t t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</t>
+                                    <t t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</t>
+                                    <t t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></t>
+                                </td>
+                                <td colspan="3" class="value-cell">
+                                    <t t-if="o.partner_shipping_id">
+                                        <t t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</t>
+                                        <t t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</t><br/>
+                                        <t t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,</t>
+                                        <t t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/>,</t>
+                                        <t t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></t>
                                     </t>
-                                    <t t-if="o.currency_id.position == 'after'">
-                                        <span t-esc="'%.2f' % (o.amount_untaxed - tot_service_amt)" /> <span t-esc="o.currency_id.symbol" />
+                                    <t t-if="not o.partner_shipping_id">
+                                        <t t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</t>
+                                        <t t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</t><br/>
+                                        <t t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</t>
+                                        <t t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</t>
+                                        <t t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></t>
                                     </t>
                                 </td>
                             </tr>
-                            <t t-foreach="order_line" t-as="service">
-                                <t t-if="service.product_id.extra_charges">
+                            <tr>
+                                <td class="label-cell">GSTIN No</td>
+                                <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
+
+                                <td class="label-cell">Contact Person</td>
+                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).name"/></td>
+
+                                <td colspan="2" class="label-cell">
+                                    Supply Timeline Requirement
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">PAN No</td>
+                                <td class="value-cell"><span t-field="o.partner_id.l10n_in_pan"/></td>
+
+                                <td class="label-cell">Contact No</td>
+                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
+
+                                <td class="label-cell">Delivery Start Date</td>
+                                <td class="value-cell"><span t-field="o.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">CIN No</td>
+                                <td class="value-cell"><span t-field="o.partner_id.company_registry"/></td>
+
+                                <td class="label-cell">Email ID</td>
+                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).email"/></td>
+
+                                <td class="label-cell">Delivery End Date</td>
+                                <td class="value-cell"><span t-field="o.commitment_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
+                            </tr>
+                        </table>
+
+                        <!-- Product & Pricing Details -->
+                        <table class="excel-table" style="width:100%; border-collapse:collapse;">
+                            <!-- Section header: total columns = 13 -->
+                            <tr>
+                                <td colspan="13" class="section-header">Product &amp; Pricing Details</td>
+                            </tr>
+
+                            <!-- Column headers (Module spans 2 columns) -->
+                            <tr class="label-cell">
+                                <td class="label-cell">Sr #</td>
+                                <td class="label-cell" colspan="2">Module - Model Type</td>
+                                <td class="label-cell">Technology</td>
+                                <td class="label-cell">Wattage (Wp)</td>
+                                <td class="label-cell">Unit Price (₹ per Wp)</td>
+                                <td class="label-cell">Unit Price (₹ per Nos)</td>
+                                <td class="label-cell">Quantity (Nos)</td>
+                                <td class="label-cell">Quantity (MW)</td>
+                                <td class="label-cell">Total Line Amount (₹)</td>
+                                <td class="label-cell">GST Rate (%)</td>
+                                <td class="label-cell">GST Amount (₹)</td>
+                                <td class="label-cell">Total Amount (₹)</td>
+                            </tr>
+
+                            <!-- Init counters -->
+                            <t t-set="line_no" t-value="1"/>
+                            <t t-set="total_qty" t-value="0"/>
+                            <t t-set="total_mw" t-value="0"/>
+                            <t t-set="total_amount" t-value="0"/>
+                            <t t-set="total_gst" t-value="0"/>
+                            <t t-set="grand_total" t-value="0"/>
+
+                            <!-- Lines -->
+                            <t t-foreach="o.order_line" t-as="line">
+                                <t t-if="not line.display_type and not line.product_id.extra_charges">
                                     <tr>
-                                        <td style="border: 1px solid black;text-align: right;">
-                                            <b><span style="padding:6px;" ><span t-field="service.product_id.name"/></span></b>
-                                        </td>
-                                        <td style="border: 1px solid black;padding-right:7px;text-align: right;">
-                                            <t t-if="o.currency_id.position == 'before'">
-                                                <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (service.price_subtotal)" />
+                                        <td class="value-cell text-center"><t t-esc="line_no"/></td>
+
+                                        <!-- Module occupies two columns -->
+                                        <td class="value-cell" colspan="2"><t t-esc="line.product_id.name"/></td>
+
+                                        <td class="value-cell text-center"><t t-esc="line.product_id.barcode or 'N-Type TOPCon Bifacial'"/></td>
+                                        <td class="value-cell text-center"><t t-esc="'590' if not line.product_id.barcode else line.product_id.barcode[:3]"/></td>
+
+                                        <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit / 590 * 1000) if line.price_unit else '0.00'"/></td>
+                                        <td class="value-cell text-right">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
+
+                                        <td class="value-cell text-center"><t t-esc="'%.0f' % line.product_uom_qty"/></td>
+                                        <td class="value-cell text-center"><t t-esc="'%.2f' % (line.product_uom_qty * 590 / 1000000)"/></td>
+
+                                        <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+
+                                        <td class="value-cell text-center">
+                                            <t t-set="tax_rate" t-value="0"/>
+                                            <t t-foreach="line.tax_id" t-as="tax">
+                                                <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
                                             </t>
-                                            <t t-if="o.currency_id.position == 'after'">
-                                                <span t-esc="'%.2f' % (service.price_subtotal)" /> <span t-esc="o.currency_id.symbol" />
-                                            </t>
+                                            <t t-esc="'%.0f' % tax_rate"/>%
                                         </td>
+
+                                        <td class="value-cell text-right">
+                                            <t t-set="gst_amount" t-value="line.price_subtotal * tax_rate / 100"/>
+                                            ₹ <t t-esc="'{:,.2f}'.format(gst_amount)"/>
+                                        </td>
+
+                                        <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal + gst_amount)"/></td>
+                                    </tr>
+
+                                    <!-- Update totals -->
+                                    <t t-set="line_no" t-value="line_no + 1"/>
+                                    <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
+                                    <t t-set="total_mw" t-value="total_mw + (line.product_uom_qty * 590 / 1000000)"/>
+                                    <t t-set="total_amount" t-value="total_amount + line.price_subtotal"/>
+                                    <t t-set="total_gst" t-value="total_gst + gst_amount"/>
+                                    <t t-set="grand_total" t-value="grand_total + line.price_subtotal + gst_amount"/>
+                                </t>
+                            </t>
+
+                            <!-- Empty rows to keep table height consistent (adjust count as needed) -->
+                            <t t-if="line_no &lt;= 5">
+                                <t t-foreach="range(line_no, 6)" t-as="i">
+                                    <tr>
+                                        <td class="value-cell text-center"><t t-esc="i"/></td>
+                                        <td class="value-cell" colspan="2"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
+                                        <td class="value-cell"></td>
                                     </tr>
                                 </t>
                             </t>
-                            <t t-set="tax_totals" t-value="o.tax_totals"/>
-                                <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
-                                    <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
-                                    <t t-foreach="tax_totals['groups_by_subtotal'][subtotal_to_show]" t-as="amount_by_group">
-                                        <tr>
-                                            <td style="width: 80%;border: 1px solid black;text-align: right;" class="text-end"><b><span style="padding-right:7px;" class="text-nowrap" t-esc="amount_by_group['tax_group_name']"/></b></td>
-                                            <td class="text-end o_price_total" style="width: 20%;border: 1px solid black;padding-right:7px;">
-                                                <span  t-esc="amount_by_group['formatted_tax_group_amount']" />
-                                            </td>
-                                            <!-- <t t-if="tax_totals['display_tax_base']">
-                                                <td class="text-end">
-                                                    <span t-esc="amount_by_group['tax_group_name']"/>
-                                                </td>
-                                                <td class="text-end o_price_total">
-                                                    <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']"/>
-                                                </td>
-                                            </t>
-                                            <t t-else="">
-                                                <td class="text-end"><span class="text-nowrap" t-esc="amount_by_group['tax_group_name']"/></td>
-                                                <td class="text-end o_price_total">
-                                                    <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']" />
-                                                </td>
-                                            </t> -->
-                                        </tr>
-                                    </t>
 
-                                </t>
+                            <!-- Total Row (Total label spans first 7 HTML columns to align with Quantity columns) -->
+                            <tr class="value-cell" style="font-weight:bold; background-color:#E7E6E6;">
+                                <td colspan="7" class="label-cell text-right">Total</td>
+
+                                <!-- Qty (Nos) -->
+                                <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
+
+                                <!-- Qty (MW) -->
+                                <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
+
+                                <!-- Total Line Amount -->
+                                <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(total_amount)"/></td>
+
+                                <!-- GST Rate empty for totals -->
+                                <td class="value-cell"></td>
+
+                                <!-- Total GST -->
+                                <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(total_gst)"/></td>
+
+                                <!-- Grand Total -->
+                                <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(grand_total)"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- Amount in Words (span remaining columns: 13 total, label + value spanning 12) -->
+                        <table class="excel-table" style="width:100%; border-collapse:collapse;">
                             <tr>
-                                <td style="border: 1px solid black;text-align: right;">
-                                    <b><span style="padding:6px;" >Total</span></b>
+                                <td class="label-cell">Amount in Words :</td>
+                                <td colspan="12" class="value-cell">
+                                    <t t-esc="o.amount_to_text(grand_total, 'INR')"/> Only
                                 </td>
-                                <t t-set="amount_total" t-value="round(o.amount_total)" />
-                                <td style="border: 1px solid black;padding-right:7px;text-align: right;">
-                                    <t t-if="o.currency_id.position == 'before'">
-                                        <span t-esc="o.currency_id.symbol" /> <span t-esc="'%.2f' % (amount_total)" />
-                                    </t>
-                                    <t t-if="o.currency_id.position == 'after'">
-                                        <span t-esc="'%.2f' % (amount_total)" /> <span t-esc="o.currency_id.symbol" />
+                            </tr>
+                        </table>
+
+                        <!-- Technical Specification -->
+                        <table class="excel-table" style="width:100%; border-collapse:collapse; margin-top:10px;">
+                            <tr>
+                                <td colspan="2" class="section-header" style="text-align:center;">Technical Specifications</td>
+                            </tr>
+                            <tr>
+                                <td style="width:88%; padding:0; vertical-align:top;">
+                                    <table style="width:100%; border-collapse:collapse;">
+                                        <tr>
+                                            <td class="label-cell" style="width:6%; text-align:center; font-weight:bold;">Sr #</td>
+                                            <td class="label-cell" style="width:22%; text-align:left; font-weight:bold;">Particulars</td>
+                                            <td class="label-cell" style="width:72%; text-align:left; font-weight:bold;">Specifications</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell" style="text-align:center;">1</td>
+                                            <td class="value-cell">Module Technology</td>
+                                            <td class="value-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell" style="text-align:center;">2</td>
+                                            <td class="value-cell">Dimensions</td>
+                                            <td class="value-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell" style="text-align:center;">3</td>
+                                            <td class="value-cell">Al. Frame Size</td>
+                                            <td class="value-cell">
+                                                <table style="width:100%; border-collapse:collapse;">
+                                                    <tr>
+                                                        <td style="width:50%; padding:4px 6px; border:none;">
+                                                            <strong>Long Side</strong><br/>
+                                                        </td>
+                                                        <td style="width:50%; padding:4px 6px; border:none;">
+                                                            <strong>Short Side</strong><br/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell" style="text-align:center;">4</td>
+                                            <td class="value-cell">Junction Box</td>
+                                            <td class="value-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell" style="text-align:center;" rowspan="2">5</td>
+                                            <td class="value-cell" rowspan="2">Warranty</td>
+                                            <td class="value-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="value-cell"></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="width:12%; vertical-align:top; padding:6px; border-left:1px solid #000;">
+                                    <div class="label-cell" style="text-align:center; font-weight:bold; margin-bottom:6px;">Remarks</div>
+                                    <div class="value-cell" style="min-height:20px;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+
+                        <!-- Commercial Terms -->
+                        <table class="excel-table" style="width:100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <td colspan="2" class="section-header" style="text-align: center; font-weight: bold; padding: 8px; border: 1px solid #000; background-color: #d3d3d3;">
+                                        Commercial Terms
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Payment Terms</strong><br/>
+                                        <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
+                                    </td>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Packing Type</strong><br/>
+                                        <span>Standard Export Packing</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Delivery Terms</strong><br/>
+                                        <span t-esc="o.incoterm.name if o.incoterm else 'Ex-Works'"/>
+                                    </td>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Delivery Location</strong><br/>
+                                        <t t-if="o.partner_shipping_id">
+                                            <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
+                                            <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
+                                            <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Offer Validity</strong><br/>
+                                        <span t-if="o.validity_date">Valid until <t t-esc="o.validity_date.strftime('%d-%m-%Y')"/></span>
+                                        <span t-else="">15 days from quotation date</span>
+                                    </td>
+                                    <td style="width:50%; padding: 5px; border: 1px solid #000;">
+                                        <strong>Delivery Schedule</strong><br/>
+                                        <span>As per mutual agreement</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Terms & Conditions -->
+                        <table class="excel-table" style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td class="terms-header">Terms &amp; Conditions</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px;">
+                                    1. This quotation is valid for 15 days from the date of issuance unless extended in writing.<br/>
+                                    2. Any change in government duties, taxes, or levies will be charged at actuals.<br/>
+                                    3. Delivery shall be made as per the mutually agreed delivery schedule.<br/>
+                                    4. Transit insurance shall be borne by the buyer unless otherwise agreed.<br/>
+                                    5. Modules will be packed in standard export-quality packaging suitable for safe transportation and handling.<br/>
+                                    6. Material is subject to pre-dispatch inspection (if required) at our facility.<br/>
+                                    7. Any external damage during transit should be reported immediately to the transporter and Solitech within 48 hours of delivery.<br/>
+                                    8. Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control.<br/>
+                                    9. Any legal dispute arising out of this transaction will fall under the jurisdiction of the Surat, Gujarat courts only.<br/>
+                                    10. All designs, specifications, and product data shared are confidential and remain the property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced without written consent.<br/>
+                                    11. Any changes to this quotation must be mutually agreed upon and documented in writing.<br/>
+                                    <t t-if="o.note">
+                                        <br/><b>Additional Notes:</b> <t t-esc="o.note"/>
                                     </t>
                                 </td>
                             </tr>
                         </table>
-                        
-                        <br/>
-                        <!-- <b><span style="font-size:16px;">Amount in words : </span><span style="font-size:16px;" t-esc="o.amount_to_text((o.amount_total), 'INR')"/> <span style="padding-left:4px;font-size:16px;">Only</span></b> -->
-                        <t t-if="o._check_note() == False">
-                            <span style="font-size:13px;color: red;"><b>Notes :</b></span><span style="font-size:13px;color: red;" t-esc="o.note"/>
-                            <!-- <br/> -->
-                        </t>
-                        <div class="row">
-                            <div class="col-5">
-                                <td style="border-top:none;border-bottom:none;width:50%;">
-                                    <b><span style="font-size:15px;">BANK DETAILS :</span></b>
-                                    <span t-esc="o.company_id.export_bank" style="font-size:14px;"/>
+
+                        <!-- Signature Section -->
+                        <table class="excel-table" style="margin-top: 20px;">
+                            <tr>
+                                <td style="width: 33%; vertical-align: bottom; height: 100px;">
+                                    <div style="border-top: 1px solid #000; margin-top: 60px;">
+                                        <b>Prepared By</b><br/>
+                                        Executive - Sales
+                                    </div>
                                 </td>
-                            </div>
-                            <div class="col-7" style="font-size:14px;">
-                                <td style="border-top:none;border-bottom:none;width:50%;text-align:left;">
-                                    <p>
-                                        <span t-esc="o.company_id.export_terms" />
-                                    </p>
+                                <td style="width: 33%; vertical-align: bottom; height: 100px;">
+                                    <div style="border-top: 1px solid #000; margin-top: 60px;">
+                                        <b>Approved By</b><br/>
+                                        Head - Sales and Marketing
+                                    </div>
                                 </td>
-                            </div>
-                        </div>
-                        <!-- <div class="row" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <div style="font-size:13px;width:50%;"> -->
-                                    <!-- <span style="font-size:13px;">Best Regards</span> -->
-                                    <!-- <br/><b><span t-esc="user.signature" style="font-size:13px;"/></b> -->
-                                    <!-- <br/><b><span t-esc="user.name" style="font-size:13px;"/></b>
-                                    <br/><span t-esc="o.company_id.name" style="font-size:13px;"/>
-                                    <br/><b><span style="font-size:13px;">M: </span><span t-esc="o.company_id.phone" style="font-size:13px;"/></b>
-                                    <br/><span style="font-size:13px;">E: </span><span t-esc="o.company_id.email" style="font-size:13px;"/>
-                                    <span style="font-size:13px;">W: </span><span t-esc="o.company_id.website" style="font-size:13px;"/> -->
-                                <!-- </div>                
-                            </div>
-                            <div class="col-3">
-                                <div>
-                                    <right>
-                                        <t t-if="o.company_id.sing">
-                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.sing)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
-                                        </t>
-                                    </right>
-                                </div>                        
-                            </div>
-                        </div> -->
-                        <br/>
-                        <div class="row" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <div style="font-size:17px;">
-                                    <span style="font-size:17px;">Best Regards</span>
-                                    <br/><b><span t-esc="user.signature" style="font-size:13px;"/></b>
-                                </div> 
-                            </div>
-                            <div class="col-3">
-                                <div>
-                                    <right>
-                                        <t t-if="o.company_id.iso_img">
-                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.iso_img)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
-                                        </t>
-                                    </right>
-                                </div>                        
-                            </div>
-                            <div class="col-3">
-                                <div>
-                                    <right>
-                                        <t t-if="o.company_id.sing">
-                                            <img class="img img-responsive" t-att-src="image_data_uri(o.company_id.sing)" width="170" height="130" style="padding-left:30px;padding-bottom:15px;text-align: right;"/>
-                                        </t>
-                                    </right>
-                                </div>                        
-                            </div>
-                        </div>
+                                <td style="width: 34%; vertical-align: bottom; height: 100px;">
+                                    <div style="border-top: 1px solid #000; margin-top: 60px;">
+                                        <b>For <t t-esc="o.company_id.name"/></b><br/>
+                                        <br/>
+                                        <i>Authorized Signatory</i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Footer -->
+                        <table class="excel-table" style="margin-top: 10px;">
+                            <tr>
+                                <td style="width: 25%;">Revision No: 00</td>
+                                <td style="width: 25%;">Revision Date: NA</td>
+                                <td style="width: 25%;">Confidentiality</td>
+                                <td style="width: 25%;">Internal Use / Customer Shared</td>
+                            </tr>
+                        </table>
                     </div>
                 </t>
-
             </t>
         </template>
     </data>
