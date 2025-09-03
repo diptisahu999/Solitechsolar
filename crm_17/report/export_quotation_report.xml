@@ -346,7 +346,7 @@
                             <thead>
                                 <tr>
                                     <td colspan="4" class="section-header" style="text-align:center; border-bottom: 1px solid #000; font-weight:bold; padding: 4px;">
-                                        Technical Specifications
+                                        Technical Specification
                                     </td>
                                 </tr>
                                 <tr>
@@ -361,12 +361,13 @@
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">1</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Module Technology</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" rowspan="6" style="vertical-align: top; padding: 4px;"></td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
                                 </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">2</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Dimensions</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
                                 </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">3</td>
@@ -375,28 +376,32 @@
                                         <table style="width:100%; height:100%; border-collapse:collapse;">
                                             <tr>
                                                 <td style="padding:4px;"><strong>Long Side</strong></td>
-                                                <td style="width:30%;"></td>
+                                                <td style="border: 1px solid #000; border-top:none; border-bottom:none; width:30%;"></td>
                                                 <td style="padding:4px;"><strong>Short Side</strong></td>
-                                                <td style="width:30%;"></td>
+                                                <td style="border-left: 1px solid #000; width:30%;"></td>
                                             </tr>
                                         </table>
                                     </td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
                                 </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">4</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Junction Box</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
                                 </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" rowspan="2" style="text-align:center; border-right: 1px solid #000; padding: 4px; vertical-align:middle;">5</td>
                                     <td class="value-cell" rowspan="2" style="border-right: 1px solid #000; padding: 4px; vertical-align:middle;">Warranty</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px; height: 1.5em;"></td>
+                                    <td class="value-cell" rowspan="2" style="vertical-align: top; padding: 4px;"></td>
                                 </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px; height: 1.5em;"></td>
                                 </tr>
                             </tbody>
                         </table>
+                        
                         <!-- Commercial Terms -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
