@@ -38,14 +38,11 @@ class InheritStockPicking(models.Model):
 
     @api.depends('move_ids.delay_alert_date')
     def _compute_delay_alert_date(self):
-        res = super(InheritStockPicking,self)._compute_delay_alert_date()
+        """
+        Override the default method to disable the stock delay check completely.
+        """
         for pic in self:
-            if pic.origin != '/':
-                inv_rec = self.env['account.move'].search(['|',('invoice_picking_id', '=', pic.id),('name', '=', pic.origin)])
-                if inv_rec:
-                    pic.pi_chr = inv_rec.pi_chr
-                    pic.po_number = inv_rec.po_number
-        return res
+            pic.delay_alert_date = False
     
     @api.onchange('company_type')
     def _onchange_company_type(self):

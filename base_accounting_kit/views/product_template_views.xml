@@ -7,10 +7,11 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <field name="property_account_expense_id" position="after">
-                <field name="asset_category_id"
+                <!-- Remove asset_category_id since it does not exist in Community -->
+                <!-- <field name="asset_category_id"
                     domain="[('type', '=', 'purchase')]"
                     context="{'default_type': 'purchase'}"
-                    groups="account.group_account_user"/>
+                    groups="account.group_account_user"/> -->
             </field>
         </field>
     </record>
