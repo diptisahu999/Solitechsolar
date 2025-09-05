@@ -100,13 +100,6 @@
                 <field name = "no_discount_ok" column_invisible="1"/>
                 <field name = "gst_tax" column_invisible="1"/>
             </xpath>
-            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="replace">
-                <button id="create_invoice" string="Create Proforma Invoice" name="create_invoice_direct" invisible="invoice_status != 'to invoice'" type="object" class="oe_highlight"
-                        confirm="Please verify all details: supply items, billing &amp; delivery addresses, GST, and terms before proceeding."/>
-            </xpath>
-            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d'][1]" position="replace">
-                <button id="create_invoice_percentage" string="Create Proforma Invoice" name="create_invoice_direct" invisible="invoice_status != 'no' or state != 'sale'" type="object" class="oe_highlight"/>
-            </xpath>
             <xpath expr="//button[@name='action_confirm']" position="attributes">
                 <attribute name="confirm">Congratulations on receiving the order! If not confirmed, please do not proceed.</attribute>
             </xpath>	

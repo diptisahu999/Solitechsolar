@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_proforma_invoice_user,proforma.invoice.user,model_proforma_invoice,base.group_user,1,1,1,1
+access_proforma_invoice_line_user,proforma.invoice.line.user,model_proforma_invoice_line,base.group_user,1,1,1,1

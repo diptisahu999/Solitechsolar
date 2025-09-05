@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="proforma_invoice_view_form" model="ir.ui.view">
+        <field name="name">proforma.invoice.form</field>
+        <field name="model">proforma.invoice</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_post" string="Confirm" class="oe_highlight" type="object" invisible="state != 'draft'"/>
+                    <button string="PI Print" type="action" name="%(proforma_invoice.action_report_proforma_invoice)d" class="oe_highlight"/>
+                    <button name="button_draft" string="Reset to Draft" type="object" invisible="state not in ('posted', 'cancel')"/>
+                    <button name="button_cancel" string="Cancel" type="object" invisible="state not in ('draft', 'posted')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <span invisible="state != 'draft'">Draft PI</span>
+                            <span invisible="state == 'draft'"><field name="name" readonly="1"/></span>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user" class="oe_link"/>
+                            <field name="partner_shipping_id" string="Place of supply"/>
+                            <field name="l10n_in_gst_treatment" string="GST Treatment"/>
+                        </group>
+                        <group>
+                            <field name="po_number"/>
+                            <field name="po_date"/>
+                            <field name="pi_chr"/>
+                            <field name="pi_date"/>
+                            <field name="invoice_date"/>
+                            <field name="invoice_date_due"/>
+                            <field name="invoice_payment_term_id"/>
+                            <field name="sample_type"/>
+                            <field name="source_id"/>
+                            <field name="project_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Invoice Lines" name="invoice_lines">
+                            <field name="line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name" string="Description" column_invisible="1"/>
+                                    <field name="inch_feet_type" string="Inch/Feet"/>
+                                    <field name="discount"/>
+                                    <field name="product_type"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit" string="Price"/>
+                                    <field name="actual_price"/>
+                                    <field name="diff_per" string="Difference (%)"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="price_subtotal" string="Tax excl." widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="remarks"/>
+                                </tree>
+                            </field>
+                             <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <field name="narration" placeholder="Terms and conditions..."/>
+                        </page>
+                         <page string="Other Info" name="other_info">
+                            <group>
+                               <field name="user_id" string="Salesperson"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="proforma_invoice_view_tree" model="ir.ui.view">
+        <field name="name">proforma.invoice.tree</field>
+        <field name="model">proforma.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" string="Number" decoration-bf="1"/>
+                <field name="partner_id"/>
+                <field name="invoice_date"/>
+                <field name="user_id"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="proforma_invoice_view_search" model="ir.ui.view">
+        <field name="name">proforma.invoice.search</field>
+        <field name="model">proforma.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Number"/>
+                <field name="partner_id"/>
+                <field name="pi_chr"/>
+                <field name="po_number"/>
+                <separator/>
+                <filter string="My PIs" name="my_pis" domain="[('user_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_proforma_invoice" model="ir.actions.act_window">
+        <field name="name">Proforma Invoices</field>
+        <field name="res_model">proforma.invoice</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_report_proforma_invoice" model="ir.actions.report">
+        <field name="name">Proforma Invoice</field>
+        <field name="model">proforma.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">proforma_invoice.report_proforma</field>
+        <field name="report_file">proforma_invoice.report_proforma</field>
+        <field name="print_report_name">'Proforma - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_proforma_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_proforma">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Proforma Invoice <span t-field="doc.name"/></h2>
+                        <p>This is a proforma for customer: <span t-field="doc.partner_id.name"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <menuitem
+        id="menu_proforma_root"
+        name="Proforma Invoices"
+        sequence="25"/>
+
+    <menuitem
+        id="menu_proforma_list"
+        name="Proforma Invoices"
+        parent="menu_proforma_root"
+        action="action_proforma_invoice"/>
+</odoo>
