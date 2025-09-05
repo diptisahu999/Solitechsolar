@@ -218,7 +218,7 @@ class InheritSaleOrder(models.Model):
     def _onchange_l10n_in_gst_treatment(self):
         if self.l10n_in_gst_treatment in ['overseas','special_economic_zone']:
             for line in self.order_line:
-                line.tax_id = False
+                line.tax_id = [(5, 0, 0)]
         else:
             for line_sale in self.order_line:
                 line_sale.onchange_gst_product()
