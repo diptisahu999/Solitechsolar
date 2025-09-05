@@ -26,13 +26,17 @@ class ProductTemplate(models.Model):
 
     upstock_qty = fields.Float(string='Upcoming Stock', compute='_compute_upstock_qty')
 
-    @api.depends('product_variant_ids', 'product_variant_ids.upcoming_stock_ids')
+    @api.depends('product_variant_ids')
     def _compute_upstock_qty(self):
-        # The key change: iterate over 'self' to process each record.
-        for product in self:  
-            upcoming_stock = self.env['upcoming.stock'].sudo().search([('product_id', '=', product.id)], order='id desc', limit=1)
+        for template in self:  
+            # Fetch upcoming stock based on all variants of the template
+            upcoming_stock = self.env['upcoming.stock'].sudo().search([
+                ('product_id', 'in', template.product_variant_ids.ids)
+            ], order='id desc', limit=1)
             
             if upcoming_stock:
-                product.upstock_qty = upcoming_stock.quantity
+                template.upstock_qty = upcoming_stock.qty   # <-- use correct field name from upcoming.stock
             else:
-                product.upstock_qty = 0
+                template.upstock_qty = 0.0
+
+
