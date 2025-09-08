@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- Report Action (must come before form view) -->
+    <record id="action_report_proforma_invoice" model="ir.actions.report">
+        <field name="name">Proforma Invoice</field>
+        <field name="model">proforma.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">proforma_invoice.report_proforma</field>
+        <field name="report_file">proforma_invoice.report_proforma</field>
+        <field name="print_report_name">'Proforma - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_proforma_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Model Reference (needed for binding_model_id) -->
+    <record id="model_proforma_invoice" model="ir.model">
+        <field name="name">proforma.invoice</field>
+        <field name="model">proforma.invoice</field>
+    </record>
+
+    <!-- Form View -->
     <record id="proforma_invoice_view_form" model="ir.ui.view">
         <field name="name">proforma.invoice.form</field>
         <field name="model">proforma.invoice</field>
@@ -65,7 +85,7 @@
                             </group>
                             <field name="narration" placeholder="Terms and conditions..."/>
                         </page>
-                         <page string="Other Info" name="other_info">
+                        <page string="Other Info" name="other_info">
                             <group>
                                <field name="user_id" string="Salesperson"/>
                             </group>
@@ -81,6 +101,7 @@
         </field>
     </record>
 
+    <!-- Tree View -->
     <record id="proforma_invoice_view_tree" model="ir.ui.view">
         <field name="name">proforma.invoice.tree</field>
         <field name="model">proforma.invoice</field>
@@ -96,6 +117,7 @@
         </field>
     </record>
     
+    <!-- Search View -->
     <record id="proforma_invoice_view_search" model="ir.ui.view">
         <field name="name">proforma.invoice.search</field>
         <field name="model">proforma.invoice</field>
@@ -115,45 +137,30 @@
         </field>
     </record>
 
+    <!-- Window Action -->
     <record id="action_proforma_invoice" model="ir.actions.act_window">
         <field name="name">Proforma Invoices</field>
         <field name="res_model">proforma.invoice</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <record id="action_report_proforma_invoice" model="ir.actions.report">
-        <field name="name">Proforma Invoice</field>
-        <field name="model">proforma.invoice</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">proforma_invoice.report_proforma</field>
-        <field name="report_file">proforma_invoice.report_proforma</field>
-        <field name="print_report_name">'Proforma - %s' % (object.name)</field>
-        <field name="binding_model_id" ref="model_proforma_invoice"/>
-        <field name="binding_type">report</field>
-    </record>
-
+    <!-- Report Template -->
     <template id="report_proforma">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2>Proforma Invoice <span t-field="doc.name"/></h2>
-                        <p>This is a proforma for customer: <span t-field="doc.partner_id.name"/></p>
+                        <p>Customer: <span t-field="doc.partner_id.name"/></p>
+                        <p>Total: <span t-field="doc.amount_total"/></p>
                     </div>
                 </t>
             </t>
         </t>
     </template>
 
+    <!-- Menu -->
+    <menuitem id="menu_proforma_root" name="Proforma Invoices" sequence="25"/>
+    <menuitem id="menu_proforma_list" name="Proforma Invoices" parent="menu_proforma_root" action="action_proforma_invoice"/>
 
-    <menuitem
-        id="menu_proforma_root"
-        name="Proforma Invoices"
-        sequence="25"/>
-
-    <menuitem
-        id="menu_proforma_list"
-        name="Proforma Invoices"
-        parent="menu_proforma_root"
-        action="action_proforma_invoice"/>
 </odoo>

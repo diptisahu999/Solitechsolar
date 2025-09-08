@@ -94,8 +94,10 @@
         <field name="name">Quotation</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">crm_17.sale_quotation</field>
-        <field name="report_file">crm_17.sale_quotation</field>
+        <!-- <field name="report_name">crm_17.sale_quotation</field>
+        <field name="report_file">crm_17.sale_quotation</field> -->
+        <field name="report_name">crm_17.export_quotation_report</field>
+        <field name="report_file">crm_17.export_quotation_report</field>
         <field name="paperformat_id" ref="crm_17.paperformat_invoice_report"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="print_report_name">'%s - %s' % (object.name, object.partner_id.name)</field>
