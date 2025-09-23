@@ -6,6 +6,7 @@
     'category': 'Sales',
     'depends': ['base', 'mail', 'product', 'sale_management', 'project'],
     'data': [
+    'report/proforma_invoice.xml',
     'views/proforma_invoice_views.xml',
     'views/sale_order_views.xml',
     'security/ir.model.access.csv',
