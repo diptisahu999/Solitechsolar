@@ -165,6 +165,15 @@
 
                         <!-- Customer Details Section -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
+                            <colgroup>
+                                <col style="width:12%;"/>
+                                <col style="width:21%;"/>
+                                <col style="width:12%;"/>
+                                <col style="width:21%;"/>
+                                <col style="width:12%;"/>
+                                <col style="width:22%;"/>
+                            </colgroup>
+
                             <tr>
                                 <td colspan="6" class="section-header">Customer Details</td>
                             </tr>
@@ -206,10 +215,8 @@
                             <tr>
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
-
                                 <td class="label-cell">Contact Person</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).name"/></td>
-
                                 <td colspan="2" class="label-cell">
                                     Supply Timeline Requirement
                                 </td>
@@ -217,20 +224,16 @@
                             <tr>
                                 <td class="label-cell">PAN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.l10n_in_pan"/></td>
-
                                 <td class="label-cell">Contact No</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
-
                                 <td class="label-cell">Delivery Start Date</td>
                                 <td class="value-cell"><span t-field="o.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
                             <tr>
                                 <td class="label-cell">CIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.company_registry"/></td>
-
                                 <td class="label-cell">Email ID</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).email"/></td>
-
                                 <td class="label-cell">Delivery End Date</td>
                                 <td class="value-cell"><span t-field="o.commitment_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
@@ -239,13 +242,12 @@
                         <!-- Product & Pricing Details -->
                         <table class="excel-table" style="width:100%; border-collapse:collapse;">
                             <tr>
-                                <td colspan="13" class="section-header">Product &amp; Pricing Details</td>
+                                <td colspan="12" class="section-header">Product &amp; Pricing Details</td>
                             </tr>
 
                             <tr class="label-cell">
                                 <td class="label-cell">Sr #</td>
                                 <td class="label-cell" colspan="2">Module - Model Type</td>
-                                <td class="label-cell">Technology</td>
                                 <td class="label-cell">Wattage (Wp)</td>
                                 <td class="label-cell">Unit Price (₹ per Wp)</td>
                                 <td class="label-cell">Unit Price (₹ per Nos)</td>
@@ -269,18 +271,12 @@
                                     <tr>
                                         <td class="value-cell text-center"><t t-esc="line_no"/></td>
                                         <td class="value-cell" colspan="2"><t t-esc="line.product_id.name"/></td>
-
-                                        <td class="value-cell text-center"><t t-esc="line.product_id.barcode or 'N-Type TOPCon Bifacial'"/></td>
                                         <td class="value-cell text-center"><t t-esc="'590' if not line.product_id.barcode else line.product_id.barcode[:3]"/></td>
-
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit / 590 * 1000) if line.price_unit else '0.00'"/></td>
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
-
                                         <td class="value-cell text-center"><t t-esc="'%.0f' % line.product_uom_qty"/></td>
                                         <td class="value-cell text-center"><t t-esc="'%.2f' % (line.product_uom_qty * 590 / 1000000)"/></td>
-
                                         <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
-
                                         <td class="value-cell text-center">
                                             <t t-set="tax_rate" t-value="0"/>
                                             <t t-foreach="line.tax_id" t-as="tax">
@@ -288,12 +284,10 @@
                                             </t>
                                             <t t-esc="'%.0f' % tax_rate"/>%
                                         </td>
-
                                         <td class="value-cell text-right">
                                             <t t-set="gst_amount" t-value="line.price_subtotal * tax_rate / 100"/>
                                             ₹ <t t-esc="'{:,.2f}'.format(gst_amount)"/>
                                         </td>
-
                                         <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal + gst_amount)"/></td>
                                     </tr>
                                     <t t-set="line_no" t-value="line_no + 1"/>
@@ -304,26 +298,9 @@
                                     <t t-set="grand_total" t-value="grand_total + line.price_subtotal + gst_amount"/>
                                 </t>
                             </t>
-                            <t t-if="line_no &lt;= 5">
-                                <t t-foreach="range(line_no, 6)" t-as="i">
-                                    <tr>
-                                        <td class="value-cell text-center"><t t-esc="i"/></td>
-                                        <td class="value-cell" colspan="2"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                        <td class="value-cell"></td>
-                                    </tr>
-                                </t>
-                            </t>
+
                             <tr class="value-cell" style="font-weight:bold; background-color:#E7E6E6;">
-                                <td colspan="7" class="label-cell text-right">Total</td>
+                                <td colspan="6" class="label-cell text-right">Total</td>
                                 <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
                                 <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
                                 <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(total_amount)"/></td>
@@ -335,70 +312,51 @@
                         <table class="excel-table" style="width:100%; border-collapse:collapse;">
                             <tr>
                                 <td class="label-cell">Amount in Words :</td>
-                                <td colspan="12" class="value-cell">
+                                <td colspan="11" class="value-cell">
                                     <t t-esc="o.amount_to_text(grand_total, 'INR')"/> Only
                                 </td>
                             </tr>
                         </table>
+                        
 
-                        <!-- Technical Specification -->
+                        <!-- Bank Details -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
                                 <tr>
-                                    <td colspan="4" class="section-header" style="text-align:center; border-bottom: 1px solid #000; font-weight:bold; padding: 4px;">
-                                        Technical Specification
-                                    </td>
+                                    <td colspan="13" class="section-header">Bank Details</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right: 1px solid #000; padding: 4px;">Sr #</td>
                                     <td class="label-cell" style="width:25%; border-right: 1px solid #000; padding: 4px;">Particulars</td>
-                                    <td class="label-cell" style="width:58%; border-right: 1px solid #000; padding: 4px;">Specifications</td>
-                                    <td class="label-cell" style="width:12%; padding: 4px;">Remarks</td>
-                                </tr>
+                                    <td class="label-cell" style="width:58%; border-right: 1px solid #000; padding: 4px;">Details</td>
+                                    <td class="label-cell" style="width:12%; padding: 4px;">Remarks</td> </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">1</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Module Technology</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Bank Name</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
-                                </tr>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">2</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Dimensions</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Name</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
-                                </tr>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">3</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Al. Frame Size</td>
-                                    <td class="value-cell" style="padding:0; border-right: 1px solid #000;">
-                                        <table style="width:100%; height:100%; border-collapse:collapse;">
-                                            <tr>
-                                                <td style="padding:4px;"><strong>Long Side</strong></td>
-                                                <td style="border: 1px solid #000; border-top:none; border-bottom:none; width:30%;"></td>
-                                                <td style="padding:4px;"><strong>Short Side</strong></td>
-                                                <td style="border-left: 1px solid #000; width:30%;"></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
-                                </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Number</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">4</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Junction Box</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">IFSC Code</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td>
-                                </tr>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
                                 <tr style="border-top: 1px solid #000;">
-                                    <td class="value-cell" rowspan="2" style="text-align:center; border-right: 1px solid #000; padding: 4px; vertical-align:middle;">5</td>
-                                    <td class="value-cell" rowspan="2" style="border-right: 1px solid #000; padding: 4px; vertical-align:middle;">Warranty</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px; height: 1.5em;"></td>
-                                    <td class="value-cell" rowspan="2" style="vertical-align: top; padding: 4px;"></td>
-                                </tr>
-                                <tr style="border-top: 1px solid #000;">
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px; height: 1.5em;"></td>
-                                </tr>
+                                    <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">5</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">SWIFT Code</td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
+                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
                             </tbody>
                         </table>
                         
