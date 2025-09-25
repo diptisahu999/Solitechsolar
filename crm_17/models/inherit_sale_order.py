@@ -30,6 +30,27 @@ class InheritSaleOrder(models.Model):
     action_link = fields.Html(string='View', compute='_compute_action_link', sanitize=False)
     final_quotation = fields.Boolean(string='Final Quotation',default=False)
     is_group_admin = fields.Boolean(string='Is Group Access Right')
+    special_instruction_dcr = fields.Selection([
+        ('dcr', 'DCR'),
+        ('non_dcr', 'NON DCR')
+    ], string='DCR Instruction', index=True)
+
+    special_instruction_mess = fields.Selection([
+        ('with_mess', 'WITH MESS'),
+        ('without_mess', 'WITHOUT MESS')
+    ], string='Mess Instruction', index=True)
+
+    def _prepare_invoice(self):
+        res = super(InheritSaleOrder, self)._prepare_invoice()
+        res.update({
+            'sample_type':self.sample_type,
+            'tag_ids':self.tag_ids.ids,
+            'project_id':self.project_id.id,
+            # Pass the new field values when creating an invoice
+            'special_instruction_dcr': self.special_instruction_dcr,
+            'special_instruction_mess': self.special_instruction_mess,
+        })
+        return res
     
     @api.depends('name')
     def _compute_action_link(self):

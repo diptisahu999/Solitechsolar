@@ -318,45 +318,72 @@
                             </tr>
                         </table>
                         
+                        <style type="text/css">
+                            .note-content p {
+                                margin: 0;
+                            }
+                        </style>
 
-                        <!-- Bank Details -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
+                            <t t-set="bank" t-value="o.company_id.partner_id.bank_ids and o.company_id.partner_id.bank_ids[0] or False"/>
+
                             <thead>
                                 <tr>
-                                    <td colspan="13" class="section-header">Bank Details</td>
+                                    <td colspan="4" class="section-header">Bank Details</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right: 1px solid #000; padding: 4px;">Sr #</td>
                                     <td class="label-cell" style="width:25%; border-right: 1px solid #000; padding: 4px;">Particulars</td>
-                                    <td class="label-cell" style="width:58%; border-right: 1px solid #000; padding: 4px;">Details</td>
-                                    <td class="label-cell" style="width:12%; padding: 4px;">Remarks</td> </tr>
+                                    <td class="label-cell" style="width:30%; border-right: 1px solid #000; padding: 4px;">Details</td>
+                                    <td class="label-cell" style="width:40%; padding: 4px;">Special Instructions</td>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">1</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Bank Name</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="bank.bank_id.name if bank else ''"/>
+                                    </td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="dict(o._fields['special_instruction_dcr'].selection).get(o.special_instruction_dcr, '') if o.special_instruction_dcr else ''"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">2</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Name</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="bank.acc_holder_name if bank else ''"/>
+                                    </td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="dict(o._fields['special_instruction_mess'].selection).get(o.special_instruction_mess, '') if o.special_instruction_mess else ''"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">3</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Number</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="bank.acc_number if bank else ''"/>
+                                    </td>
+                                    <td class="label-cell" style="border-right: 1px solid #000; padding: 4px;">Note</td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">4</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">IFSC Code</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="bank.bank_id.bic if bank else ''"/>
+                                    </td>
+                                    <td class="value-cell note-content" style="vertical-align: top; padding: 4px;" rowspan="2">
+                                        <span t-field="o.note" t-options="{'widget': 'html'}"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">5</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">SWIFT Code</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="bank.bank_id.bic if bank else ''"/>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         
@@ -485,14 +512,6 @@
                                     <td style="padding:4px; border-right:1px solid #000; height:1.5em;"></td>
                                     <td style="padding:4px;"></td>
                                 </tr>
-                                <t t-if="o.note">
-                                    <tr style="border-top:1px solid #000;">
-                                        <td colspan="2" style="padding: 4px;">
-                                            <strong>Additional Notes:</strong>
-                                            <span t-esc="o.note"/>
-                                        </td>
-                                    </tr>
-                                </t>
                             </tbody>
                         </table>
 
