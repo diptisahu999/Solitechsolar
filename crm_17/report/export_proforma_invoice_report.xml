@@ -165,6 +165,15 @@
 
                         <!-- Customer Details Section -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
+                            <colgroup>
+                                <col style="width:12%;"/>
+                                <col style="width:21%;"/>
+                                <col style="width:12%;"/>
+                                <col style="width:21%;"/>
+                                <col style="width:12%;"/>
+                                <col style="width:22%;"/>
+                            </colgroup>
+
                             <tr>
                                 <td colspan="6" class="section-header">Customer Details</td>
                             </tr>
@@ -206,10 +215,8 @@
                             <tr>
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
-
                                 <td class="label-cell">Contact Person</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).name"/></td>
-
                                 <td colspan="2" class="label-cell">
                                     Supply Timeline Requirement
                                 </td>
@@ -217,20 +224,16 @@
                             <tr>
                                 <td class="label-cell">PAN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.l10n_in_pan"/></td>
-
                                 <td class="label-cell">Contact No</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
-
                                 <td class="label-cell">Delivery Start Date</td>
                                 <td class="value-cell"><span t-field="o.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
                             <tr>
                                 <td class="label-cell">CIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.company_registry"/></td>
-
                                 <td class="label-cell">Email ID</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).email"/></td>
-
                                 <td class="label-cell">Delivery End Date</td>
                                 <td class="value-cell"><span t-field="o.commitment_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
@@ -271,7 +274,7 @@
                                         <td class="value-cell" colspan="2"><t t-esc="line.product_id.name"/></td>
 
                                         <td class="value-cell text-center"><t t-esc="line.product_id.barcode or 'N-Type TOPCon Bifacial'"/></td>
-                                        <td class="value-cell text-center"><t t-esc="'590' if not line.product_id.barcode else line.product_id.barcode[:3]"/></td>
+                                        <td class="value-cell text-center"><span t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
 
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit / 590 * 1000) if line.price_unit else '0.00'"/></td>
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
@@ -342,43 +345,70 @@
                         </table>
 
                         <!-- Bank Details -->
+                        <style type="text/css">
+                            .note-content p {
+                                margin: 0;
+                            }
+                        </style>
+
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
                                 <tr>
-                                    <td colspan="13" class="section-header">Technical Specification</td>
+                                    <td colspan="4" class="section-header">Bank Details</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right: 1px solid #000; padding: 4px;">Sr #</td>
                                     <td class="label-cell" style="width:25%; border-right: 1px solid #000; padding: 4px;">Particulars</td>
-                                    <td class="label-cell" style="width:58%; border-right: 1px solid #000; padding: 4px;">Details</td>
-                                    <td class="label-cell" style="width:12%; padding: 4px;">Remarks</td> </tr>
+                                    <td class="label-cell" style="width:30%; border-right: 1px solid #000; padding: 4px;">Details</td>
+                                    <td class="label-cell" style="width:40%; padding: 4px;">Special Instructions</td>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">1</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Bank Name</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="o.company_id.bank_name"/>
+                                    </td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="dict(o._fields['special_instruction_dcr'].selection).get(o.special_instruction_dcr, '') if o.special_instruction_dcr else ''"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">2</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Name</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="o.company_id.bank_ac_name"/>
+                                    </td>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="dict(o._fields['special_instruction_mess'].selection).get(o.special_instruction_mess, '') if o.special_instruction_mess else ''"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">3</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">Account Number</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="o.company_id.bank_ac_no"/>
+                                    </td>
+                                    <td class="label-cell" style="border-right: 1px solid #000; padding: 4px;">Note</td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">4</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">IFSC Code</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="o.company_id.bank_branch_ifsc"/>
+                                    </td>
+                                    <td class="value-cell note-content" style="vertical-align: top; padding: 4px;" rowspan="2">
+                                        <span t-field="o.note" t-options="{'widget': 'html'}"/>
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right: 1px solid #000; padding: 4px;">5</td>
                                     <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">SWIFT Code</td>
-                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;"></td>
-                                    <td class="value-cell" style="vertical-align: top; padding: 4px;"></td> </tr>
+                                    <td class="value-cell" style="border-right: 1px solid #000; padding: 4px;">
+                                        <span t-esc="o.company_id.bank_swift_code"/>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -495,14 +525,6 @@
                                     <td style="padding:4px; border-right:1px solid #000; height:1.5em;"></td>
                                     <td style="padding:4px;"></td>
                                 </tr>
-                                <t t-if="o.note">
-                                    <tr style="border-top:1px solid #000;">
-                                        <td colspan="2" style="padding: 4px;">
-                                            <strong>Additional Notes:</strong>
-                                            <span t-esc="o.note"/>
-                                        </td>
-                                    </tr>
-                                </t>
                                 <tr>We hereby declare that the goods/services mentioned are correct and supplied as per order. This document is system generated and does not require physical signature.</tr>
                             </tbody>
                         </table>

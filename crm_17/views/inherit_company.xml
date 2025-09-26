@@ -24,6 +24,7 @@
                         <group>
                             <field name="bank_ac_no"/>
                             <field name="bank_branch_ifsc"/>
+                            <field name="bank_swift_code"/>
                         </group>
                     </group>
                 </page>

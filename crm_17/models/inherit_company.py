@@ -12,6 +12,7 @@ class InheritCompany(models.Model):
     bank_ac_name = fields.Text("Bank A/C Name")
     bank_ac_no = fields.Text("Bank A/C No")
     bank_branch_ifsc = fields.Text("Bank Branch IFSC")
+    bank_swift_code = fields.Char("SWIFT Code")
     conditions = fields.Html("Terms & Conditions")
     iso_img = fields.Binary("Iso Image")
     sing = fields.Binary("Sing")
