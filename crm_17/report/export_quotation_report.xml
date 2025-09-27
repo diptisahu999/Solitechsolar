@@ -330,7 +330,6 @@
                             </tr>
                         </table>
 
-                        <!-- Bank Details -->
                         <style type="text/css">
                             .note-content p {
                                 margin: 0;
@@ -340,14 +339,14 @@
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
                                 <tr>
-                                    <td colspan="2" class="section-header" style="text-align:center; padding:4px;">Bank Details</td>
-                                    <td colspan="2" class="section-header" style="text-align:center; padding:4px;">Special Instructions</td>
+                                    <td colspan="3" class="section-header" style="text-align:center; padding:4px;">Bank Details</td>
+                                    <td colspan="1" class="section-header" style="text-align:center; padding:4px;">Special Instructions</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right:1px solid #000; padding:4px;">Sr #</td>
-                                    <td class="label-cell" style="width:15%; border-right:1px solid #000; padding:4px;">Particulars</td>
-                                    <td class="label-cell" style="width:15%; border-right:1px solid #000; padding:4px;">Details</td>
-                                    <td class="label-cell" style="width:50%; border-left:1px solid #000; padding:4px;">Instructions</td>
+                                    <td class="label-cell" style="width:25%; border-right:1px solid #000; padding:4px;">Particulars</td>
+                                    <td class="label-cell" style="width:35%; border-right:1px solid #000; padding:4px;">Details</td>
+                                    <td class="label-cell" style="width:35%; border-left:1px solid #000; padding:4px;">Instructions</td>
                                 </tr>
                             </thead>
                             <tbody>
