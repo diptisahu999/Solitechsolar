@@ -9,22 +9,31 @@ class InheritSaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def onchange_gst_product(self):
-    	# for line in self:
         for line in self:
-            if line.product_id.taxes_id:
-                for gst in line.product_id.taxes_id:
+            if not line.product_id:
+                continue
 
-                    if line.order_id.l10n_in_gst_treatment == 'deemed_export':
-                        gst_recs = self.env['account.tax'].sudo().search([('name', '=', '0.10% GST'),('type_tax_use', '=', 'sale')])
-                        if gst_recs:
-                            line.tax_id = [(6, 0, gst_recs.ids)] 
+            # Default to the product's taxes (for intrastate)
+            taxes = line.product_id.taxes_id
 
-                    if line.order_id.partner_id.state_id.name != line.company_id.state_id.name:
-                        gst_rec = self.env['account.tax'].sudo().search([('amount','=',gst.amount),('type_tax_use','=','sale'),('tax_group_id.name','=','IGST')],limit=1)
-                        line.tax_id = [(6,0,[gst_rec.id])]
+            # For Interstate sales (partner state is different from company state)
+            partner = line.order_id.partner_id
+            company = line.order_id.company_id
+            if partner.state_id and company.state_id and partner.state_id != company.state_id:
+                # Find a matching IGST tax if the product has a default tax
+                if line.product_id.taxes_id:
+                    # Get the rate from the first default tax on the product
+                    tax_rate = line.product_id.taxes_id[0].amount
+                    
+                    igst_tax = self.env['account.tax'].search([
+                        ('amount', '=', tax_rate),
+                        ('type_tax_use', '=', 'sale'),
+                        ('company_id', '=', company.id),
+                        ('tax_group_id.name', '=', 'IGST')
+                    ], limit=1)
+                    
+                    # If an IGST tax is found, use it. Otherwise, clear the taxes.
+                    taxes = igst_tax if igst_tax else False
 
-                        if line.order_id.l10n_in_gst_treatment == 'deemed_export':
-                            gst_rec = self.env['account.tax'].sudo().search([('name', '=', '0.10% IGST'),('type_tax_use', '=', 'sale')], limit=1)
-                            if gst_rec:
-                                line.tax_id = [(6, 0, [gst_rec.id])]
+            line.tax_id = taxes
                                 
