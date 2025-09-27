@@ -164,7 +164,7 @@
                         </table>
 
                         <!-- Customer Details Section -->
-                        <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
+                        <table class="excel-table" style="width:150%; border-collapse: collapse; margin-top: 0px;">
                             <colgroup>
                                 <col style="width:12%;"/>
                                 <col style="width:21%;"/>
@@ -177,7 +177,7 @@
                             <tr>
                                 <td colspan="6" class="section-header">Customer Details</td>
                             </tr>
-                            <tr>
+                            <tr **style="min-height: 35px; height: 35px;"**>
                                 <td class="label-cell">Bill To</td>
                                 <td colspan="2" class="value-cell">
                                     <t t-esc="o.partner_id.name"/>
@@ -248,7 +248,7 @@
                             <tr class="label-cell">
                                 <td class="label-cell">Sr #</td>
                                 <td class="label-cell" colspan="2">Module - Model Type</td>
-                                <td class="label-cell">Wattage (Wp)</td>
+                                <td class="label-cell">HSN Code</td>
                                 <td class="label-cell">Unit Price (₹ per Wp)</td>
                                 <td class="label-cell">Unit Price (₹ per Nos)</td>
                                 <td class="label-cell">Quantity (Nos)</td>
