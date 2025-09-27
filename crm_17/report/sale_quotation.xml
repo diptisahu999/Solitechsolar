@@ -248,7 +248,7 @@
                             <tr class="label-cell">
                                 <td class="label-cell">Sr #</td>
                                 <td class="label-cell" colspan="2">Module - Model Type</td>
-                                <td class="label-cell">Wattage (Wp)</td>
+                                <td class="label-cell">HSN Code</td>
                                 <td class="label-cell">Unit Price (₹ per Wp)</td>
                                 <td class="label-cell">Unit Price (₹ per Nos)</td>
                                 <td class="label-cell">Quantity (Nos)</td>
