@@ -164,7 +164,7 @@
                         </table>
 
                         <!-- Customer Details Section -->
-                        <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
+                        <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 3px;">
                             <colgroup>
                                 <col style="width:12%;"/>
                                 <col style="width:21%;"/>
@@ -187,15 +187,15 @@
                                     <t t-esc="o.partner_shipping_id.name if o.partner_shipping_id else o.partner_id.name"/>
                                 </td>
                             </tr>
-                            <tr>
-                                <td colspan="3" class="value-cell">
+                            <tr style="height:60px;">
+                                <td colspan="3" class="value-cell" style="height:60px; vertical-align:top;">
                                     <t t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</t>
                                     <t t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</t><br/>
                                     <t t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</t>
                                     <t t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</t>
                                     <t t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></t>
                                 </td>
-                                <td colspan="3" class="value-cell">
+                                <td colspan="3" class="value-cell" style="height:60px; vertical-align:top;">
                                     <t t-if="o.partner_shipping_id">
                                         <t t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</t>
                                         <t t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</t><br/>
