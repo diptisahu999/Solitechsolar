@@ -247,7 +247,7 @@
 
                             <tr class="label-cell">
                                 <td class="label-cell">Sr #</td>
-                                <td class="label-cell" colspan="2">Module - Model Type</td>
+                                <td class="label-cell" colspan="2">Model No</td>
                                 <td class="label-cell">HSN Code</td>
                                 <td class="label-cell">Unit Price (₹ per Wp)</td>
                                 <td class="label-cell">Unit Price (₹ per Nos)</td>
@@ -268,9 +268,21 @@
 
                             <t t-foreach="o.order_line" t-as="line">
                                 <t t-if="not line.display_type and not line.product_id.extra_charges">
+                                    <t t-set="model_no_value" t-value="''"/>
+                                    <t t-if="line.product_id.product_template_attribute_value_ids">
+                                        <t t-foreach="line.product_id.product_template_attribute_value_ids" t-as="attribute_value">
+                                            <t t-if="attribute_value.attribute_id.name == 'Model No'">
+                                                <t t-set="model_no_value" t-value="attribute_value.name"/>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <t t-if="not model_no_value">
+                                        <t t-set="model_no_value" t-value="line.product_id.name"/>
+                                    </t>
+
                                     <tr>
                                         <td class="value-cell text-center"><t t-esc="line_no"/></td>
-                                        <td class="value-cell" colspan="2"><t t-esc="line.product_id.name"/></td>
+                                        <td class="value-cell" colspan="2"><t t-esc="model_no_value"/></td>
                                         <td class="value-cell text-center"><span t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit / 590 * 1000) if line.price_unit else '0.00'"/></td>
                                         <td class="value-cell text-right">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
