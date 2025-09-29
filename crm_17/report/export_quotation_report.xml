@@ -314,7 +314,7 @@
 
 
                                             <td class="value-cell text-center">
-                                                <t t-set="tax_rate" t-value="0"/>
+                                                <t t-set="tax_rate" t-value="5"/>
                                                 <t t-foreach="line.tax_id" t-as="tax">
                                                     <t t-if="tax.amount_type == 'percent'">
                                                         <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
