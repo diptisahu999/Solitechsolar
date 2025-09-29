@@ -327,13 +327,14 @@
                                             <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal + gst_amount)"/></td>
                                         </tr>
 
-                                        <t t-set="line_no" t-value="line_no + 1"/>
-                                        <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
-                                        <t t-set="total_mw" 
-                                        t-value="total_mw + ((line.product_uom_qty * (line.product_id.l10n_in_hsn_code or 0)) / 1000000)"/>
-                                        <t t-set="total_amount" t-value="total_amount + line.price_subtotal"/>
-                                        <t t-set="total_gst" t-value="total_gst + gst_amount"/>
-                                        <t t-set="grand_total" t-value="grand_total + line.price_subtotal + gst_amount"/>
+<t t-set="line_no" t-value="line_no + 1"/>
+<t t-set="total_qty" t-value="total_qty + (float(line.product_uom_qty or 0))"/>
+<t t-set="total_mw" 
+   t-value="total_mw + ((float(line.product_uom_qty or 0) * float(line.product_id.l10n_in_hsn_code or 0)) / 1000000)"/>
+<t t-set="total_amount" t-value="total_amount + (float(line.price_subtotal or 0))"/>
+<t t-set="total_gst" t-value="total_gst + (float(gst_amount or 0))"/>
+<t t-set="grand_total" t-value="grand_total + (float(line.price_subtotal or 0) + float(gst_amount or 0))"/>
+
 
                                 </t>
                             </t>
