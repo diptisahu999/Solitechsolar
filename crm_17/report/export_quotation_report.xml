@@ -295,7 +295,7 @@
                 
                 <!-- Wattage Column -->
                 <td class="value-cell text-center">
-                    <t t-esc="line.product_id.wattage or '-'"/>
+                    <t t-esc="line.product_id.l10n_in_hsn_code or '-'"/>
                 </td>
 
                 <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit / 590 * 1000) if line.price_unit else '0.00'"/></td>
