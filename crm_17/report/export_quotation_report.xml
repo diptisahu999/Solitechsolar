@@ -316,11 +316,13 @@
                                             <td class="value-cell text-center">
                                                 <t t-set="tax_rate" t-value="0"/>
                                                 <t t-foreach="line.tax_id" t-as="tax">
-                                                    <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
+                                                    <t t-if="tax.amount_type == 'percent'">
+                                                        <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
+                                                    </t>
                                                 </t>
                                                 <t t-esc="'%.0f' % tax_rate"/>%
                                             </td>
-                                            
+
                                             <td class="value-cell text-right">
                                                 <t t-set="gst_amount" t-value="line.price_subtotal * tax_rate / 100"/>
                                                 ₹ <t t-esc="'{:,.2f}'.format(gst_amount)"/>
