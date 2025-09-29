@@ -293,9 +293,9 @@
                                             </td>
 
                                             <td class="value-cell text-right">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
-                                            <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit * 590) if line.price_unit else '0.00'"/></td>
+                                            <td class="value-cell text-right">₹ <t t-esc="'%.2f' % (line.price_unit * line.product_id.l10n_in_hsn_code) if line.price_unit else '0.00'"/></td>
                                             <td class="value-cell text-center"><t t-esc="'%.0f' % line.product_uom_qty"/></td>
-                                            <td class="value-cell text-center"><t t-esc="'%.2f' % (line.product_uom_qty * 590 / 1000000)"/></td>
+                                            <td class="value-cell text-center"><t t-esc="'%.2f' % (line.product_uom_qty * line.product_id.l10n_in_hsn_code / 1000000)"/></td>
                                             <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
                                             <td class="value-cell text-center">
                                                 <t t-set="tax_rate" t-value="0"/>
