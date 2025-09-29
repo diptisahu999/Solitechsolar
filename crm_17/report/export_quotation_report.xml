@@ -314,9 +314,9 @@
 
 
 <td class="value-cell text-center">
-    <!-- Initialize tax_rate to 0 -->
-    <t t-set="tax_rate" t-value="0"/>
-    <!-- Sum all percent-type taxes for this line -->
+    <!-- Start with static 5% GST -->
+    <t t-set="tax_rate" t-value="5"/>
+    <!-- Add other percent-type taxes from line.tax_id -->
     <t t-foreach="line.tax_id" t-as="tax">
         <t t-if="tax.amount_type == 'percent'">
             <t t-set="tax_rate" t-value="float(tax_rate or 0) + float(tax.amount or 0)"/>
@@ -334,6 +334,7 @@
 <td class="value-cell text-right">
     ₹ <t t-esc="'{:,.2f}'.format(float(line.price_subtotal or 0) + gst_amount)"/>
 </td>
+
                                         </tr>
 
                                     <t t-set="line_no" t-value="line_no + 1"/>
