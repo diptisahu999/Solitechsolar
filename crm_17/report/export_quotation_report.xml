@@ -330,7 +330,7 @@
                                         <t t-set="line_no" t-value="line_no + 1"/>
                                         <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
                                         <t t-set="total_mw" 
-                                        t-value="total_mw + ((line.product_uom_qty * (line.product_id.x_wattage or 0)) / 1000000)"/>
+                                        t-value="total_mw + ((line.product_uom_qty * (line.product_id.l10n_in_hsn_code or 0)) / 1000000)"/>
                                         <t t-set="total_amount" t-value="total_amount + line.price_subtotal"/>
                                         <t t-set="total_gst" t-value="total_gst + gst_amount"/>
                                         <t t-set="grand_total" t-value="grand_total + line.price_subtotal + gst_amount"/>
