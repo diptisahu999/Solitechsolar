@@ -313,21 +313,27 @@
                                             </td>
 
 
-                                            <td class="value-cell text-center">
-                                                <t t-set="tax_rate" t-value="5"/>
-                                                <t t-foreach="line.tax_id" t-as="tax">
-                                                    <t t-if="tax.amount_type == 'percent'">
-                                                        <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
-                                                    </t>
-                                                </t>
-                                                <t t-esc="'%.0f' % tax_rate"/>%
-                                            </td>
+<td class="value-cell text-center">
+    <!-- Initialize tax_rate to 0 -->
+    <t t-set="tax_rate" t-value="0"/>
+    <!-- Sum all percent-type taxes for this line -->
+    <t t-foreach="line.tax_id" t-as="tax">
+        <t t-if="tax.amount_type == 'percent'">
+            <t t-set="tax_rate" t-value="float(tax_rate or 0) + float(tax.amount or 0)"/>
+        </t>
+    </t>
+    <t t-esc="'%.0f' % tax_rate"/>%
+</td>
 
-                                            <td class="value-cell text-right">
-                                                <t t-set="gst_amount" t-value="line.price_subtotal * tax_rate / 100"/>
-                                                ₹ <t t-esc="'{:,.2f}'.format(gst_amount)"/>
-                                            </td>
-                                            <td class="value-cell text-right">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal + gst_amount)"/></td>
+<td class="value-cell text-right">
+    <!-- Calculate GST amount safely -->
+    <t t-set="gst_amount" t-value="float(line.price_subtotal or 0) * float(tax_rate or 0) / 100"/>
+    ₹ <t t-esc="'{:,.2f}'.format(gst_amount)"/>
+</td>
+
+<td class="value-cell text-right">
+    ₹ <t t-esc="'{:,.2f}'.format(float(line.price_subtotal or 0) + gst_amount)"/>
+</td>
                                         </tr>
 
                                     <t t-set="line_no" t-value="line_no + 1"/>
