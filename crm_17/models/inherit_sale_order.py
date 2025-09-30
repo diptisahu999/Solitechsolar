@@ -46,13 +46,19 @@ class InheritSaleOrder(models.Model):
     'order_line.unit_price_per_nos', 'order_line.wattage',
     'currency_id','company_id'
     )
+    @api.depends('order_line.unit_price_per_nos', 'order_line.price_subtotal', 'order_line.price_tax')
     def _compute_amounts(self):
-        """
-        Keep the base behaviour (rounding, currency, taxes) and ensure
-        the compute depends include your custom per-nos fields so the ORM
-        will recompute in the correct order.
-        """
-        super(InheritSaleOrder, self)._compute_amounts()
+        for order in self:
+            untaxed = 0.0
+            tax = 0.0
+            for line in order.order_line:
+                untaxed += line.price_subtotal
+                tax += line.price_tax
+            order.update({
+                'amount_untaxed': untaxed,
+                'amount_tax': tax,
+                'amount_total': untaxed + tax,
+            })
     
     def _prepare_invoice(self):
         res = super(InheritSaleOrder, self)._prepare_invoice()
