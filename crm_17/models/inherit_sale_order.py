@@ -304,30 +304,30 @@ class InheritSaleOrder(models.Model):
             'res_id': partner.id,
         }
     
-    # @api.depends('order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total')
-    # def _compute_amounts(self):
-    #     """Compute the total amounts of the SO."""
-    #     for record in self:
-    #         super(InheritSaleOrder, record)._compute_amounts()  # Call parent method for each record
-    #         record.rounding_amount = round(record.amount_untaxed + record.amount_tax) - (record.amount_untaxed + record.amount_tax)
-    #         record.sale_amount_total = round(record.amount_untaxed + record.amount_tax) 
+    @api.depends('order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total')
+    def _compute_amounts(self):
+        """Compute the total amounts of the SO."""
+        for record in self:
+            super(InheritSaleOrder, record)._compute_amounts()  # Call parent method for each record
+            record.rounding_amount = round(record.amount_untaxed + record.amount_tax) - (record.amount_untaxed + record.amount_tax)
+            record.sale_amount_total = round(record.amount_untaxed + record.amount_tax) 
 
-    # @api.depends_context('lang')
-    # @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
-    # def _compute_tax_totals(self):
-    #     for order in self:
-    #         order_lines = order.order_line.filtered(lambda x: not x.display_type)
-    #         order.tax_totals = self.env['account.tax']._prepare_tax_totals(
-    #             [x._convert_to_tax_base_line_dict() for x in order_lines],
-    #             order.currency_id or order.company_id.currency_id,
-    #         )
-    #         order.tax_totals.update({
-    #         'display_rounding' : True,
-    #         'rounding_amount' : order.rounding_amount,
-    #         'formatted_rounding_amount':formatLang(self.env,order.rounding_amount,currency_obj=order.currency_id),
-    #         'amount_total_rounded': order.amount_total + order.rounding_amount,
-    #         'formatted_amount_total_rounded':formatLang(self.env, order.amount_total + order.rounding_amount, currency_obj=order.currency_id)
-    #         })
+    @api.depends_context('lang')
+    @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
+    def _compute_tax_totals(self):
+        for order in self:
+            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+            order.tax_totals = self.env['account.tax']._prepare_tax_totals(
+                [x._convert_to_tax_base_line_dict() for x in order_lines],
+                order.currency_id or order.company_id.currency_id,
+            )
+            order.tax_totals.update({
+            'display_rounding' : True,
+            'rounding_amount' : order.rounding_amount,
+            'formatted_rounding_amount':formatLang(self.env,order.rounding_amount,currency_obj=order.currency_id),
+            'amount_total_rounded': order.amount_total + order.rounding_amount,
+            'formatted_amount_total_rounded':formatLang(self.env, order.amount_total + order.rounding_amount, currency_obj=order.currency_id)
+            })
 
     def update_product_price(self):
         for line in self.order_line:
