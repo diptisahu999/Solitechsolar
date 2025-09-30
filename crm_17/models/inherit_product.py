@@ -107,7 +107,7 @@ class InheritProductTemplate(models.Model):
 
         if not self.env.user.has_group('crm_17.group_product_price'):
             if 'list_price' in fields_info:
-                fields_info['list_price']['readonly'] = True
+                fields_info['list_price']['readonly'] = False
                 fields_info['list_price']['force_save'] = True
             # if 'name' in fields_info:
             #     fields_info['name']['readonly'] = True
