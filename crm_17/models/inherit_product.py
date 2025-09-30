@@ -58,6 +58,7 @@ class InheritProductTemplate(models.Model):
     is_customization = fields.Boolean('Make to Customization')
     is_color_coating = fields.Boolean('Color Coating Possible')
     is_discontinue = fields.Boolean('Discontinue')
+    wattage = fields.Float(string="Wattage (Wp)")
 
     def action_print_products_details(self):       
         return self.env.ref('crm_17.action_techv_product_template_pricelist').report_action(self)
