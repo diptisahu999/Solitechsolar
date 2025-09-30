@@ -40,6 +40,20 @@ class InheritSaleOrder(models.Model):
         ('without_mess', 'WITHOUT MESS')
     ], string='Mess Instruction', index=True)
 
+    @api.depends(
+    'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
+    'order_line.product_uom_qty', 'order_line.price_unit',
+    'order_line.unit_price_per_nos', 'order_line.wattage',
+    'currency_id','company_id'
+    )
+    def _compute_amounts(self):
+        """
+        Keep the base behaviour (rounding, currency, taxes) and ensure
+        the compute depends include your custom per-nos fields so the ORM
+        will recompute in the correct order.
+        """
+        super(InheritSaleOrder, self)._compute_amounts()
+    
     def _prepare_invoice(self):
         res = super(InheritSaleOrder, self)._prepare_invoice()
         res.update({
@@ -350,7 +364,61 @@ class InheritSaleOrderLine(models.Model):
     remarks = fields.Char(string='Remarks')
     diff_per = fields.Float(string="Difference Per(%)")
     up_after_disc_amt = fields.Float(string="Unit Price After Discount")
+    wattage = fields.Float(
+        string="Wattage (Wp)",
+        related='product_id.wattage',
+        store=True,
+        readonly=False
+    )
 
+    unit_price_per_nos = fields.Monetary(
+        string="Unit Price (₹ per Nos)",
+        compute='_compute_unit_price_per_nos',
+        store=True,
+        readonly=True
+    )
+
+    @api.depends('wattage', 'price_unit')
+    def _compute_unit_price_per_nos(self):
+        """Calculates the price per unit number based on wattage."""
+        for line in self:
+            line.unit_price_per_nos = line.wattage * line.price_unit
+
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'wattage', 'actual_price', 'unit_price_per_nos')
+    def _compute_amount(self):
+        for line in self:
+            # choose the price that should be used for tax / subtotal:
+            if line.wattage and line.wattage > 0:
+                # price is per "nos" (already computed as wattage * base price)
+                price_for_taxes = line.unit_price_per_nos or 0.0
+            else:
+                price_for_taxes = line.price_unit or 0.0
+
+            # apply discount to that price
+            price_after_discount = price_for_taxes * (1 - (line.discount or 0.0) / 100.0)
+
+            taxes = line.tax_id.compute_all(
+                price_after_discount,
+                line.order_id.currency_id,
+                line.product_uom_qty,
+                product=line.product_id,
+                partner=line.order_id.partner_shipping_id,
+            )
+
+            # IMPORTANT: store the computed totals so order uses them
+            line.price_tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+            line.price_total = taxes.get('total_included', 0.0)
+            line.price_subtotal = taxes.get('total_excluded', 0.0)
+
+            # diff/disc logic unchanged
+            if line.actual_price:
+                line.diff_amount = line.price_unit - line.actual_price
+                line.diff_per = (line.diff_amount / line.actual_price) * 100 if line.actual_price else 0.0
+            else:
+                line.diff_amount = 0.0
+                line.diff_per = 0.0
+
+            line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0) if line.discount else 0.0
 
     @api.constrains('product_uom_qty')
     def _check_quantity_integer(self):
@@ -518,23 +586,6 @@ class InheritSaleOrderLine(models.Model):
             rec.tile_width = rec.product_id.tile_width
             rec.tile_length = rec.product_id.tile_length
             rec.tiles_per_box = rec.product_id.tiles_per_box
-
-
-    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
-    def _compute_amount(self):
-        res = super(InheritSaleOrderLine, self)._compute_amount()
-        for line in self:
-            if line.actual_price:
-                line.diff_amount = line.price_unit - line.actual_price
-                if line.actual_price != 0:
-                    line.diff_per = (line.diff_amount / line.actual_price) * 100
-                else:
-                    line.diff_per = 0
-            else:
-                line.diff_amount = 0
-                line.diff_per = 0
-            line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100) if line.discount > 0 else 0
-        return res
     
     @api.depends('product_id','product_uom','inch_feet_type')
     def _compute_price_unit(self):

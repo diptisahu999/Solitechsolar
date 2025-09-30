@@ -147,6 +147,10 @@
                 <attribute name="force_save">True</attribute>
                 <attribute name="options">{'no_open': True}</attribute>
             </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="special_instruction_dcr"/>
+                <field name="special_instruction_mess"/>
+            </xpath>
         </field>
     </record>
 
@@ -273,18 +277,21 @@
         </field>
     </record>
 
-    <record id="view_sale_product_image" model="ir.ui.view">
-        <field name="name">sale.order.form</field>
+    <record id="view_order_form_inherit_wattage" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.wattage</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            
-            <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="special_instruction_dcr"/>
-                <field name="special_instruction_mess"/>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="string">Unit Price (₹ per Wp)</attribute>
             </xpath>
-
-            </field>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="unit_price_per_nos" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
+                <field name="wattage"/>
+            </xpath>
+        </field>
     </record>
     
 
