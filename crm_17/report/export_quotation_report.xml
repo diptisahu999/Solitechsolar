@@ -350,7 +350,7 @@
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right:1px solid #000; padding:4px;">Sr #</td>
-                                    <td class="label-cell" style="width:25%; border-right:1px solid #000; padding:4px;">Particulars</td>
+                                    <td class="label-cell" style="width:10%; border-right:1px solid #000; padding:4px;">Particulars</td>
                                     <td class="label-cell" style="width:30%; border-right:1px solid #000; padding:4px;">Details</td>
                                     
                                     <td class="value-cell" style="width:40%; border-left:1px solid #000; padding:4px; font-weight:bold;">
