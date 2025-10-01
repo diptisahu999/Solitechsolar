@@ -314,14 +314,18 @@
 <t t-foreach="o.tax_totals.get('groups_by_subtotal', {}).get('Untaxed Amount', [])" t-as="tax_group">
     <tr>
         <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
-            <t t-set="tax_obj" t-value="request.env['account.tax.group'].browse(tax_group['tax_group_id'])"/>
-            <span t-esc="tax_group['tax_group_name']"/> (<span t-esc="', '.join([str(t.amount) + '%' for t in tax_obj.tax_ids])"/>)
+            <t t-set="taxes" t-value="o.order_line.mapped('tax_id').filtered(lambda t: t.tax_group_id.id == tax_group['tax_group_id'])"/>
+            <span t-esc="tax_group['tax_group_name']"/>
+            <t t-if="taxes">
+                (<span t-esc="', '.join([str(int(t.amount)) + '%' for t in taxes])"/>)
+            </t>
         </td>
         <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
             <span t-esc="tax_group['formatted_tax_group_amount']"/>
         </td>
     </tr>
 </t>
+
 
                                 <tr style="font-weight:bold;">
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
