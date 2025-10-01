@@ -315,9 +315,18 @@
     <tr>
         <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
             <span t-esc="tax_group['tax_group_name']"/>
-            <t t-if="tax_group['tax_group_name'] == 'CGST' or tax_group['tax_group_name'] == 'SGST'">
+            
+            <t t-if="tax_group.get('percentage')">
+                (<span t-esc="tax_group['percentage']"/>%)
+            </t>
+            
+            <t t-elif="tax_group['tax_group_name'] == 'CGST' or tax_group['tax_group_name'] == 'SGST'">
                 (6%)
             </t>
+            <t t-elif="tax_group['tax_group_name'] == 'IGST'">
+                (12%)
+            </t>
+            
         </td>
         <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
             <span t-esc="tax_group['formatted_tax_group_amount']"/>
