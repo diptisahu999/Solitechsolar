@@ -55,7 +55,24 @@ class ProformaInvoice(models.Model):
     source_id = fields.Many2one('utm.source', string='Source') # NEW FIELD
 
     narration = fields.Html(string="Terms and Conditions")
+    sale_order_id = fields.Many2one('sale.order', string='Source Sale Order', readonly=True, copy=False)
 
+    def amount_to_text(self, amount, currency='INR'):
+        """
+        Converts a numeric amount to its text representation in words.
+        e.g., 1234.56 -> "ONE THOUSAND TWO HUNDRED THIRTY-FOUR AND 56/100"
+        """
+        # Ensure num2words is installed: pip install num2words
+        try:
+            word = self.currency_id.amount_to_text(amount)
+        except (AttributeError, TypeError):
+             # Fallback for currencies without a specific to_text method
+             word = num2words(int(amount), lang='en_IN').upper()
+             decimals = int(round((amount - int(amount)) * 100))
+             if decimals > 0:
+                 word += f" AND {decimals}/100"
+        return word
+    
     @api.depends('line_ids.price_subtotal', 'line_ids.price_total')
     def _compute_amounts(self):
         for pi in self:
@@ -131,6 +148,7 @@ class ProformaInvoiceLine(models.Model):
     actual_price = fields.Float(string="Actual Price")
     diff_per = fields.Float(string="Difference (%)", compute="_compute_diff")
     remarks = fields.Char(string='Remarks')
+    sale_line_id = fields.Many2one('sale.order.line', string='Source SO Line', readonly=True, copy=False)
 
     @api.depends('price_unit', 'actual_price')
     def _compute_diff(self):

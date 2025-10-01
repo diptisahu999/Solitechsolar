@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Report Action (must come before form view) -->
     <record id="action_report_proforma_invoice" model="ir.actions.report">
         <field name="name">Proforma Invoice</field>
         <field name="model">proforma.invoice</field>
@@ -13,7 +12,6 @@
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Form View -->
     <record id="proforma_invoice_view_form" model="ir.ui.view">
         <field name="name">proforma.invoice.form</field>
         <field name="model">proforma.invoice</field>
@@ -95,66 +93,24 @@
         </field>
     </record>
 
-    <!-- Tree View -->
     <record id="proforma_invoice_view_tree" model="ir.ui.view">
         <field name="name">proforma.invoice.tree</field>
         <field name="model">proforma.invoice</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name" string="Number" decoration-bf="1"/>
-                <field name="partner_id"/>
-                <field name="invoice_date"/>
-                <field name="user_id"/>
-                <field name="amount_total" sum="Total"/>
-                <field name="state"/>
-            </tree>
-        </field>
+        <field name="arch" type="xml"><tree><field name="name" string="Number" decoration-bf="1"/><field name="partner_id"/><field name="invoice_date"/><field name="user_id"/><field name="amount_total" sum="Total"/><field name="state"/></tree></field>
     </record>
     
-    <!-- Search View -->
     <record id="proforma_invoice_view_search" model="ir.ui.view">
         <field name="name">proforma.invoice.search</field>
         <field name="model">proforma.invoice</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="name" string="Number"/>
-                <field name="partner_id"/>
-                <field name="pi_chr"/>
-                <field name="po_number"/>
-                <separator/>
-                <filter string="My PIs" name="my_pis" domain="[('user_id', '=', uid)]"/>
-                <group expand="0" string="Group By">
-                    <filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by': 'user_id'}"/>
-                    <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
-                </group>
-            </search>
-        </field>
+        <field name="arch" type="xml"><search><field name="name" string="Number"/><field name="partner_id"/><field name="pi_chr"/><field name="po_number"/><separator/><filter string="My PIs" name="my_pis" domain="[('user_id', '=', uid)]"/><group expand="0" string="Group By"><filter string="Salesperson" name="salesperson" domain="[]" context="{'group_by': 'user_id'}"/><filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/></group></search></field>
     </record>
 
-    <!-- Window Action -->
     <record id="action_proforma_invoice" model="ir.actions.act_window">
         <field name="name">Proforma Invoices</field>
         <field name="res_model">proforma.invoice</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <!-- Report Template -->
-    <template id="report_proforma">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Proforma Invoice <span t-field="doc.name"/></h2>
-                        <p>Customer: <span t-field="doc.partner_id.name"/></p>
-                        <p>Total: <span t-field="doc.amount_total"/></p>
-                    </div>
-                </t>
-            </t>
-        </t>
-    </template>
-
-    <!-- Menu -->
     <menuitem id="menu_proforma_root" name="Proforma Invoices" sequence="25"/>
     <menuitem id="menu_proforma_list" name="Proforma Invoices" parent="menu_proforma_root" action="action_proforma_invoice"/>
-
 </odoo>
