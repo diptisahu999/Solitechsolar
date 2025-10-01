@@ -40,6 +40,23 @@ class InheritSaleOrder(models.Model):
         ('without_mess', 'WITHOUT MESS')
     ], string='Mess Instruction', index=True)
 
+    @api.onchange('fiscal_position_id')
+    def _onchange_fiscal_position_id_update_taxes(self):
+        """
+        When the Fiscal Position changes, manually loop through the order lines
+        and re-apply the tax mapping. This automates the "update tax" button.
+        """
+        if not self.order_line or not self.fiscal_position_id:
+            return
+
+        for line in self.order_line:
+            if line.product_id:
+                # Get the default taxes from the product
+                product_taxes = line.product_id.taxes_id.filtered(lambda t: t.company_id == self.company_id)
+                
+                # Apply the fiscal position's mapping to find the correct new tax
+                line.tax_id = self.fiscal_position_id.map_tax(product_taxes)
+
     @api.depends(
     'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
     'order_line.product_uom_qty', 'order_line.price_unit',
