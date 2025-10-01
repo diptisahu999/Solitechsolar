@@ -40,6 +40,23 @@ class InheritSaleOrder(models.Model):
         ('without_mess', 'WITHOUT MESS')
     ], string='Mess Instruction', index=True)
 
+    @api.onchange('fiscal_position_id')
+    def _onchange_fiscal_position_id_update_taxes(self):
+        """
+        When the Fiscal Position changes, manually loop through the order lines
+        and re-apply the tax mapping. This automates the "update tax" button.
+        """
+        if not self.order_line or not self.fiscal_position_id:
+            return
+
+        for line in self.order_line:
+            if line.product_id:
+                # Get the default taxes from the product
+                product_taxes = line.product_id.taxes_id.filtered(lambda t: t.company_id == self.company_id)
+                
+                # Apply the fiscal position's mapping to find the correct new tax
+                line.tax_id = self.fiscal_position_id.map_tax(product_taxes)
+
     @api.depends(
     'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
     'order_line.product_uom_qty', 'order_line.price_unit',
@@ -261,8 +278,7 @@ class InheritSaleOrder(models.Model):
             for line in self.order_line:
                 line.tax_id = [(5, 0, 0)]
         else:
-            for line_sale in self.order_line:
-                line_sale.onchange_gst_product()
+            pass
     # def _update_order_line_info(self, product_id, quantity, **kwargs):
     #     res = super(InheritSaleOrder, self)._update_order_line_info(product_id, quantity, **kwargs)
     #     self.order_line.onchange_gst_product()
@@ -304,30 +320,29 @@ class InheritSaleOrder(models.Model):
             'res_id': partner.id,
         }
     
-    # @api.depends('order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total')
-    # def _compute_amounts(self):
-    #     """Compute the total amounts of the SO."""
-    #     for record in self:
-    #         super(InheritSaleOrder, record)._compute_amounts()  # Call parent method for each record
-    #         record.rounding_amount = round(record.amount_untaxed + record.amount_tax) - (record.amount_untaxed + record.amount_tax)
-    #         record.sale_amount_total = round(record.amount_untaxed + record.amount_tax) 
+    @api.depends(
+    'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
+    'order_line.product_uom_qty', 'order_line.price_unit',
+    'order_line.unit_price_per_nos', 'order_line.wattage',
+    'currency_id','company_id'
+    )
+    def _compute_amounts(self):
+        """Compute the total amounts of the SO."""
+        for record in self:
+            super(InheritSaleOrder, record)._compute_amounts() 
 
-    # @api.depends_context('lang')
-    # @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
-    # def _compute_tax_totals(self):
-    #     for order in self:
-    #         order_lines = order.order_line.filtered(lambda x: not x.display_type)
-    #         order.tax_totals = self.env['account.tax']._prepare_tax_totals(
-    #             [x._convert_to_tax_base_line_dict() for x in order_lines],
-    #             order.currency_id or order.company_id.currency_id,
-    #         )
-    #         order.tax_totals.update({
-    #         'display_rounding' : True,
-    #         'rounding_amount' : order.rounding_amount,
-    #         'formatted_rounding_amount':formatLang(self.env,order.rounding_amount,currency_obj=order.currency_id),
-    #         'amount_total_rounded': order.amount_total + order.rounding_amount,
-    #         'formatted_amount_total_rounded':formatLang(self.env, order.amount_total + order.rounding_amount, currency_obj=order.currency_id)
-    #         })
+    @api.depends_context('lang')
+    @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
+    def _compute_tax_totals(self):
+        # This will iterate over all orders and call the standard computation.
+        # It's important that your custom _compute_amounts runs first.
+        for order in self:
+            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+            order.tax_totals = self.env['account.tax']._prepare_tax_totals(
+                # Use the existing amounts from the custom _compute_amounts
+                [x._convert_to_tax_base_line_dict() for x in order_lines],
+                order.currency_id or order.company_id.currency_id,
+            )
 
     def update_product_price(self):
         for line in self.order_line:
