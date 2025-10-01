@@ -77,15 +77,11 @@
                             <!-- Row 1 -->
                             <tr>
                                 <!-- Column 1: Logo spanning 3 rows -->
-                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 5px;" rowspan="3">
-                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 60px;"/>
+                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
+                                    <img t-if="o.company_id.quotation_invoice_image" 
+                                        t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                        style="max-height: 85px;"/>
                                 </td>
-
-                                <!-- Column 2: Company Name spanning 2 rows -->
-                                <td style="width: 55%; text-align: center; vertical-align: middle; background-color: #002060; color: white; font-weight: bold; font-size: 18px; padding: 8px;" rowspan="2">
-                                    <span t-esc="o.company_id.name"/>
-                                </td>
-
                                 <!-- Column 3: Document No -->
                                 <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
                                 <td style="width: 13%; font-size: 10px; border: 1px solid black; padding: 4px;">
@@ -104,11 +100,6 @@
 
                             <!-- Row 3 -->
                             <tr>
-                                <!-- Column 2: Quotation Heading -->
-                                <td style="text-align: center; font-size: 12px; font-weight: bold; border: 1px solid black; padding: 6px;">
-                                    Quotation
-                                </td>
-
                                 <!-- Column 3: Effective Date -->
                                 <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
                                 <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
@@ -264,9 +255,6 @@
                                 <t t-set="line_no" t-value="1"/>
                                 <t t-set="total_qty" t-value="0"/>
                                 <t t-set="total_mw" t-value="0"/>
-                                <t t-set="total_subtotal" t-value="0"/>
-                                <t t-set="total_gst" t-value="0"/>
-                                <t t-set="grand_total" t-value="0"/>
 
                                 <t t-foreach="o.order_line" t-as="line">
                                     <t t-if="not line.display_type and not line.product_id.extra_charges">
@@ -297,13 +285,9 @@
                                             <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total - line.price_subtotal)"/></td>
                                             <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total)"/></td>
                                         </tr>
-
                                         <t t-set="line_no" t-value="line_no + 1"/>
                                         <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
                                         <t t-set="total_mw" t-value="total_mw + ((line.product_uom_qty * line.wattage) / 1000000)"/>
-                                        <t t-set="total_subtotal" t-value="total_subtotal + line.price_subtotal"/>
-                                        <t t-set="total_gst" t-value="total_gst + (line.price_total - line.price_subtotal)"/>
-                                        <t t-set="grand_total" t-value="grand_total + line.price_total"/>
                                     </t>
                                 </t>
 
@@ -311,27 +295,38 @@
                                     <td colspan="7" class="label-cell text-right">Total</td>
                                     <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
                                     <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(total_subtotal)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;"><span t-esc="o.tax_totals.get('formatted_amount_untaxed')"/></td>
                                     <td class="value-cell"></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(total_gst)"/></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(grand_total)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">
+                                        <t t-set="total_gst" t-value="o.amount_total - o.amount_untaxed"/>
+                                        ₹ <t t-esc="'{:,.2f}'.format(total_gst)"/>
+                                    </td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;"><span t-esc="o.tax_totals.get('formatted_amount_total')"/></td>
                                 </tr>
 
                                 <tr>
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(total_subtotal)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        <span t-esc="o.tax_totals.get('formatted_amount_untaxed')"/>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(total_gst/2)"/></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(total_gst/2)"/></td>
-                                </tr>
+
+                                <t t-foreach="o.tax_totals.get('groups_by_subtotal', {}).get('Untaxed Amount', [])" t-as="tax_group">
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                                            <span t-esc="tax_group['tax_group_name']"/>
+                                        </td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            <span t-esc="tax_group['formatted_tax_group_amount']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+
                                 <tr style="font-weight:bold;">
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(grand_total)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        <span t-esc="o.tax_totals.get('formatted_amount_total')"/>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -339,11 +334,10 @@
                             <tr>
                                 <td class="label-cell">Amount in Words :</td>
                                 <td colspan="11" class="value-cell">
-                                    <t t-esc="o.amount_to_text(grand_total, 'INR')"/> Only
+                                    <t t-esc="o.amount_to_text(o.tax_totals.get('amount_total', 0.0), 'INR')"/> Only
                                 </td>
                             </tr>
                         </table>
-
                         <!-- Bank Details -->
                         <style type="text/css">
                             .note-content p {
@@ -359,7 +353,7 @@
                                 </tr>
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right:1px solid #000; padding:4px;">Sr #</td>
-                                    <td class="label-cell" style="width:25%; border-right:1px solid #000; padding:4px;">Particulars</td>
+                                    <td class="label-cell" style="width:10%; border-right:1px solid #000; padding:4px;">Particulars</td>
                                     <td class="label-cell" style="width:30%; border-right:1px solid #000; padding:4px;">Details</td>
                                     
                                     <td class="value-cell" style="width:40%; border-left:1px solid #000; padding:4px; font-weight:bold;">
