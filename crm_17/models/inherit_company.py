@@ -23,6 +23,8 @@ class InheritCompany(models.Model):
     warehouse_address = fields.Text(string="Warehouse Address")
     export_bank = fields.Html(string="Bank details")
     export_terms = fields.Html(string="Terms/Conditions")
+    quotation_invoice_image = fields.Binary("Quotation Invoice Image")
+    quotation_image = fields.Binary("Quotation Image")
 
     def _convert_text_to_html(self, text):
         """Convert plain text to HTML by replacing newlines with <br/> tags."""

@@ -76,5 +76,16 @@
             </xpath>
         </field>
     </record>
+    <record id="view_company_form_custom" model="ir.ui.view">
+        <field name="name">res.company.form.inherit.images</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="arch" type="xml">
+        <xpath expr="//field[@name='sing']" position="after">
+            <field name="quotation_invoice_image" widget="image" class="oe_avatar" />
+            <field name="quotation_image" widget="image" class="oe_avatar" />
+        </xpath>
+        </field>
+    </record>
 
 </odoo>

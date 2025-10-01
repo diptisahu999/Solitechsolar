@@ -77,14 +77,13 @@
                             <!-- Row 1 -->
                             <tr>
                                 <!-- Column 1: Logo spanning 3 rows -->
-                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 5px;" rowspan="3">
-                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 60px;"/>
+                                                                 <!-- Column 1: Logo spanning 3 rows -->
+                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
+                                    <img t-if="o.company_id.quotation_invoice_image" 
+                                        t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                        style="max-height: 85px;"/>
                                 </td>
 
-                                <!-- Column 2: Company Name spanning 2 rows -->
-                                <td style="width: 55%; text-align: center; vertical-align: middle; background-color: #002060; color: white; font-weight: bold; font-size: 18px; padding: 8px;" rowspan="2">
-                                    <span t-esc="o.company_id.name"/>
-                                </td>
 
                                 <!-- Column 3: Document No -->
                                 <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
