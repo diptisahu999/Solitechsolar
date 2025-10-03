@@ -1,0 +1,258 @@
+.o_sales_dashboard {
+    background-color: #f8f9fa;
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        
+        h2 {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-group {
+            .btn {
+                color: white;
+                border-color: rgba(255, 255, 255, 0.5);
+                
+                &.active {
+                    background-color: rgba(255, 255, 255, 0.2);
+                    border-color: white;
+                }
+                
+                &:hover:not(.active) {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+        
+        .btn-primary {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: white;
+            
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+            }
+        }
+    }
+    
+    .kpi-card {
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        overflow: hidden;
+        
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+            
+            .progress-bar {
+                animation: progress-animation 1s ease-in-out;
+            }
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            i {
+                font-size: 1.25rem;
+            }
+        }
+        
+        h3, h4 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .display-6 {
+            font-size: 2.5rem;
+        }
+        
+        .progress {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, currentColor, currentColor);
+            opacity: 0.8;
+        }
+    }
+    
+    .card {
+        border-radius: 12px;
+        
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            background-color: transparent;
+            
+            h5 {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .btn-link {
+                color: #667eea;
+                text-decoration: none;
+                font-size: 0.875rem;
+                padding: 0.25rem 0.5rem;
+                
+                &:hover {
+                    color: #764ba2;
+                }
+            }
+        }
+    }
+    
+    // Table styling
+    .table {
+        margin-bottom: 0;
+        
+        thead th {
+            border-bottom: 2px solid #e9ecef;
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tbody {
+            tr {
+                transition: background-color 0.2s;
+                
+                &:hover {
+                    background-color: rgba(102, 126, 234, 0.05);
+                }
+            }
+            
+            td {
+                padding: 0.75rem;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1f3f5;
+            }
+        }
+        
+        .badge {
+            padding: 0.35em 0.65em;
+            font-weight: 500;
+        }
+    }
+    
+    // Chart container styling
+    canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+    
+    // Animation
+    @keyframes progress-animation {
+        0% {
+            width: 0;
+        }
+        100% {
+            width: 100%;
+        }
+    }
+    
+    // Gradient backgrounds for different metrics
+    .text-primary {
+        color: #667eea !important;
+    }
+    
+    .text-success {
+        color: #10b981 !important;
+    }
+    
+    .text-warning {
+        color: #f59e0b !important;
+    }
+    
+    .text-info {
+        color: #3b82f6 !important;
+    }
+    
+    .text-secondary {
+        color: #6b7280 !important;
+    }
+    
+    .bg-primary {
+        background-color: #667eea !important;
+    }
+    
+    .bg-success {
+        background-color: #10b981 !important;
+    }
+    
+    .bg-warning {
+        background-color: #f59e0b !important;
+    }
+    
+    .bg-info {
+        background-color: #3b82f6 !important;
+    }
+    
+    // Responsive adjustments
+    @media (max-width: 768px) {
+        .kpi-card {
+            .display-6 {
+                font-size: 2rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+        }
+        
+        .dashboard-header {
+            .btn-group {
+                width: 100%;
+                margin-top: 1rem;
+                
+                .btn {
+                    flex: 1;
+                }
+            }
+        }
+    }
+    
+    // Loading state
+    .fa-spinner {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+        
+        &:hover {
+            background: #555;
+        }
+    }
+}

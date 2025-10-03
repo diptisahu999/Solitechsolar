@@ -1,16 +1,31 @@
 {
-    'name': 'Proforma Invoicing (Non-Accounting)',
-    'version': '17.0.1.0',
-    'summary': 'Create and manage Proforma Invoices completely separate from the accounting module.',
-    'author': 'Your Name',
+    'name': 'Proforma Invoicing with Sales Dashboard',
+    'version': '17.0.2.0',
+    'summary': 'Comprehensive Sales Dashboard with Proforma Invoicing',
+    'author': 'Pratham',
     'category': 'Sales',
-    'depends': ['base', 'mail', 'product', 'sale_management', 'project'],
+    'depends': ['base', 'mail', 'product', 'sale_management', 'project', 'crm', 'web'],
     'data': [
-    'report/proforma_invoice.xml',
-    'views/proforma_invoice_views.xml',
-    'views/sale_order_views.xml',
-    'security/ir.model.access.csv',
+        'report/proforma_invoice.xml',
+        'data/sales_dashboard_data.xml',
+        'views/sales_dashboard_views.xml',
+        'views/proforma_invoice_views.xml',
+        'views/sale_order_views.xml',
+        'security/ir.model.access.csv',
     ],
+    'assets': {
+        'web.assets_backend': [
+            # Chart.js library
+            ('include', 'web._assets_helpers'),
+            'https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js',
+            
+            # Dashboard files
+            'proforma_invoice/static/src/components/dashboard/sales_dashboard.scss',
+            'proforma_invoice/static/src/components/dashboard/sales_dashboard.js',
+            'proforma_invoice/static/src/components/dashboard/sales_dashboard.xml',
+        ],
+    },
     'installable': True,
     'application': True,
+    'license': 'LGPL-3',
 }
