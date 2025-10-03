@@ -15,9 +15,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-            # Chart.js library
             ('include', 'web._assets_helpers'),
-            'https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js',
+            'proforma_invoice/static/lib/chartjs/chart.umd.min.js',
             
             # Dashboard files
             'proforma_invoice/static/src/components/dashboard/sales_dashboard.scss',
