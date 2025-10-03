@@ -127,7 +127,7 @@
                         <!-- KPI Cards Row 2 - Sales -->
                         <div class="row mb-4">
                             <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => openMyQuotations('draft')">
+                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('draft')">
                                     <div class="card-body text-center">
                                         <h4 class="display-6 fw-bold text-secondary">
                                             <t t-esc="state.dashboardData.my_draft_quotations_count"/>
@@ -138,7 +138,7 @@
                             </div>
 
                             <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => openMyQuotations('sent')">
+                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('sent')">
                                     <div class="card-body text-center">
                                         <h4 class="display-6 fw-bold text-info">
                                             <t t-esc="state.dashboardData.my_sent_quotations_count"/>
@@ -149,7 +149,7 @@
                             </div>
 
                             <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => openMyQuotations('confirmed')">
+                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('confirmed')">
                                     <div class="card-body text-center">
                                         <h4 class="display-6 fw-bold text-success">
                                             <t t-esc="state.dashboardData.my_confirmed_quotations_count"/>
@@ -171,7 +171,7 @@
                             </div>
 
                             <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => openMyProformas('draft')">
+                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyProformas('draft')">
                                     <div class="card-body text-center">
                                         <h4 class="display-6 fw-bold text-secondary">
                                             <t t-esc="state.dashboardData.my_draft_proformas_count"/>

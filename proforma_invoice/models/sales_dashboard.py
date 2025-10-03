@@ -271,7 +271,7 @@ class SalesDashboard(models.Model):
         
         return sorted(performance, key=lambda x: x['revenue'], reverse=True)
 
-    # Action methods
+    @api.model
     def action_open_my_leads(self):
         return {
             'name': 'My Leads',
@@ -280,7 +280,8 @@ class SalesDashboard(models.Model):
             'view_mode': 'tree,kanban,form',
             'domain': [('type', '=', 'lead'), ('user_id', '=', self.env.uid)]
         }
-    
+
+    @api.model
     def action_open_my_opportunities(self):
         return {
             'name': 'My Opportunities',
@@ -290,12 +291,57 @@ class SalesDashboard(models.Model):
             'domain': [('type', '=', 'opportunity'), ('user_id', '=', self.env.uid)]
         }
 
-    def action_open_my_quotations(self):
-        action = self.env['ir.actions.act_window']._for_xml_id('sale.action_quotations_with_onboarding')
-        action['domain'] = [('user_id', '=', self.env.uid)]
+    @api.model
+    def action_open_my_quotations(self, state=None):
+        # Prefer existing quotation action; fallback to a generic action dict
+        try:
+            action = self.env.ref('sale.action_quotations_with_onboarding').read()[0]
+        except Exception:
+            # fallback to standard sale quotations action
+            action = self.env.ref('sale.action_quotations').read()[0]
+
+        domain = [('user_id', '=', self.env.uid)]
+        if state == 'draft':
+            domain.append(('state', '=', 'draft'))
+            action['name'] = 'My Draft Quotations'
+        elif state == 'sent':
+            domain.append(('state', '=', 'sent'))
+            action['name'] = 'My Sent Quotations'
+        elif state == 'confirmed':
+            domain.append(('state', 'in', ['sale', 'done']))
+            action['name'] = 'My Confirmed Quotations'
+        else:
+            action['name'] = 'My Quotations'
+
+        action['domain'] = domain
         return action
-        
-    def action_open_my_proformas(self):
-        action = self.env['ir.actions.act_window']._for_xml_id('proforma_invoice.action_proforma_invoice')
-        action['domain'] = [('user_id', '=', self.env.uid)]
+
+    @api.model
+    def action_open_my_proformas(self, state=None):
+        # Try to return the module's proforma action if present, else build a minimal action
+        try:
+            action = self.env.ref('proforma_invoice.action_proforma_invoice').read()[0]
+        except Exception:
+            action = {
+                'name': 'My Proforma Invoices',
+                'type': 'ir.actions.act_window',
+                'res_model': 'proforma.invoice',
+                'view_mode': 'tree,form',
+                'domain': [('user_id', '=', self.env.uid)]
+            }
+
+        domain = [('user_id', '=', self.env.uid)]
+        if state == 'draft':
+            domain.append(('state', '=', 'draft'))
+            action['name'] = 'My Draft Proformas'
+        elif state == 'sent':
+            domain.append(('state', '=', 'sent'))
+            action['name'] = 'My Sent Proformas'
+        elif state == 'posted':
+            domain.append(('state', '=', 'posted'))
+            action['name'] = 'My Confirmed Proformas'
+        else:
+            action['name'] = action.get('name', 'My Proforma Invoices')
+
+        action['domain'] = domain
         return action

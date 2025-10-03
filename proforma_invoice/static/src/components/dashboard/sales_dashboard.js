@@ -1,5 +1,6 @@
 /** @odoo-module **/
 
+
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, onMounted, useState, useRef } from "@odoo/owl";
@@ -9,9 +10,9 @@ class SalesDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.user = useService("user");
+        this.user = useService("user"); // <-- use this.user.id (not userId)
 
-        // Chart refs
+        // Chart refs...
         this.monthlySalesChartRef = useRef("monthlySalesChart");
         this.leadConversionChartRef = useRef("leadConversionChart");
         this.productSalesChartRef = useRef("productSalesChart");
@@ -308,95 +309,133 @@ class SalesDashboard extends Component {
         this.state.showTeamView = !this.state.showTeamView;
     }
 
-    // Navigation actions (no changes needed here)
-    openMyLeads() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: _t('My Leads'),
-            res_model: 'crm.lead',
-            views: [[false, 'tree'], [false, 'kanban'], [false, 'form']],
-            domain: [['type', '=', 'lead'], ['user_id', '=', this.user.userId]],
-        });
-    }
-
-    openMyOpportunities() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: _t('My Opportunities'),
-            res_model: 'crm.lead',
-            views: [[false, 'kanban'], [false, 'tree'], [false, 'form']],
-            domain: [['type', '=', 'opportunity'], ['user_id', '=', this.user.userId]],
-        });
-    }
-
-    openMyQuotations(state = null) {
-        let domain = [['user_id', '=', this.user.userId]];
-        let name = _t('My Quotations');
-        
-        if (state === 'draft') {
-            domain.push(['state', '=', 'draft']);
-            name = _t('My Draft Quotations');
-        } else if (state === 'sent') {
-            domain.push(['state', '=', 'sent']);
-            name = _t('My Sent Quotations');
-        } else if (state === 'confirmed') {
-            domain.push(['state', 'in', ['sale', 'done']]);
-            name = _t('My Confirmed Quotations');
+    _normalizeAction(action) {
+        if (!action || typeof action !== 'object') {
+            return null;
         }
-        
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: name,
-            res_model: 'sale.order',
-            views: [[false, 'tree'], [false, 'form'], [false, 'kanban']],
-            domain: domain,
-        });
+
+        action.type = action.type || 'ir.actions.act_window';
+
+        if (!Array.isArray(action.domain)) {
+            if (typeof action.domain === 'string') {
+                try {
+                    action.domain = JSON.parse(action.domain);
+                } catch (e) {
+                    action.domain = action.domain ? [action.domain] : [];
+                }
+            } else {
+                action.domain = action.domain || [];
+            }
+        }
+
+        if (action.context && typeof action.context === 'string') {
+            try {
+                action.context = JSON.parse(action.context);
+            } catch (e) {
+                action.context = {};
+            }
+        } else {
+            action.context = action.context || {};
+        }
+
+        if (action.views === undefined || action.views === null) {
+            if (action.view_mode && typeof action.view_mode === 'string') {
+                action.views = action.view_mode.split(',')
+                    .map(v => v.trim())
+                    .filter(Boolean)
+                    .map(v => [false, v]);
+            } else if (Array.isArray(action.view_mode)) {
+                action.views = action.view_mode.map(v => [false, v]);
+            } else if (Array.isArray(action.views)) {
+            } else {
+                action.views = [[false, 'tree'], [false, 'form'], [false, 'kanban']];
+            }
+        }
+
+        if (!Array.isArray(action.views) && action.view_id) {
+            action.views = [[action.view_id.id || action.view_id, action.view_type || 'form']];
+        }
+
+        return action;
     }
 
-    openMyProformas(state = null) {
-        let domain = [['user_id', '=', this.user.userId]];
-        let name = _t('My Proforma Invoices');
-        
-        if (state === 'draft') {
-            domain.push(['state', '=', 'draft']);
-            name = _t('My Draft Proformas');
-        } else if (state === 'sent') {
-            domain.push(['state', '=', 'sent']);
-            name = _t('My Sent Proformas');
-        } else if (state === 'posted') {
-            domain.push(['state', '=', 'posted']);
-            name = _t('My Confirmed Proformas');
+    async openMyLeads() {
+        try {
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_leads', []);
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+            else console.error("openMyLeads: invalid action", action);
+        } catch (err) {
+            console.error("openMyLeads error:", err);
         }
-        
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: name,
-            res_model: 'proforma.invoice',
-            views: [[false, 'tree'], [false, 'form']],
-            domain: domain,
-        });
+    }
+
+    async openMyOpportunities() {
+        try {
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_opportunities', []);
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+            else console.error("openMyOpportunities: invalid action", action);
+        } catch (err) {
+            console.error("openMyOpportunities error:", err);
+        }
+    }
+
+    async openMyQuotations(state = null) {
+        try {
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_quotations', [state]);
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+            else console.error("openMyQuotations: invalid action", action);
+        } catch (err) {
+            console.error("openMyQuotations error:", err);
+        }
+    }
+
+    async openMyProformas(state = null) {
+        try {
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_proformas', [state]);
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+            else console.error("openMyProformas: invalid action", action);
+        } catch (err) {
+            console.error("openMyProformas error:", err);
+        }
     }
 
     openTopCustomers() {
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: _t('Top Customers'),
-            res_model: 'res.partner',
-            views: [[false, 'tree'], [false, 'form']],
-            domain: [['customer_rank', '>', 0]],
-        });
+        try {
+            let action = {
+                type: 'ir.actions.act_window',
+                name: _t('Top Customers'),
+                res_model: 'res.partner',
+                views: [[false, 'tree'], [false, 'form']],
+                domain: [['customer_rank', '>', 0]],
+            };
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+        } catch (err) {
+            console.error("openTopCustomers error:", err);
+        }
     }
 
     openTeamPipeline() {
-        const team_member_ids = this.state.dashboardData.team_performance.map(m => m.id);
-        this.action.doAction({
-            type: 'ir.actions.act_window',
-            name: _t('Team Pipeline'),
-            res_model: 'crm.lead',
-            views: [[false, 'kanban'], [false, 'tree'], [false, 'form']],
-            domain: [['user_id', 'in', team_member_ids], ['type', '=', 'opportunity']],
-        });
+        try {
+            const team_member_ids = this.state.dashboardData.team_performance.map(m => m.id);
+            let action = {
+                type: 'ir.actions.act_window',
+                name: _t('Team Pipeline'),
+                res_model: 'crm.lead',
+                views: [[false, 'kanban'], [false, 'tree'], [false, 'form']],
+                domain: [['user_id', 'in', team_member_ids], ['type', '=', 'opportunity']],
+            };
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+        } catch (err) {
+            console.error("openTeamPipeline error:", err);
+        }
     }
+
 }
 
 SalesDashboard.template = "proforma_invoice.SalesDashboard";
