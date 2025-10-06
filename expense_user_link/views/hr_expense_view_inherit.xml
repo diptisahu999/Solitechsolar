@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="hr_expense_view_form_inherit_user_proxy_fixed" model="ir.ui.view">
+      <field name="name">hr.expense.form.inherit.paid_by_fixed</field>
+      <field name="model">hr.expense</field>
+      <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+      <field name="arch" type="xml">
+
+        <!-- keep employee hidden -->
+        <xpath expr="//field[@name='employee_id']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+
+        <!-- Insert paid_by_user_id after employee_id and use modifiers instead of attrs -->
+        <xpath expr="//field[@name='employee_id']" position="after">
+          <field name="paid_by_user_id" force_save="1" required="1">
+            <!-- modifiers must be a JSON-like string; readonly when is_current_user_approver is False -->
+            <attribute name="modifiers">{'readonly': [('is_current_user_approver','=',False)]}</attribute>
+            <!-- keep the same picker options -->
+            <attribute name="options">{'no_open': True, 'no_create': True}</attribute>
+          </field>
+          <field name="is_current_user_approver" invisible="1"/>
+        </xpath>
+
+      </field>
+    </record>
+  </data>
+</odoo>
