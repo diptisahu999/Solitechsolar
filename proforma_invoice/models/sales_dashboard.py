@@ -181,26 +181,114 @@ class SalesDashboard(models.Model):
         )
         return [{'name': p['product_id'][1], 'revenue': p['price_subtotal']} for p in product_data]
     
+    def _get_team_overview_data(self, member_ids):
+        """Calculates high-level aggregated stats for the team."""
+        if not member_ids:
+            return {}
+
+        # Team Pipeline
+        leads_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'lead'), ('stage_id.is_won', '=', False)])
+        opportunities_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', True), ('stage_id.is_won', '=', False)])
+        pipeline_data = self.env['crm.lead'].read_group([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', True), ('stage_id.is_won', '=', False)], ['expected_revenue:sum'], [], lazy=False)
+        
+        # Team Win Rate
+        won_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('stage_id.is_won', '=', True)])
+        lost_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', False), ('stage_id.is_won', '=', False)])
+        total_closed = won_count + lost_count
+        win_rate = (won_count / total_closed * 100) if total_closed > 0 else 0
+
+        # Team Revenue
+        revenue_data = self.env['sale.order'].read_group([('user_id', 'in', member_ids), ('state', 'in', ['sale', 'done']), ('opportunity_id', '!=', False)], ['amount_total:sum'], [], lazy=False)
+        
+        return {
+            'leads_count': leads_count,
+            'opportunities_count': opportunities_count,
+            'pipeline_revenue': pipeline_data[0]['expected_revenue'] if pipeline_data and pipeline_data[0]['expected_revenue'] else 0,
+            'win_rate': f"{win_rate:.1f}%",
+            'total_revenue': revenue_data[0]['amount_total'] if revenue_data and revenue_data[0]['amount_total'] else 0,
+        }
+
+    def _get_team_sales_over_time_data(self, member_ids):
+        """Gets aggregated team sales data for the last 12 months."""
+        if not member_ids:
+            return []
+            
+        today = fields.Date.today()
+        date_from = today - relativedelta(months=11, day=1)
+        
+        sales_data = self.env['sale.order'].read_group(
+            domain=[
+                ('user_id', 'in', member_ids),
+                ('state', 'in', ['sale', 'done']),
+                ('opportunity_id', '!=', False),
+                ('date_order', '>=', date_from),
+            ],
+            fields=['amount_total'],
+            groupby=['date_order:month'],
+            orderby='date_order:month'
+        )
+        month_map = {item['date_order:month']: item['amount_total'] for item in sales_data}
+        data = []
+        for i in range(11, -1, -1):
+            current_month_start = today - relativedelta(months=i, day=1)
+            month_key = current_month_start.strftime('%B %Y')
+            data.append({
+                'month': current_month_start.strftime('%b %Y'),
+                'revenue': month_map.get(month_key, 0),
+            })
+        return data
+
+    def _get_team_member_performance_data(self, member_ids):
+        """Gets revenue breakdown by team member."""
+        if not member_ids:
+            return []
+            
+        performance_data = self.env['sale.order'].read_group(
+            domain=[
+                ('user_id', 'in', member_ids),
+                ('state', 'in', ['sale', 'done']),
+                ('opportunity_id', '!=', False),
+            ],
+            fields=['amount_total'],
+            groupby=['user_id'],
+            orderby='amount_total desc',
+            lazy=False
+        )
+        return [{'name': perf['user_id'][1], 'revenue': perf['amount_total']} for perf in performance_data]
+    
     @api.model
     def get_dashboard_data(self):
         """ The main controller method that calls helpers and assembles the data. """
         uid = self.env.uid
         is_sales_manager = self.env.user.has_group('sales_team.group_sale_manager')
-        
+
         pipeline_overview = self._get_pipeline_overview_data(uid)
         opportunity_analysis = self._get_opportunity_analysis_data(uid)
-
         quotation_analysis = self._get_quotation_analysis_data(uid)
         proforma_analysis = self._get_proforma_analysis_data(uid)
+
         quotation_analysis['sales_over_time'] = self._get_sales_over_time_data(uid)
         quotation_analysis['sales_by_category'] = self._get_sales_by_category_data(uid)
         quotation_analysis['top_products'] = self._get_top_products_data(uid)
+
+        team_analysis = {}
+        if is_sales_manager:
+            team = self.env['crm.team'].search([('user_id', '=', uid)], limit=1)
+            if team:
+                member_ids = team.member_ids.ids + [team.user_id.id]
+                team_analysis = {
+                    'overview': self._get_team_overview_data(member_ids),
+                    'sales_over_time': self._get_team_sales_over_time_data(member_ids),
+                    'member_performance': self._get_team_member_performance_data(member_ids),
+                }
 
         return {
             'pipeline_overview': pipeline_overview,
             'opportunity_analysis': opportunity_analysis,
             'quotation_analysis': quotation_analysis,
             'proforma_analysis': proforma_analysis,
+            
+            'team_analysis': team_analysis, 
             
             'is_sales_manager': is_sales_manager,
             'currency_id': self.env.company.currency_id.id,

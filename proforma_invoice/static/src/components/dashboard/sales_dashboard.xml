@@ -159,7 +159,41 @@
                             </div>
                         </t>
 
-                        <t t-if="state.activeTab === 'team'"><p class="text-muted">Team performance metrics will be added here.</p></t>
+                        <t t-if="state.activeTab === 'team'">
+                            <t t-if="state.dashboardData.team_analysis and state.dashboardData.team_analysis.overview">
+                                <div class="row mb-4">
+                                    <div class="col-lg col-6 mb-4">
+                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Leads</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.leads_count"/></h3></div></div>
+                                    </div>
+                                    <div class="col-lg col-6 mb-4">
+                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Opportunities</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.opportunities_count"/></h3></div></div>
+                                    </div>
+                                    <div class="col-lg col-6 mb-4">
+                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Pipeline Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.team_analysis.overview.pipeline_revenue)"/></h3></div></div>
+                                    </div>
+                                    <div class="col-lg col-6 mb-4">
+                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.team_analysis.overview.total_revenue)"/></h3></div></div>
+                                    </div>
+                                    <div class="col-lg col-6 mb-4">
+                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Win Rate</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.win_rate"/></h3></div></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-8 mb-4">
+                                        <div class="card h-100"><div class="card-header">Team's 12-Month Sales Trend</div><div class="card-body"><div style="height: 350px;"><canvas t-ref="teamSalesTrendChart"/></div></div></div>
+                                    </div>
+                                    <div class="col-lg-4 mb-4">
+                                        <div class="card h-100"><div class="card-header">Revenue Contribution by Member</div><div class="card-body"><div style="height: 350px;"><canvas t-ref="teamMemberPerformanceChart"/></div></div></div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fa fa-info-circle me-2"/>
+                                    Team performance data could not be loaded. To view this tab, please ensure you are set as the "Team Leader" of a Sales Team in the CRM app.
+                                </div>
+                            </t>
+                        </t>
                     </div>
                 </div>
             </div>

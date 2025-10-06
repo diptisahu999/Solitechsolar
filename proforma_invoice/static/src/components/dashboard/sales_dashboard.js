@@ -17,6 +17,8 @@ class SalesDashboard extends Component {
         this.pipelineValueByStageChartRef = useRef("pipelineValueByStageChart");
         this.salesOverTimeChartRef = useRef("salesOverTimeChart"); 
         this.salesByCategoryChartRef = useRef("salesByCategoryChart");
+        this.teamSalesTrendChartRef = useRef("teamSalesTrendChart"); // NEW
+        this.teamMemberPerformanceChartRef = useRef("teamMemberPerformanceChart");
         
         this.state = useState({
             dashboardData: {},
@@ -68,8 +70,12 @@ class SalesDashboard extends Component {
         } else if (this.state.activeTab === 'quotations' && this.state.dashboardData.quotation_analysis) {
             this.renderSalesOverTimeChart();
             this.renderSalesByCategoryChart();
+        } else if (this.state.activeTab === 'team' && this.state.dashboardData.is_sales_manager) {
+            this.renderTeamSalesTrendChart();
+            this.renderTeamMemberPerformanceChart();
         }
     }
+
 
     renderOppsByStageChart() {
         const canvas = this.oppsByStageChartRef.el;
@@ -184,6 +190,55 @@ class SalesDashboard extends Component {
         });
     }
 
+    renderTeamSalesTrendChart() {
+        const canvas = this.teamSalesTrendChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.team_analysis.sales_over_time || [];
+        const ctx = canvas.getContext('2d');
+        this.charts.teamSalesTrend = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.month),
+                datasets: [{
+                    label: 'Team Sales Revenue',
+                    data: data.map(d => d.revenue),
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { callback: (value) => this.formatCurrency(value) } } }
+            }
+        });
+    }
+
+    renderTeamMemberPerformanceChart() {
+        const canvas = this.teamMemberPerformanceChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.team_analysis.member_performance || [];
+        const ctx = canvas.getContext('2d');
+        this.charts.teamMemberPerformance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    label: 'Revenue',
+                    data: data.map(d => d.revenue),
+                    backgroundColor: ['#4c51bf', '#667eea', '#3b82f6', '#f59e0b', '#10b981', '#6b7280'],
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { callback: (value) => this.formatCurrency(value) } } }
+            }
+        });
+    }
+    
     formatCurrency(value) {
         if (value === undefined || value === null) return (this.state.dashboardData.currency_symbol || '$') + '0';
         const formatter = new Intl.NumberFormat(this.user.lang.replace('_', '-'), {
