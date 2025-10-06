@@ -20,11 +20,10 @@ class SaleOrder(models.Model):
         self.ensure_one()
         proforma_lines = []
         for line in self.order_line:
-            # Skip sections and notes
             if line.display_type:
                 continue
             proforma_lines.append((0, 0, {
-                'sale_line_id': line.id,  # <-- ADD THIS
+                'sale_line_id': line.id,  
                 'product_id': line.product_id.id,
                 'name': line.name,
                 'quantity': line.product_uom_qty,
@@ -34,7 +33,8 @@ class SaleOrder(models.Model):
             }))
 
         proforma = self.env['proforma.invoice'].create({
-            'sale_order_id': self.id,  # <-- ADD THIS
+            'sale_order_id': self.id,  
+            'opportunity_id': self.opportunity_id.id,
             'partner_id': self.partner_invoice_id.id,
             'partner_shipping_id': self.partner_shipping_id.id,
             'user_id': self.user_id.id,

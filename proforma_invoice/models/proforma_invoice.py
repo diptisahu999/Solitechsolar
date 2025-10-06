@@ -56,6 +56,13 @@ class ProformaInvoice(models.Model):
 
     narration = fields.Html(string="Terms and Conditions")
     sale_order_id = fields.Many2one('sale.order', string='Source Sale Order', readonly=True, copy=False)
+    opportunity_id = fields.Many2one(
+        'crm.lead',
+        string='Opportunity',
+        help="The CRM opportunity related to this proforma invoice.",
+        domain="[('type', '=', 'opportunity')]",
+        copy=False
+    )
 
     def amount_to_text(self, amount, currency='INR'):
         """

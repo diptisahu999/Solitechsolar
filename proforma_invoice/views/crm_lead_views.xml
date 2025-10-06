@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="crm_lead_view_form_proforma_button" model="ir.ui.view">
+            <field name="name">crm.lead.form.proforma.button</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button"
+                            invisible="proforma_invoice_count == 0"
+                            type="object"
+                            name="action_view_proforma_invoices"
+                            icon="fa-file-text-o">
+                        <field name="proforma_invoice_count" widget="statinfo" string="Proformas"/>
+                    </button>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

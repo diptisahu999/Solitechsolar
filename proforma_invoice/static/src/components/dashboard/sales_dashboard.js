@@ -1,49 +1,43 @@
 /** @odoo-module **/
 
-
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, onWillStart, onMounted, useState, useRef } from "@odoo/owl";
+import { Component, onWillStart, onMounted, useState, useRef, onPatched } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 
 class SalesDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.user = useService("user"); // <-- use this.user.id (not userId)
+        this.user = useService("user");
+        this.charts = {};
 
-        // Chart refs...
-        this.monthlySalesChartRef = useRef("monthlySalesChart");
-        this.leadConversionChartRef = useRef("leadConversionChart");
-        this.productSalesChartRef = useRef("productSalesChart");
-        this.teamPerformanceChartRef = useRef("teamPerformanceChart");
+        this.oppsByStageChartRef = useRef("oppsByStageChart");
+        this.oppsBySourceChartRef = useRef("oppsBySourceChart");
+        this.pipelineValueByStageChartRef = useRef("pipelineValueByStageChart");
+        this.salesOverTimeChartRef = useRef("salesOverTimeChart"); 
+        this.salesByCategoryChartRef = useRef("salesByCategoryChart");
         
         this.state = useState({
             dashboardData: {},
             isLoading: true,
-            selectedPeriod: 'month', // month, quarter, year
-            showTeamView: false,
+            activeTab: 'overview',
         });
-
-        this.charts = {};
 
         onWillStart(async () => {
             await this.loadDashboardData();
         });
 
-        onMounted(() => {
+         onPatched(() => {
+            this.destroyCharts();
             this.renderCharts();
         });
     }
 
     async loadDashboardData() {
+        this.state.isLoading = true;
         try {
-            this.state.isLoading = true;
-            this.state.dashboardData = await this.orm.call(
-                "sales.dashboard",
-                "get_dashboard_data",
-                []
-            );
+            this.state.dashboardData = await this.orm.call("sales.dashboard", "get_dashboard_data", []);
         } catch (error) {
             console.error("Error loading dashboard data:", error);
         } finally {
@@ -52,9 +46,9 @@ class SalesDashboard extends Component {
     }
 
     async refreshDashboard() {
-        await this.loadDashboardData();
         this.destroyCharts();
-        this.renderCharts();
+        await this.loadDashboardData();
+        // The onPatched hook will automatically call renderCharts after data is loaded and state is set
     }
 
     destroyCharts() {
@@ -65,227 +59,125 @@ class SalesDashboard extends Component {
     }
 
     renderCharts() {
-        if (this.state.isLoading || !this.state.dashboardData.monthly_sales) return;
+        if (this.state.isLoading || !this.state.dashboardData) return;
         
-        this.renderMonthlySalesChart();
-        this.renderLeadConversionChart();
-        this.renderProductSalesChart();
-        if (this.state.dashboardData.is_sales_manager) {
-            this.renderTeamPerformanceChart();
+        if (this.state.activeTab === 'opportunities' && this.state.dashboardData.opportunity_analysis) {
+            this.renderOppsByStageChart();
+            this.renderOppsBySourceChart();
+            this.renderPipelineValueByStageChart();
+        } else if (this.state.activeTab === 'quotations' && this.state.dashboardData.quotation_analysis) {
+            this.renderSalesOverTimeChart();
+            this.renderSalesByCategoryChart();
         }
     }
 
-    // Helper for number formatting to avoid repetition
-    getCurrencyFormat() {
-        return new Intl.NumberFormat(this.user.lang.replace('_', '-'), {
-            style: 'currency',
-            currency: this.state.dashboardData.currency_code || 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
+    renderOppsByStageChart() {
+        const canvas = this.oppsByStageChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.opportunity_analysis.by_stage_count || [];
+        const ctx = canvas.getContext('2d');
+        this.charts.oppsByStage = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: data.map(d => d.name), datasets: [{ data: data.map(d => d.count), backgroundColor: ['rgba(76, 81, 191, 0.8)', 'rgba(102, 126, 234, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(245, 159, 11, 0.8)'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     }
 
-    renderMonthlySalesChart() {
-        const canvas = this.monthlySalesChartRef.el;
+    renderOppsBySourceChart() {
+        const canvas = this.oppsBySourceChartRef.el;
         if (!canvas) return;
-        
+        const data = this.state.dashboardData.opportunity_analysis.by_source || [];
         const ctx = canvas.getContext('2d');
-        const data = this.state.dashboardData.monthly_sales;
-        
-        this.charts.monthlySales = new Chart(ctx, {
+        this.charts.oppsBySource = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: data.map(d => d.name), datasets: [{ data: data.map(d => d.count), backgroundColor: ['rgba(76, 81, 191, 0.8)', 'rgba(102, 126, 234, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(245, 159, 11, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(107, 114, 128, 0.8)'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+        });
+    }
+
+    renderPipelineValueByStageChart() {
+        const canvas = this.pipelineValueByStageChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.opportunity_analysis.by_stage_value || [];
+        const ctx = canvas.getContext('2d');
+        this.charts.pipelineValue = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.name),
+                datasets: [{
+                    label: 'Pipeline Value',
+                    data: data.map(d => d.value),
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                }]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => this.formatCurrency(value)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderSalesOverTimeChart() {
+        const canvas = this.salesOverTimeChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.quotation_analysis.sales_over_time || [];
+        const ctx = canvas.getContext('2d');
+        this.charts.salesOverTime = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.map(d => d.month),
                 datasets: [{
-                    label: 'Revenue',
+                    label: 'Sales Revenue',
                     data: data.map(d => d.revenue),
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Orders',
-                    data: data.map(d => d.count),
-                    borderColor: 'rgb(34, 197, 94)',
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                    tension: 0.4,
-                    fill: false,
-                    yAxisID: 'y1',
-                    hidden: true
+                    borderColor: 'rgba(76, 81, 191, 1)',
+                    backgroundColor: 'rgba(76, 81, 191, 0.1)',
+                    fill: true,
+                    tension: 0.3,
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { display: true, position: 'top' },
-                    tooltip: {
-                        callbacks: {
-                            // FIX: Changed to arrow function to preserve 'this' context
-                            label: (context) => {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-
-                                if (context.dataset.yAxisID === 'y1') {
-                                    label += context.parsed.y; // For count
-                                } else {
-                                    label += this.getCurrencyFormat().format(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        ticks: {
-                             // FIX: Changed to arrow function to preserve 'this' context
-                            callback: (value) => this.getCurrencyFormat().format(value)
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        ticks: { beginAtZero: true }
-                    }
-                }
-            }
-        });
-    }
-
-    renderLeadConversionChart() {
-        const canvas = this.leadConversionChartRef.el;
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = this.state.dashboardData.lead_conversion;
-        
-        this.charts.leadConversion = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Leads', 'Opportunities', 'Quotations', 'Won'],
-                datasets: [{
-                    label: 'Sales Funnel',
-                    data: [data.leads, data.opportunities, data.quotations, data.won],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)', 'rgba(168, 85, 247, 0.8)',
-                        'rgba(236, 72, 153, 0.8)', 'rgba(34, 197, 94, 0.8)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                scales: { y: { beginAtZero: true, ticks: { callback: (value) => this.formatCurrency(value) } } }
             }
         });
     }
 
-    renderProductSalesChart() {
-        const canvas = this.productSalesChartRef.el;
-        if (!canvas || !this.state.dashboardData.sales_by_product.length) return;
-        
+    renderSalesByCategoryChart() {
+        const canvas = this.salesByCategoryChartRef.el;
+        if (!canvas) return;
+        const data = this.state.dashboardData.quotation_analysis.sales_by_category || [];
         const ctx = canvas.getContext('2d');
-        const data = this.state.dashboardData.sales_by_product;
-        const sortedData = [...data].sort((a, b) => b.revenue - a.revenue).slice(0, 5);
-        
-        this.charts.productSales = new Chart(ctx, {
-            type: 'doughnut',
+        this.charts.salesByCategory = new Chart(ctx, {
+            type: 'pie',
             data: {
-                labels: sortedData.map(d => d.name),
+                labels: data.map(d => d.name),
                 datasets: [{
-                    data: sortedData.map(d => d.revenue),
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)', 'rgba(168, 85, 247, 0.8)',
-                        'rgba(236, 72, 153, 0.8)', 'rgba(251, 146, 60, 0.8)',
-                        'rgba(34, 197, 94, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
+                    data: data.map(d => d.revenue),
+                    backgroundColor: ['#4c51bf', '#667eea', '#3b82f6', '#f59e0b', '#10b981', '#6b7280', '#ef4444', '#ec4899'],
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { 
                     legend: { position: 'right' },
                     tooltip: {
                         callbacks: {
-                             // FIX: Changed to arrow function to preserve 'this' context
                             label: (context) => {
                                 const label = context.label || '';
-                                const value = this.getCurrencyFormat().format(context.parsed);
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                                return `${label}: ${value} (${percentage}%)`;
+                                const value = this.formatCurrency(context.parsed);
+                                return ` ${label}: ${value}`;
                             }
                         }
-                    }
-                }
-            }
-        });
-    }
-
-    renderTeamPerformanceChart() {
-        const canvas = this.teamPerformanceChartRef.el;
-        if (!canvas || !this.state.dashboardData.team_performance.length) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = this.state.dashboardData.team_performance.slice(0, 10);
-        
-        this.charts.teamPerformance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.name.split(' ')[0]),
-                datasets: [{
-                    label: 'Revenue',
-                    data: data.map(d => d.revenue),
-                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                    borderWidth: 0,
-                    yAxisID: 'y',
-                }, {
-                    label: 'Deals',
-                    data: data.map(d => d.deals_closed),
-                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                    borderWidth: 0,
-                    yAxisID: 'y1',
-                    hidden: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: true, position: 'top' },
-                    tooltip: {
-                        callbacks: {
-                            afterLabel: (context) => `Pipeline: ${data[context.dataIndex].pipeline} opportunities`
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        ticks: {
-                            // FIX: Changed to arrow function to preserve 'this' context
-                            callback: (value) => this.getCurrencyFormat().format(value)
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: false,
-                        position: 'right',
-                        grid: { drawOnChartArea: false }
                     }
                 }
             }
@@ -293,29 +185,23 @@ class SalesDashboard extends Component {
     }
 
     formatCurrency(value) {
-        if (value === undefined || value === null) return this.state.dashboardData.currency_symbol + '0';
-        
+        if (value === undefined || value === null) return (this.state.dashboardData.currency_symbol || '$') + '0';
+        const formatter = new Intl.NumberFormat(this.user.lang.replace('_', '-'), {
+            style: 'currency', currency: this.state.dashboardData.currency_code || 'USD',
+            minimumFractionDigits: 0, maximumFractionDigits: 0,
+        });
         const absValue = Math.abs(value);
-        if (absValue >= 1000000) {
-            return (Math.sign(value) * (absValue / 1000000)).toFixed(1) + 'M';
-        }
-        if (absValue >= 1000) {
-            return (Math.sign(value) * (absValue / 1000)).toFixed(1) + 'K';
-        }
-        return this.getCurrencyFormat().format(value);
+        if (absValue >= 1000000) return (this.state.dashboardData.currency_symbol || '$') + (Math.sign(value) * (absValue / 1000000)).toFixed(1) + 'M';
+        if (absValue >= 1000) return (this.state.dashboardData.currency_symbol || '$') + (Math.sign(value) * (absValue / 1000)).toFixed(1) + 'K';
+        return formatter.format(value);
     }
 
-    toggleTeamView() {
-        this.state.showTeamView = !this.state.showTeamView;
-    }
-
+    // --- YOUR EXISTING NAVIGATION LOGIC (UNCHANGED) ---
     _normalizeAction(action) {
         if (!action || typeof action !== 'object') {
             return null;
         }
-
         action.type = action.type || 'ir.actions.act_window';
-
         if (!Array.isArray(action.domain)) {
             if (typeof action.domain === 'string') {
                 try {
@@ -327,7 +213,6 @@ class SalesDashboard extends Component {
                 action.domain = action.domain || [];
             }
         }
-
         if (action.context && typeof action.context === 'string') {
             try {
                 action.context = JSON.parse(action.context);
@@ -337,7 +222,6 @@ class SalesDashboard extends Component {
         } else {
             action.context = action.context || {};
         }
-
         if (action.views === undefined || action.views === null) {
             if (action.view_mode && typeof action.view_mode === 'string') {
                 action.views = action.view_mode.split(',')
@@ -351,11 +235,9 @@ class SalesDashboard extends Component {
                 action.views = [[false, 'tree'], [false, 'form'], [false, 'kanban']];
             }
         }
-
         if (!Array.isArray(action.views) && action.view_id) {
             action.views = [[action.view_id.id || action.view_id, action.view_type || 'form']];
         }
-
         return action;
     }
 
@@ -435,7 +317,6 @@ class SalesDashboard extends Component {
             console.error("openTeamPipeline error:", err);
         }
     }
-
 }
 
 SalesDashboard.template = "proforma_invoice.SalesDashboard";

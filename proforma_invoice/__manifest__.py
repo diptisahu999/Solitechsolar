@@ -10,6 +10,7 @@
         'data/sales_dashboard_data.xml',
         'views/sales_dashboard_views.xml',
         'views/proforma_invoice_views.xml',
+        'views/crm_lead_views.xml', 
         'views/sale_order_views.xml',
         'security/ir.model.access.csv',
     ],

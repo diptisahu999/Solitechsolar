@@ -2,294 +2,164 @@
 <templates xml:space="preserve">
     <t t-name="proforma_invoice.SalesDashboard" owl="1">
         <div class="o_sales_dashboard h-100 d-flex flex-column">
-            <!-- Header -->
-            <div class="dashboard-header bg-white border-bottom px-4 py-3">
-                <div class="row align-items-center">
-                    <div class="col-auto">
-                        <h2 class="mb-0">Sales Dashboard</h2>
-                    </div>
-                    <div class="col">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button class="btn btn-outline-primary" t-att-class="{'active': !state.showTeamView}" t-on-click="() => state.showTeamView = false">
-                                My Performance
-                            </button>
-                            <button t-if="state.dashboardData.is_sales_manager" class="btn btn-outline-primary" t-att-class="{'active': state.showTeamView}" t-on-click="() => state.showTeamView = true">
-                                Team Performance
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-sm btn-primary" t-on-click="refreshDashboard">
-                            <i class="fa fa-refresh me-1"/>Refresh
-                        </button>
-                    </div>
+            <div class="dashboard-header text-white px-4 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0 text-white">Sales Dashboard</h2>
+                    <button class="btn btn-sm btn-light-refresh" t-on-click="refreshDashboard">
+                        <i class="fa fa-refresh me-1"/>Refresh
+                    </button>
                 </div>
             </div>
 
-            <!-- Main Content -->
             <div class="flex-grow-1 overflow-auto bg-light">
-                <div class="container-fluid py-4">
-                    
-                    <!-- Loading State -->
-                    <div t-if="state.isLoading" class="text-center py-5">
-                        <i class="fa fa-spinner fa-spin fa-3x text-primary"/>
-                        <p class="mt-3">Loading dashboard data...</p>
-                    </div>
+                <div t-if="state.isLoading" class="d-flex justify-content-center align-items-center h-100">
+                    <i class="fa fa-spinner fa-spin fa-3x text-primary"/>
+                </div>
+                <div t-else="" class="p-4">
+                    <ul class="nav nav-pills mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'overview' }" href="#" t-on-click.prevent="() => state.activeTab = 'overview'">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'opportunities' }" href="#" t-on-click.prevent="() => state.activeTab = 'opportunities'">Opportunity Analysis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'quotations' }" href="#" t-on-click.prevent="() => state.activeTab = 'quotations'">Sales &amp; Revenue</a>
+                        </li>
+                        <li t-if="state.dashboardData.is_sales_manager" class="nav-item">
+                             <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'team' }" href="#" t-on-click.prevent="() => state.activeTab = 'team'">Team Performance</a>
+                        </li>
+                    </ul>
 
-                    <!-- Dashboard Content -->
-                    <div t-else="">
-                        
-                        <!-- KPI Cards Row 1 - Pipeline -->
-                        <div class="row mb-4">
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="openMyLeads">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <p class="text-muted mb-1 small">Leads</p>
-                                                <h3 class="mb-0 text-primary">
-                                                    <t t-esc="state.showTeamView ? state.dashboardData.team_leads_count : state.dashboardData.my_leads_count"/>
-                                                </h3>
-                                            </div>
-                                            <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle p-3">
-                                                <i class="fa fa-users text-primary"/>
-                                            </div>
-                                        </div>
-                                        <div class="progress" style="height: 4px;">
-                                            <div class="progress-bar bg-primary" style="width: 100%"/>
-                                        </div>
-                                    </div>
+                    <div class="tab-content">
+                        <t t-if="state.activeTab === 'overview'">
+                            <div class="row">
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-primary text-white me-3"><i class="fa fa-users"/></div><div><p class="text-muted mb-0 small">Leads</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.leads_count"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-warning text-white me-3"><i class="fa fa-rocket"/></div><div><p class="text-muted mb-0 small">Opportunities</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.opportunities_count"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-info text-white me-3"><i class="fa fa-line-chart"/></div><div><p class="text-muted mb-0 small">Pipeline Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.pipeline_overview.pipeline_revenue)"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-bullseye"/></div><div><p class="text-muted mb-0 small">Lead Conversion</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.conversion_rate"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-check-square-o"/></div><div><p class="text-muted mb-0 small">Confirmed Orders</p><h3 class="mb-0"><t t-esc="state.dashboardData.quotation_analysis.confirmed_count"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-inr"/></div><div><p class="text-muted mb-0 small">Sales Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.confirmed_revenue)"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-balance-scale"/></div><div><p class="text-muted mb-0 small">Avg. Order Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.average_order_value)"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-secondary text-white me-3"><i class="fa fa-file-text-o"/></div><div><p class="text-muted mb-0 small">Confirmed Proformas</p><h3 class="mb-0"><t t-esc="state.dashboardData.proforma_analysis.posted_count"/></h3></div></div></div></div>
+                            </div>
+                        </t>
+
+                        <t t-if="state.activeTab === 'opportunities'">
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-primary text-white me-3"><i class="fa fa-users"/></div><div><p class="text-muted mb-0 small">Open Leads</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.leads_count"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-warning text-white me-3"><i class="fa fa-rocket"/></div><div><p class="text-muted mb-0 small">Open Opportunities</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.opportunities_count"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-info text-white me-3"><i class="fa fa-line-chart"/></div><div><p class="text-muted mb-0 small">Pipeline Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.pipeline_overview.pipeline_revenue)"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-bullseye"/></div><div><p class="text-muted mb-0 small">Lead Conversion</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.conversion_rate"/></h3></div></div></div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="openMyOpportunities">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <p class="text-muted mb-1 small">Opportunities</p>
-                                                <h3 class="mb-0 text-warning">
-                                                    <t t-esc="state.showTeamView ? state.dashboardData.team_opportunities_count : state.dashboardData.my_opportunities_count"/>
-                                                </h3>
-                                            </div>
-                                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded-circle p-3">
-                                                <i class="fa fa-rocket text-warning"/>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between small text-muted">
-                                            <span>Won: <t t-esc="state.dashboardData.my_won_opportunities_count"/></span>
-                                            <span>Lost: <t t-esc="state.dashboardData.my_lost_opportunities_count"/></span>
-                                        </div>
-                                    </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-4 col-6">
+                                    <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Win Rate</p><h3 class="mb-0"><t t-esc="state.dashboardData.opportunity_analysis.win_rate"/></h3></div></div>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <p class="text-muted mb-1 small">Pipeline Value</p>
-                                                <h3 class="mb-0 text-info">
-                                                    <t t-esc="formatCurrency(state.showTeamView ? state.dashboardData.team_pipeline_revenue : state.dashboardData.my_pipeline_revenue)"/>
-                                                </h3>
-                                            </div>
-                                            <div class="icon-wrapper bg-info bg-opacity-10 rounded-circle p-3">
-                                                <i class="fa fa-chart-line text-info"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <p class="text-muted mb-1 small">Conversion Rate</p>
-                                                <h3 class="mb-0 text-success">
-                                                    <t t-if="state.dashboardData.my_opportunities_count > 0">
-                                                        <t t-esc="Math.round((state.dashboardData.my_won_opportunities_count / (state.dashboardData.my_opportunities_count + state.dashboardData.my_won_opportunities_count)) * 100)"/>%
-                                                    </t>
-                                                    <t t-else="">0%</t>
-                                                </h3>
-                                            </div>
-                                            <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle p-3">
-                                                <i class="fa fa-percent text-success"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- KPI Cards Row 2 - Sales -->
-                        <div class="row mb-4">
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('draft')">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-secondary">
-                                            <t t-esc="state.dashboardData.my_draft_quotations_count"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Draft Quotations</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('sent')">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-info">
-                                            <t t-esc="state.dashboardData.my_sent_quotations_count"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Sent Quotations</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyQuotations('confirmed')">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-success">
-                                            <t t-esc="state.dashboardData.my_confirmed_quotations_count"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Confirmed Orders</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-success">
-                                            <t t-esc="formatCurrency(state.showTeamView ? state.dashboardData.team_confirmed_quotations_revenue : state.dashboardData.my_confirmed_quotations_revenue)"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Sales Revenue</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100" t-on-click="() => this.openMyProformas('draft')">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-secondary">
-                                            <t t-esc="state.dashboardData.my_draft_proformas_count"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Draft Proformas</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-4 mb-3">
-                                <div class="card kpi-card border-0 shadow-sm h-100">
-                                    <div class="card-body text-center">
-                                        <h4 class="display-6 fw-bold text-primary">
-                                            <t t-esc="formatCurrency(state.showTeamView ? state.dashboardData.team_confirmed_proformas_total : state.dashboardData.my_confirmed_proformas_total)"/>
-                                        </h4>
-                                        <p class="text-muted mb-0 small">Proforma Revenue</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Charts Row 1 -->
-                        <div class="row mb-4">
-                            <div class="col-lg-8 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom-0">
-                                        <h5 class="mb-0">Monthly Sales Trend</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div style="height: 300px;">
-                                            <canvas t-ref="monthlySalesChart"/>
-                                        </div>
-                                    </div>
+                                <div class="col-lg-4 col-6">
+                                    <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Average Deal Size</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.opportunity_analysis.avg_deal_size)"/></h3></div></div>
                                 </div>
                             </div>
                             
-                            <div class="col-lg-4 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom-0">
-                                        <h5 class="mb-0">Sales Funnel</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div style="height: 300px;">
-                                            <canvas t-ref="leadConversionChart"/>
-                                        </div>
-                                    </div>
+                            <div class="row">
+                                <div class="col-lg-8 mb-4">
+                                    <div class="card h-100"><div class="card-header">Pipeline Value by Stage</div><div class="card-body"><div style="height: 300px;"><canvas t-ref="pipelineValueByStageChart"/></div></div></div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Charts Row 2 -->
-                        <div class="row mb-4">
-                            <div class="col-lg-4 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom-0">
-                                        <h5 class="mb-0">Sales by Category</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div style="height: 250px;">
-                                            <canvas t-ref="productSalesChart"/>
-                                        </div>
-                                    </div>
+                                <div class="col-lg-4 mb-4">
+                                    <div class="card h-100"><div class="card-header">Opportunities by Source</div><div class="card-body"><div style="height: 300px;"><canvas t-ref="oppsBySourceChart"/></div></div></div>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-4 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">Top Customers</h5>
-                                        <button class="btn btn-sm btn-link" t-on-click="openTopCustomers">View All</button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-sm table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Customer</th>
-                                                        <th class="text-end">Revenue</th>
-                                                        <th class="text-center">Orders</th>
-                                                    </tr>
-                                                </thead>
+                                <div class="col-lg-8 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header">Top 5 Open Deals</div>
+                                        <div class="card-body p-0">
+                                            <table class="table table-hover mb-0">
+                                                <thead><tr><th>Opportunity</th><th>Customer</th><th class="text-end">Expected Revenue</th></tr></thead>
                                                 <tbody>
-                                                    <t t-if="state.dashboardData.top_customers">
-                                                        <tr t-foreach="state.dashboardData.top_customers" t-as="customer" t-key="customer.name">
-                                                            <td class="text-truncate" style="max-width: 150px;">
-                                                                <t t-esc="customer.name"/>
-                                                            </td>
-                                                            <td class="text-end">
-                                                                <t t-esc="formatCurrency(customer.revenue)"/>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span class="badge bg-secondary">
-                                                                    <t t-esc="customer.order_count"/>
-                                                                </span>
-                                                            </td>
-                                                        </tr>
+                                                    <tr t-foreach="state.dashboardData.opportunity_analysis.top_open_deals" t-as="deal" t-key="deal.id">
+                                                        <td><t t-esc="deal.name"/></td>
+                                                        <td><t t-esc="deal.partner_id[1]"/></td>
+                                                        <td class="text-end fw-bold"><t t-esc="formatCurrency(deal.expected_revenue)"/></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 mb-4">
+                                    <div class="card h-100"><div class="card-header">Opportunities by Stage (Count)</div><div class="card-body"><div style="height: 300px;"><canvas t-ref="oppsByStageChart"/></div></div></div>
+                                </div>
+                            </div>
+                        </t>
+                        
+                        <!-- Sales & Revenue Tab -->
+                        <t t-if="state.activeTab === 'quotations'">
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-secondary text-white me-3"><i class="fa fa-pencil-square-o"/></div><div><p class="text-muted mb-0 small">Draft Quotations</p><h3 class="mb-0"><t t-esc="state.dashboardData.quotation_analysis.draft_count"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-check-square-o"/></div><div><p class="text-muted mb-0 small">Confirmed Orders</p><h3 class="mb-0"><t t-esc="state.dashboardData.quotation_analysis.confirmed_count"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-secondary text-white me-3"><i class="fa fa-file-o"/></div><div><p class="text-muted mb-0 small">Draft Proformas</p><h3 class="mb-0"><t t-esc="state.dashboardData.proforma_analysis.draft_count"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-primary text-white me-3"><i class="fa fa-file-text-o"/></div><div><p class="text-muted mb-0 small">Confirmed Proformas</p><h3 class="mb-0"><t t-esc="state.dashboardData.proforma_analysis.posted_count"/></h3></div></div></div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-inr"/></div><div><p class="text-muted mb-0 small">Sales Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.confirmed_revenue)"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-balance-scale"/></div><div><p class="text-muted mb-0 small">Avg. Order Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.average_order_value)"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-primary text-white me-3"><i class="fa fa-money"/></div><div><p class="text-muted mb-0 small">Proforma Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.proforma_analysis.posted_revenue)"/></h3></div></div></div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-info text-white me-3"><i class="fa fa-paper-plane-o"/></div><div><p class="text-muted mb-0 small">Sent Quotations</p><h3 class="mb-0"><t t-esc="state.dashboardData.quotation_analysis.sent_count"/></h3></div></div></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 mb-4">
+                                    <div class="card h-100"><div class="card-header">12-Month Sales Trend</div><div class="card-body"><div style="height: 350px;"><canvas t-ref="salesOverTimeChart"/></div></div></div>
+                                </div>
+                                <div class="col-lg-7 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header">Top 5 Selling Products</div>
+                                        <div class="card-body p-0">
+                                            <table class="table table-hover mb-0">
+                                                <thead><tr><th>Product</th><th class="text-end">Revenue</th></tr></thead>
+                                                <tbody>
+                                                    <tr t-foreach="state.dashboardData.quotation_analysis.top_products" t-as="product" t-key="product.name">
+                                                        <td><t t-esc="product.name"/></td>
+                                                        <td class="text-end fw-bold"><t t-esc="formatCurrency(product.revenue)"/></td>
+                                                    </tr>
+                                                    <t t-if="!state.dashboardData.quotation_analysis.top_products.length">
+                                                        <tr><td colspan="2" class="text-center text-muted p-4">No product sales data available.</td></tr>
                                                     </t>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div t-if="state.dashboardData.is_sales_manager" class="col-lg-4 mb-3">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-white border-bottom-0">
-                                        <h5 class="mb-0">Team Performance</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div style="height: 250px;">
-                                            <canvas t-ref="teamPerformanceChart"/>
-                                        </div>
-                                    </div>
+                                <div class="col-lg-5 mb-4">
+                                    <div class="card h-100"><div class="card-header">Sales by Product Category</div><div class="card-body"><div style="height: 300px;"><canvas t-ref="salesByCategoryChart"/></div></div></div>
                                 </div>
                             </div>
-                        </div>
+                        </t>
 
+                        <t t-if="state.activeTab === 'team'"><p class="text-muted">Team performance metrics will be added here.</p></t>
                     </div>
                 </div>
             </div>
