@@ -17,7 +17,8 @@ class HrExpenseInherit(models.Model):
     )
 
     def _compute_is_current_user_approver(self):
-        is_approver = self.env.user.has_group('hr_expense.group_hr_expense_manager')
+        is_approver = self.env.user.has_group('hr_expense.group_hr_expense_manager') \
+                    or self.env.user.has_group('base.group_system')
         for expense in self:
             expense.is_current_user_approver = is_approver
 

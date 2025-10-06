@@ -7,6 +7,7 @@
     'depends': ['hr_expense'],
     'data': [
     'views/hr_expense_view_inherit.xml', 
+    'views/hr_expense_sheet_inherit_views.xml',
     'data/user_employee_data.xml',
 ],
     'installable': True,
