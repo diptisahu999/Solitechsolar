@@ -102,7 +102,7 @@ class InheritProductTemplate(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         # Clear cache dynamically to reflect changes immediately
-        self.env['ir.model.fields'].clear_caches()
+        #self.env['ir.model.fields'].clear_caches()
         fields_info = super().fields_get(allfields, attributes)
 
         if not self.env.user.has_group('crm_17.group_product_price'):

@@ -1,59 +1,56 @@
 # -*- coding: utf-8 -*-
-# 1. ADD THESE THREE LINES AT THE TOP
-import traceback
-import logging
-_logger = logging.getLogger(__name__)
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 class HrExpenseSheetInherit(models.Model):
     _inherit = 'hr.expense.sheet'
 
-    # ... (all your fields like is_paid_manually, etc. are here, no changes needed) ...
-    is_paid_manually = fields.Boolean(
-        string='Paid (manual)',
-        default=False,
-        help="Checked when the expense was paid outside accounting (manually marked)."
-    )
+    # The Boolean is replaced by a Selection field for a complete status
+    manual_payment_state = fields.Selection([
+        ('not_paid', 'Not Paid'),
+        ('paid', 'Paid Manually'),
+    ], string="Manual Payment Status", default='not_paid', tracking=True)
+    
     paid_by_user_id = fields.Many2one(
         'res.users',
         string='Marked Paid By',
         readonly=True,
+        tracking=True,
     )
     paid_date = fields.Datetime(
         string='Marked Paid On',
         readonly=True,
+        tracking=True,
     )
 
-
     @api.model
-    def _ensure_user_can_mark_paid(self):
+    def _ensure_user_can_change_payment_state(self):
+        """Return True if current user is allowed to mark as paid/unpaid."""
         return self.env.user.has_group('base.group_system') or \
                self.env.user.has_group('hr_expense.group_hr_expense_manager')
 
     def action_mark_as_paid(self):
-        # 2. ADD THESE THREE LINES INSIDE THE FUNCTION
-        _logger.error("--- UNEXPECTED CALL TO action_mark_as_paid ---")
-        _logger.error("--- STACK TRACE TO FIND THE CULPRIT: ---")
-        traceback.print_stack()
+        """Sets the custom payment status to 'Paid Manually'."""
+        if not self._ensure_user_can_change_payment_state():
+            raise UserError(_("You are not allowed to change the payment status of an expense."))
 
-        """Mark the sheet and its lines as paid without creating accounting moves."""
-        if not self._ensure_user_can_mark_paid():
-            raise UserError(_("You are not allowed to mark expense as paid."))
+        for sheet in self.filtered(lambda s: s.state == 'approve'):
+            sheet.write({
+                'manual_payment_state': 'paid',
+                'paid_by_user_id': self.env.uid,
+                'paid_date': fields.Datetime.now()
+            })
+        return True
+
+    def action_mark_as_unpaid(self):
+        """Resets the custom payment status to 'Not Paid'."""
+        if not self._ensure_user_can_change_payment_state():
+            raise UserError(_("You are not allowed to change the payment status of an expense."))
 
         for sheet in self:
-            # ... (the rest of your function code is here, no changes needed) ...
-            if sheet.state != 'approve':
-                 raise UserError(_("You can only mark an expense as paid when it is in the 'Approved' state."))
-
-            if sheet.expense_line_ids:
-                sheet.expense_line_ids.sudo().write({'state': 'done'})
-
-            sheet.state = 'done'
-
-            sheet.is_paid_manually = True
-            sheet.paid_by_user_id = self.env.uid
-            sheet.paid_date = fields.Datetime.now()
-
+            sheet.write({
+                'manual_payment_state': 'not_paid',
+                'paid_by_user_id': False,
+                'paid_date': False
+            })
         return True

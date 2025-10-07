@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_expense_sheet_view_tree_inherit_manual_status" model="ir.ui.view">
+        <field name="name">hr.expense.sheet.tree.inherit.manual.status</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_state']" position="replace">
+                <field name="manual_payment_state" string="Payment Status" widget="badge" decoration-success="manual_payment_state == 'paid'" decoration-danger="manual_payment_state == 'not_paid'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
