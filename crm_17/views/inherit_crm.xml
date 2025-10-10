@@ -395,6 +395,19 @@
         </field>
     </record>
 
+    <record id="view_crm_lead_filter_inherit_status" model="ir.ui.view">
+        <field name="name">crm.lead.filter.status</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='source']" position="after">
+                <filter string="Status" name="status" domain="[('status', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
 
 
 </odoo>
