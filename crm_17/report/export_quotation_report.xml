@@ -255,6 +255,9 @@
                                 <t t-set="line_no" t-value="1"/>
                                 <t t-set="total_qty" t-value="0"/>
                                 <t t-set="total_mw" t-value="0"/>
+                                <t t-set="calculated_untaxed" t-value="0"/>
+                                <t t-set="calculated_tax_amount" t-value="0"/>
+                                <t t-set="calculated_total" t-value="0"/>
 
                                 <t t-foreach="o.order_line" t-as="line">
                                     <t t-if="not line.display_type and not line.product_id.extra_charges">
@@ -271,14 +274,14 @@
                                             <td class="value-cell text-center">
                                                 <t t-set="tax_rate" t-value="0"/>
                                                 <t t-foreach="line.tax_id" t-as="tax">
-                                                    <t t-if="tax.amount_type == 'group'">
-                                                        <t t-foreach="tax.children_tax_ids" t-as="child_tax">
-                                                            <t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-else="">
-                                                        <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
-                                                    </t>
+                                                     <t t-if="tax.amount_type == 'group'">
+                                                         <t t-foreach="tax.children_tax_ids" t-as="child_tax">
+                                                             <t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/>
+                                                         </t>
+                                                     </t>
+                                                     <t t-else="">
+                                                         <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
+                                                     </t>
                                                 </t>
                                                 <t t-esc="'%.0f' % tax_rate"/>%
                                             </td>
@@ -288,6 +291,9 @@
                                         <t t-set="line_no" t-value="line_no + 1"/>
                                         <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
                                         <t t-set="total_mw" t-value="total_mw + ((line.product_uom_qty * line.wattage) / 1000000)"/>
+                                        <t t-set="calculated_untaxed" t-value="calculated_untaxed + line.price_subtotal"/>
+                                        <t t-set="calculated_tax_amount" t-value="calculated_tax_amount + (line.price_total - line.price_subtotal)"/>
+                                        <t t-set="calculated_total" t-value="calculated_total + line.price_total"/>
                                     </t>
                                 </t>
 
@@ -295,49 +301,39 @@
                                     <td colspan="7" class="label-cell text-right">Total</td>
                                     <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
                                     <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;"><span t-esc="o.tax_totals.get('formatted_amount_untaxed')"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/></td>
                                     <td class="value-cell"></td>
                                     <td class="value-cell text-right" style="white-space: nowrap;">
-                                        <t t-set="total_gst" t-value="o.amount_total - o.amount_untaxed"/>
-                                        ₹ <t t-esc="'{:,.2f}'.format(total_gst)"/>
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
                                     </td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;"><span t-esc="o.tax_totals.get('formatted_amount_total')"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/></td>
                                 </tr>
 
                                 <tr>
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
                                     <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                        <span t-esc="o.tax_totals.get('formatted_amount_untaxed')"/>
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/>
                                     </td>
                                 </tr>
 
-                                <t t-foreach="o.tax_totals.get('groups_by_subtotal', {}).get('Untaxed Amount', [])" t-as="tax_group">
-                                    <tr>
-                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
-                                            <span t-esc="tax_group['tax_group_name']"/>
-                                            
-                                            <t t-if="tax_group.get('percentage')">
-                                                (<span t-esc="tax_group['percentage']"/>%)
-                                            </t>
-                                            
-                                            <t t-elif="tax_group['tax_group_name'] == 'CGST' or tax_group['tax_group_name'] == 'SGST'">
-                                                (6%)
-                                            </t>
-                                            <t t-elif="tax_group['tax_group_name'] == 'IGST'">
-                                                (12%)
-                                            </t>
-                                            
-                                        </td>
-                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                            <span t-esc="tax_group['formatted_tax_group_amount']"/>
-                                        </td>
-                                    </tr>
-                                </t>
+                                <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2"/>
+                                <tr>
+                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST (6%)</td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST (6%)</td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                    </td>
+                                </tr>
 
                                 <tr style="font-weight:bold;">
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
                                     <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                        <span t-esc="o.tax_totals.get('formatted_amount_total')"/>
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/>
                                     </td>
                                 </tr>
                             </tbody>
