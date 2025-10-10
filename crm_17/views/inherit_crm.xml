@@ -86,10 +86,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//sheet//group" position="inside">
-                <div style="display: flex; align-items: center; gap: 8px; color: #111; font-weight: 600;">
-                    <label string="Status:" for="status" style="color: #111; font-weight: 600;"/>
-                    <field name="status" modifiers='{"invisible": [["type", "!=", "lead"]]}' style="margin-bottom:0; color: #111; font-weight: 600;"/>
-                </div>
+                <group>
+                    <field name="status" string="Status" invisible="type != 'lead'" style="color: #111; font-weight: 600;"/>
+                </group>
             </xpath>
 
 
@@ -245,6 +244,7 @@
         <field name="inherit_id" ref="crm.crm_case_tree_view_leads" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='team_id']" position="after">
+                <field name="status" string="Status" optional="show"/>
                 <field name="action_link" widget="html"/>
             </xpath>
         </field>
@@ -338,6 +338,7 @@
         <field name="inherit_id" ref="crm.crm_lead_view_list_activities" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='email_from']" position="after">
+                <field name="status" optional="show"/> 
                 <field name="activity_date_deadline" />
                 <field name="activity_ids" widget="list_activity" />
                 <field name="user_id" />
@@ -394,18 +395,6 @@
         </field>
     </record>
 
-    <!-- <record id="view_crm_lead_form_inherit_status" model="ir.ui.view">
-    <field name="name">crm.lead.view.form.inherit.status</field>
-    <field name="model">crm.lead</field>
-    <field name="inherit_id" ref="crm.crm_lead_view_form"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='priority']" position="after">
-            <label for="status" string="Status" class="oe_inline"/>
-            <field name="status"
-                   modifiers='{"invisible": [["type", "!=", "lead"]]}'
-                   class="oe_inline"/>
-        </xpath>
-    </field>
-</record> -->
+
 
 </odoo>
