@@ -47,6 +47,14 @@ class InheritCRM(models.Model):
     mobile = fields.Char(string="Mobile 2",unaccent=False)
     action_link = fields.Html(string='View', compute='_compute_action_link', sanitize=False)
     project_id = fields.Many2one('project.project',string="Project",tracking=True)
+    status = fields.Selection([
+        ('busy', 'BUSY'),
+        ('not_connect', 'NOT CONNECT'),
+        ('call_not_lifting', 'CALL NOT LIFTING'),
+        ('interested', 'INTERESTED'),
+        ('not_interested','NOT INTRESTED'),
+        ('pending', 'PENDING'),
+    ], string="Status", tracking=True, default='pending')
 
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
