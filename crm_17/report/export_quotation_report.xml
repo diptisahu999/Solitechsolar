@@ -115,8 +115,8 @@
                                 <td colspan="6" class="section-header">Company Details</td>
                             </tr>
                             <tr>
-                                <td class="label-cell">Name</td>
-                                <td class="value-cell"><t t-esc="o.company_id.name"/></td>
+                                <td class="label-cell" style="width: 4%;">Names</td>
+                                <td class="value-cell" style="width: 30%;"><t t-esc="o.company_id.name"/></td>
 
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><t t-esc="o.company_id.vat or ''"/></td>
@@ -125,11 +125,10 @@
                                 <td class="value-cell"><t t-esc="o.name"/></td>
                             </tr>
                             <tr>
-                                <td class="label-cell" rowspan="3">Address</td>
-                                <td class="value-cell" rowspan="3">
+                                <td class="label-cell" style="width: 4%;">Address</td>
+                                <td class="value-cell" style="width: 30%;">
                                     <t t-if="o.company_id.street"><t t-esc="o.company_id.street"/>, </t>
                                     <t t-if="o.company_id.street2"><t t-esc="o.company_id.street2"/>, </t>
-                                    <br/>
                                     <t t-if="o.company_id.city"><t t-esc="o.company_id.city"/>, </t>
                                     <t t-if="o.company_id.state_id"><t t-esc="o.company_id.state_id.name"/>, </t>
                                     <t t-if="o.company_id.zip"><t t-esc="o.company_id.zip"/></t>
@@ -145,12 +144,11 @@
                                 <td class="label-cell">Contact No</td>
                                 <td class="value-cell"><t t-esc="o.company_id.phone or ''"/></td>
 
-                                <td class="label-cell" rowspan="2">Customer Reference</td>
-                                <td class="value-cell" rowspan="2"><t t-esc="o.client_order_ref or ''"/></td>
-                            </tr>
-                            <tr>
                                 <td class="label-cell">Email ID</td>
                                 <td class="value-cell"><t t-esc="o.company_id.email or ''"/></td>
+
+                                <td class="label-cell">Customer Reference</td>
+                                <td class="value-cell"><t t-esc="o.client_order_ref or ''"/></td>
                             </tr>
                         </table>
 
@@ -362,9 +360,9 @@
                                 <tr>
                                     <td class="label-cell" style="width:5%; text-align:center; border-right:1px solid #000; padding:4px;">Sr #</td>
                                     <td class="label-cell" style="width:10%; border-right:1px solid #000; padding:4px;">Particulars</td>
-                                    <td class="label-cell" style="width:30%; border-right:1px solid #000; padding:4px;">Details</td>
+                                    <td class="label-cell" style="width:25%; border-right:1px solid #000; padding:4px;">Details</td>
                                     
-                                    <td class="value-cell" style="width:40%; border-left:1px solid #000; padding:4px; font-weight:bold;">
+                                    <td class="value-cell" style="width:45%; border-left:1px solid #000; padding:4px; font-weight:bold;">
                                         <span t-esc="o.order_line[0].name if o.order_line else ''"/>
                                     </td>
                                 </tr>
