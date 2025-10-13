@@ -395,7 +395,7 @@
         </field>
     </record>
 
-    <record id="view_crm_lead_filter_inherit_status" model="ir.ui.view">
+    <!-- <record id="view_crm_lead_filter_inherit_status" model="ir.ui.view">
         <field name="name">crm.lead.filter.status</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
@@ -404,7 +404,20 @@
                 <filter string="Status" name="status" domain="[('status', '!=', False)]"/>
             </xpath>
         </field>
+    </record> -->
+
+    <record id="inherit_view_crm_case_my_opportunities_filter_status" model="ir.ui.view">
+        <field name="name">inherit.crm.lead.search.opportunities.status</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <!-- Add status field to group_by -->
+            <xpath expr="//filter[@name='source']" position="after">
+                <filter string="Status" name="status" domain="[]" context="{'group_by':'status'}"/>
+            </xpath>
+        </field>
     </record>
+
 
 
 
