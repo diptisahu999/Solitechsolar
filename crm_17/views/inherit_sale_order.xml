@@ -38,9 +38,9 @@
                 <!-- <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id), '|', ('company_id', '=', False), ('company_id', 'child_of', company_id)]</attribute> -->
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="class">o_list_renderer .o_list_table thead</attribute>
-                <attribute name="readonly">state == 'cancel' or locked or invoice_status != 'upselling' and state == 'sale'</attribute>
+                <attribute name="readonly">False</attribute>
             </xpath>
+
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
                 <attribute name="options">{'no_create': True}</attribute>
             </xpath>
@@ -70,8 +70,9 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="after" >
                 <field name = "up_after_disc_amt" readonly="1" force_save="1" optional="hide"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes" >
-                <attribute name="readonly">is_group_price == False and is_service != True</attribute>
+            <!-- ✅ Make Price Unit Editable -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">False</attribute>
                 <attribute name="force_save">True</attribute>
             </xpath>
             <xpath expr="//control/create[@name='add_section_control']" position="replace"/>
@@ -286,7 +287,7 @@
                 <attribute name="string">Unit Price (₹ per Wp)</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
-                <field name="unit_price_per_nos" readonly="1"/>
+                <field name="unit_price_per_nos"/>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
                 <field name="wattage"/>
