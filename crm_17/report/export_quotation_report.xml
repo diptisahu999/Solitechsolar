@@ -229,153 +229,153 @@
                         </table>
 
                         <!-- Product & Pricing Details -->
-<table class="excel-table" style="width:100%; border-collapse:collapse;">
-    <thead>
-        <tr>
-            <td colspan="13" class="section-header">Product &amp; Pricing Details</td>
-        </tr>
-        <tr class="label-cell">
-            <td class="label-cell" style="width: 4%;">Sr #</td>
-            <td class="label-cell" colspan="2" style="width: 12%;">Model No</td>
-            <td class="label-cell" style="width: 7%;">HSN Code</td>
-            <td class="label-cell" style="width: 7%;">Wattage (Wp)</td>
-            <td class="label-cell" style="width: 10%;">Unit Price (₹ per Wp)</td>
-            <td class="label-cell" style="width: 10%;">Unit Price (₹ per Nos)</td>
-            <td class="label-cell" style="width: 6%;">Quantity (Nos)</td>
-            <td class="label-cell" style="width: 6%;">Quantity (MW)</td>
-            <td class="label-cell" style="width: 12%;">Total Line Amount (₹)</td>
-            <td class="label-cell" style="width: 5%;">GST Rate (%)</td>
-            <td class="label-cell" style="width: 7%;">GST Amount (₹)</td>
-            <td class="label-cell" style="width: 14%;">Total Amount (₹)</td>
-        </tr>
-    </thead>
-    <tbody>
-        <t t-set="line_no" t-value="1"/>
-        <t t-set="total_qty" t-value="0"/>
-        <t t-set="total_mw" t-value="0"/>
-        <t t-set="calculated_untaxed" t-value="0"/>
-        <t t-set="calculated_tax_amount" t-value="0"/>
-        <t t-set="calculated_total" t-value="0"/>
+                        <table class="excel-table" style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <td colspan="13" class="section-header">Product &amp; Pricing Details</td>
+                                </tr>
+                                <tr class="label-cell">
+                                    <td class="label-cell" style="width: 4%;">Sr #</td>
+                                    <td class="label-cell" colspan="2" style="width: 12%;">Model No</td>
+                                    <td class="label-cell" style="width: 7%;">HSN Code</td>
+                                    <td class="label-cell" style="width: 7%;">Wattage (Wp)</td>
+                                    <td class="label-cell" style="width: 10%;">Unit Price (₹ per Wp)</td>
+                                    <td class="label-cell" style="width: 10%;">Unit Price (₹ per Nos)</td>
+                                    <td class="label-cell" style="width: 6%;">Quantity (Nos)</td>
+                                    <td class="label-cell" style="width: 6%;">Quantity (MW)</td>
+                                    <td class="label-cell" style="width: 12%;">Total Line Amount (₹)</td>
+                                    <td class="label-cell" style="width: 5%;">GST Rate (%)</td>
+                                    <td class="label-cell" style="width: 7%;">GST Amount (₹)</td>
+                                    <td class="label-cell" style="width: 14%;">Total Amount (₹)</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="line_no" t-value="1"/>
+                                <t t-set="total_qty" t-value="0"/>
+                                <t t-set="total_mw" t-value="0"/>
+                                <t t-set="calculated_untaxed" t-value="0"/>
+                                <t t-set="calculated_tax_amount" t-value="0"/>
+                                <t t-set="calculated_total" t-value="0"/>
 
-        <t t-foreach="o.order_line" t-as="line">
-            <t t-if="not line.display_type and not line.product_id.extra_charges">
-                <tr>
-                    <td class="value-cell text-center"><t t-esc="line_no"/></td>
+                                <t t-foreach="o.order_line" t-as="line">
+                                    <t t-if="not line.display_type and not line.product_id.extra_charges">
+                                        <tr>
+                                            <td class="value-cell text-center"><t t-esc="line_no"/></td>
 
-                    <!-- ✅ Model No Column -->
-                    <td class="value-cell" colspan="2">
-                        <t t-set="model_no_value" t-value="''"/>
-                        <t t-if="line.product_id.product_template_attribute_value_ids">
-                            <t t-foreach="line.product_id.product_template_attribute_value_ids" t-as="attribute_value">
-                                <t t-if="attribute_value.attribute_id.name == 'Model No'">
-                                    <t t-set="model_no_value" t-value="attribute_value.name"/>
+                                            <!-- ✅ Model No Column -->
+                                            <td class="value-cell" colspan="2">
+                                                <t t-set="model_no_value" t-value="''"/>
+                                                <t t-if="line.product_id.product_template_attribute_value_ids">
+                                                    <t t-foreach="line.product_id.product_template_attribute_value_ids" t-as="attribute_value">
+                                                        <t t-if="attribute_value.attribute_id.name == 'Model No'">
+                                                            <t t-set="model_no_value" t-value="attribute_value.name"/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                                <!-- fallback to product name if model no not found -->
+                                                <t t-esc="model_no_value or line.product_id.name"/>
+                                            </td>
+
+                                            <td class="value-cell text-center"><t t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
+                                            <td class="value-cell text-center"><t t-esc="line.wattage"/></td>
+                                            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
+                                            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.unit_price_per_nos"/></td>
+                                            <td class="value-cell text-center"><t t-esc="'%.0f' % line.product_uom_qty"/></td>
+                                            <td class="value-cell text-center"><t t-esc="'%.2f' % ((line.product_uom_qty * line.wattage) / 1000000)"/></td>
+                                            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+
+                                            <!-- ✅ Tax Percentage -->
+                                            <td class="value-cell text-center">
+                                                <t t-set="tax_rate" t-value="0"/>
+                                                <t t-foreach="line.tax_id" t-as="tax">
+                                                    <t t-if="tax.amount_type == 'group'">
+                                                        <t t-foreach="tax.children_tax_ids" t-as="child_tax">
+                                                            <t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
+                                                    </t>
+                                                </t>
+                                                <t t-esc="'%.0f' % tax_rate"/>%
+                                            </td>
+
+                                            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total - line.price_subtotal)"/></td>
+                                            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total)"/></td>
+                                        </tr>
+
+                                        <!-- Totals Update -->
+                                        <t t-set="line_no" t-value="line_no + 1"/>
+                                        <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
+                                        <t t-set="total_mw" t-value="total_mw + ((line.product_uom_qty * line.wattage) / 1000000)"/>
+                                        <t t-set="calculated_untaxed" t-value="calculated_untaxed + line.price_subtotal"/>
+                                        <t t-set="calculated_tax_amount" t-value="calculated_tax_amount + (line.price_total - line.price_subtotal)"/>
+                                        <t t-set="calculated_total" t-value="calculated_total + line.price_total"/>
+                                    </t>
                                 </t>
-                            </t>
-                        </t>
-                        <!-- fallback to product name if model no not found -->
-                        <t t-esc="model_no_value or line.product_id.name"/>
-                    </td>
 
-                    <td class="value-cell text-center"><t t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
-                    <td class="value-cell text-center"><t t-esc="line.wattage"/></td>
-                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
-                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.unit_price_per_nos"/></td>
-                    <td class="value-cell text-center"><t t-esc="'%.0f' % line.product_uom_qty"/></td>
-                    <td class="value-cell text-center"><t t-esc="'%.2f' % ((line.product_uom_qty * line.wattage) / 1000000)"/></td>
-                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+                                <!-- Totals Row -->
+                                <tr class="value-cell" style="font-weight:bold; background-color:#E7E6E6;">
+                                    <td colspan="7" class="label-cell text-right">Total</td>
+                                    <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
+                                    <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/></td>
+                                    <td class="value-cell"></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/></td>
+                                </tr>
 
-                    <!-- ✅ Tax Percentage -->
-                    <td class="value-cell text-center">
-                        <t t-set="tax_rate" t-value="0"/>
-                        <t t-foreach="line.tax_id" t-as="tax">
-                            <t t-if="tax.amount_type == 'group'">
-                                <t t-foreach="tax.children_tax_ids" t-as="child_tax">
-                                    <t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/>
+                                <!-- Total Value -->
+                                <tr>
+                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/>
+                                    </td>
+                                </tr>
+
+                                <!-- GST Conditional Logic -->
+                                <t t-if="o.partner_id.state_id.name == 'Gujarat'">
+                                    <!-- Within Gujarat: CGST + SGST -->
+                                    <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2"/>
+
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST (2.5%)</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST (2.5%)</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                        </td>
+                                    </tr>
                                 </t>
-                            </t>
-                            <t t-else="">
-                                <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
-                            </t>
-                        </t>
-                        <t t-esc="'%.0f' % tax_rate"/>%
-                    </td>
+                                <t t-else="">
+                                    <!-- Outside Gujarat: IGST -->
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">IGST (5%)</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
+                                        </td>
+                                    </tr>
+                                </t>
 
-                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total - line.price_subtotal)"/></td>
-                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total)"/></td>
-                </tr>
-
-                <!-- Totals Update -->
-                <t t-set="line_no" t-value="line_no + 1"/>
-                <t t-set="total_qty" t-value="total_qty + line.product_uom_qty"/>
-                <t t-set="total_mw" t-value="total_mw + ((line.product_uom_qty * line.wattage) / 1000000)"/>
-                <t t-set="calculated_untaxed" t-value="calculated_untaxed + line.price_subtotal"/>
-                <t t-set="calculated_tax_amount" t-value="calculated_tax_amount + (line.price_total - line.price_subtotal)"/>
-                <t t-set="calculated_total" t-value="calculated_total + line.price_total"/>
-            </t>
-        </t>
-
-        <!-- Totals Row -->
-        <tr class="value-cell" style="font-weight:bold; background-color:#E7E6E6;">
-            <td colspan="7" class="label-cell text-right">Total</td>
-            <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
-            <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
-            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/></td>
-            <td class="value-cell"></td>
-            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/></td>
-            <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/></td>
-        </tr>
-
-        <!-- Total Value -->
-        <tr>
-            <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
-            <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                ₹ <t t-esc="'{:,.2f}'.format(calculated_untaxed)"/>
-            </td>
-        </tr>
-
-        <!-- GST Conditional Logic -->
-        <t t-if="o.partner_id.state_id.name == 'Gujarat'">
-            <!-- Within Gujarat: CGST + SGST -->
-            <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2"/>
-
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST (2.5%)</td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST (2.5%)</td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                </td>
-            </tr>
-        </t>
-        <t t-else="">
-            <!-- Outside Gujarat: IGST -->
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">IGST (5%)</td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
-                </td>
-            </tr>
-        </t>
-
-        <!-- Final Total -->
-        <tr style="font-weight:bold;">
-            <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
-            <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                ₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                                <!-- Final Total -->
+                                <tr style="font-weight:bold;">
+                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                        ₹ <t t-esc="'{:,.2f}'.format(calculated_total)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <table class="excel-table" style="width:100%; border-collapse:collapse;">
                             <tr>
                                 <td class="label-cell">Amount in Words :</td>
                                 <td colspan="11" class="value-cell">
-                                    <t t-esc="o.amount_to_text(o.tax_totals.get('amount_total', 0.0), 'INR')"/> Only
+                                    <t t-esc="o.amount_to_text(calculated_total, 'INR')"/> Only
                                 </td>
                             </tr>
                         </table>
