@@ -13,6 +13,7 @@
         'views/crm_lead_views.xml', 
         'views/sale_order_views.xml',
         'security/ir.model.access.csv',
+        'security/proforma_invoice_security.xml',
     ],
     'assets': {
         'web.assets_backend': [
