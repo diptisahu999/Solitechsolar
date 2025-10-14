@@ -389,7 +389,7 @@ class InheritSaleOrderLine(models.Model):
         string="Wattage (Wp)",
         related='product_id.wattage',
         store=True,
-        readonly=False
+        readonly=True
     )
 
     unit_price_per_nos = fields.Monetary(
