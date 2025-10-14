@@ -9,7 +9,8 @@
     'depends': [
         'base','crm','l10n_in','sale_pdf_quote_builder','sale',
         'sales_team','state_wise_gst','stock','purchase','repair',
-        'web_notify','dolphy_project', 'stock_landed_costs', 'mrp'
+        'web_notify','dolphy_project', 'stock_landed_costs', 'mrp',
+        'project', 'hr',
     ],
     'data': [
             'security/rule_security.xml',
@@ -68,6 +69,7 @@
             'views/spare_parts_production.xml',
             'views/upcoming_stock.xml',
             'views/reserved_stock.xml',
+            'views/hide_menus.xml',
             'data/mail_template.xml',
             'data/mail_templates_email_layouts.xml',
             ],
