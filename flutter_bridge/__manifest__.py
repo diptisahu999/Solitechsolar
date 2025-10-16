@@ -15,11 +15,11 @@
         'web',  
         'mail', 
     ],
-    'assets': {
-        'web.assets_backend': [
-            'my_flutter_bridge/static/src/js/notification_bridge.js',
-        ],
-    },
+    # 'assets': {
+    #     'web.assets_backend': [
+    #         'my_flutter_bridge/static/src/js/notification_bridge.js',
+    #     ],
+    # },
     'installable': True,
     'application': False,
     'auto_install': False,
