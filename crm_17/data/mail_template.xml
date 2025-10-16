@@ -16,7 +16,7 @@
                     <t t-set="doc_name" t-value="'quotation' if object.state in ('draft', 'sent') else 'order'"/>
                     Hello <b><t t-out="object.partner_id.name or ''"></t></b>,
                     <br/><br/>
-                    Greetings from Dolphy.
+                    Greetings from SolitechSolar.
                     <br/><br/>
                     I hope you all are doing well. <br/>
                     Kindly please find the attached PI for your requirement.
@@ -54,7 +54,7 @@
                 <p style="margin: 0px; padding: 0px; font-size: 13px; color: black; font-weight: normal;">
                     Hello <b><t t-out="object.partner_id.name or ''"></t></b>,
                     <br/><br/>
-                    Greetings from Dolphy.
+                    Greetings from SolitechSolar.
                     <br/><br/>
                     I hope you all are doing well. <br/>
                     Kindly please find the attached PI for your requirement.
