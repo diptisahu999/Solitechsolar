@@ -12,9 +12,9 @@
         # 'wizards/business_card_scanner_wizard_views.xml',
         'security/ir.model.access.csv',
     ],
-    'external_dependencies': {
-        'python': ['pytesseract'],
-    },
+    # 'external_dependencies': {
+    #     'python': ['pytesseract'],
+    # },
     'installable': True,
     'application': False,
 }
