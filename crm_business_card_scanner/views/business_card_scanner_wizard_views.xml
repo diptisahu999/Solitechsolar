@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_business_card_scanner_wizard_form" model="ir.ui.view">
+        <field name="name">business.card.scanner.wizard.form</field>
+        <field name="model">business.card.scanner.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Business Card Scanner">
+                <group>
+                    <field name="business_card_image"/>
+                    <field name="extracted_text" readonly="1"/>
+                </group>
+                <footer>
+                    <button string="Scan Card"
+                            name="action_scan_card"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Create Lead"
+                            name="action_create_lead"
+                            type="object"
+                            class="btn-success"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

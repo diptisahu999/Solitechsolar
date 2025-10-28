@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- 1️⃣ Define the Action for Opening the Scanner Wizard -->
+        <record id="action_open_scanner_wizard" model="ir.actions.act_window">
+            <field name="name">Import Business Card</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">business.card.scanner.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- 2️⃣ Add the "Scan Business Card" Button to the CRM Lead Tree View Header -->
+        <record id="crm_lead_view_form_inherit_scanner" model="ir.ui.view">
+            <field name="name">crm.lead.view.form.inherit.scanner</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <header position="inside">
+                    <button
+                        name="%(action_open_scanner_wizard)d"
+                        string="Scan Business Card"
+                        type="action"
+                        class="oe_highlight"
+                        icon="fa-id-card"/>
+                </header>
+            </field>
+        </record>
+
+
+
+
+    </data>
+</odoo>
