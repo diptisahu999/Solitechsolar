@@ -135,7 +135,7 @@ class BusinessCardScannerWizard(models.TransientModel):
             base_url = 'https://webhook.whatapi.in/webhook/69032eee1b9845c02d42d75c'
 
             params = {
-                'number': 918328891798,
+                'number': mobile,
                 'title1': "Dear User",
                 'title2': "Thank you for showing interest in SolitechSolar Pvt. Ltd.",
                 'title3': "We are excited to connect with you and assist you with Product.",
@@ -243,4 +243,3 @@ class BusinessCardScannerWizard(models.TransientModel):
             'target': 'new',
             'name': _('Business Card Scanner (GPT)'),
         }
-    
