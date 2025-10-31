@@ -9,12 +9,8 @@
     'data': [
         'views/crm_lead_views.xml',
         'views/business_card_scanner_wizard_views.xml',
-        # 'wizards/business_card_scanner_wizard_views.xml',
         'security/ir.model.access.csv',
     ],
-    # 'external_dependencies': {
-    #     'python': ['pytesseract'],
-    # },
     'installable': True,
     'application': False,
 }

@@ -2,6 +2,8 @@
 import base64
 import re
 import json
+import requests
+import urllib.parse
 from odoo import models, fields, _
 from openai import OpenAI
 import os
@@ -97,37 +99,128 @@ class BusinessCardScannerWizard(models.TransientModel):
         return self._open_self_form()
 
     # ---------------------------------------------------------
-    # Action: Create Lead from Extracted GPT Data
+    # ✅ Clean Mobile Number
+    # ---------------------------------------------------------
+    def _sanitize_mobile_for_webhook(self, raw_mobile: str) -> str:
+        if not raw_mobile:
+            return ''
+
+        digits = re.sub(r'\D', '', raw_mobile)
+        if not digits:
+            return ''
+
+        digits = digits.lstrip('0')
+
+        # If 10 digits → assume Indian number
+        if len(digits) == 10:
+            digits = '91' + digits
+
+        return digits
+
+    # ---------------------------------------------------------
+    # ✅ Send WhatsApp Message via Webhook
+    # ---------------------------------------------------------
+    def _send_whatsapp_webhook(self, mobile_number: str, parsed: dict) -> dict:
+        try:
+            if not mobile_number:
+                return {'ok': False, 'error': 'No mobile found'}
+
+            mobile = self._sanitize_mobile_for_webhook(mobile_number)
+            print(f"Sanitized mobile for webhook: {mobile}")
+
+            if not mobile:
+                print("❌ Invalid mobile number after sanitizing")
+                return {'ok': False, 'error': 'Invalid phone number'}
+
+            base_url = 'https://webhook.whatapi.in/webhook/69032eee1b9845c02d42d75c'
+
+            params = {
+                'number': 918328891798,
+                'title1': "Dear User",
+                'title2': "Thank you for showing interest in SolitechSolar Pvt. Ltd.",
+                'title3': "We are excited to connect with you and assist you with Product.",
+                'title4': "SolitechSolar Pvt. Ltd.",
+            }
+
+            encoded = urllib.parse.urlencode(params)
+            full_url = f"{base_url}?{encoded}"
+
+            # ✅ Do NOT let this raise an exception
+            try:
+                resp = requests.get(full_url, timeout=10)
+
+                # ✅ SUCCESS PRINT HERE 📌
+                print(f"✅ WhatsApp message sent successfully to {mobile} | Status: {resp.status_code}")
+
+                return {
+                    'ok': True,
+                    'status_code': resp.status_code,
+                    'response': resp.text,
+                    'url': full_url,
+                }
+
+            except Exception as e:
+                print(f"❌ WhatsApp webhook error: {str(e)}")
+                return {'ok': False, 'error': str(e), 'url': full_url}
+
+        except Exception as e:
+            print(f"❌ Unexpected error while sending WhatsApp: {str(e)}")
+            return {'ok': False, 'error': str(e)}
+
+
+
+    # ---------------------------------------------------------
+    # ✅ Create Lead + Send WhatsApp message
     # ---------------------------------------------------------
     def action_create_lead(self):
-        """Parse GPT JSON and create a CRM Lead."""
         self.ensure_one()
 
         if not self.extracted_text:
-            self.extracted_text = "No data extracted yet."
+            self.extracted_text = "No extracted data."
             return self._open_self_form()
 
         try:
             parsed = json.loads(self.extracted_text)
-        except Exception:
-            self.extracted_text = "Invalid extracted data format (not JSON)."
+        except:
+            self.extracted_text = "Invalid JSON data."
             return self._open_self_form()
 
-        # Safely map fields
+        # Create tag "Card Scan"
+        tag = self.env['crm.tag'].search([('name', '=', 'Card Scan')], limit=1)
+        if not tag:
+            tag = self.env['crm.tag'].create({'name': 'Card Scan'})
+
         lead_vals = {
-            'name': parsed.get('name') or 'Lead from Business Card',
+            'name': parsed.get('name') or 'Lead From Business Card',
             'partner_name': parsed.get('company'),
             'contact_name': parsed.get('name'),
             'email_from': (parsed.get('emails') or [None])[0],
             'phone': (parsed.get('phone_numbers') or [None])[0],
-            'mobile': (parsed.get('phone_numbers') or [None, None])[1] if len(parsed.get('phone_numbers', [])) > 1 else None,
+            'mobile': (parsed.get('phone_numbers') or [None])[1] if len(parsed.get('phone_numbers', [])) > 1 else None,
             'website': parsed.get('website'),
             'function': parsed.get('designation'),
-            'street': parsed.get('address') or '',
+            'street': parsed.get('address'),
             'description': json.dumps(parsed, indent=4),
+            'tag_ids': [(6, 0, [tag.id])],
         }
 
         lead = self.env['crm.lead'].create(lead_vals)
+
+        # ✅ Choose best mobile number
+        mobile = None
+        if parsed.get('phone_numbers'):
+            mobile = parsed['phone_numbers'][0]
+        if not mobile:
+            mobile = lead.phone or lead.mobile
+
+        # ✅ Send WhatsApp webhook
+        webhook_result = self._send_whatsapp_webhook(mobile, parsed)
+
+        # ✅ Show webhook result inside wizard
+        final_json = parsed
+        final_json["_whatsapp_webhook"] = webhook_result
+
+        self.extracted_text = json.dumps(final_json, indent=4, ensure_ascii=False)
 
         return {
             'type': 'ir.actions.act_window',
@@ -139,10 +232,9 @@ class BusinessCardScannerWizard(models.TransientModel):
         }
 
     # ---------------------------------------------------------
-    # Helper: Return Form View
+    # ✅ Reopen Wizard
     # ---------------------------------------------------------
     def _open_self_form(self):
-        """Reopen wizard form."""
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
