@@ -135,11 +135,15 @@ class BusinessCardScannerWizard(models.TransientModel):
             base_url = 'https://webhook.whatapi.in/webhook/69032eee1b9845c02d42d75c'
 
             params = {
-                'number': mobile,
+                'number': 8328891798,
                 'title1': "Dear User",
                 'title2': "Thank you for showing interest in SolitechSolar Pvt. Ltd.",
                 'title3': "We are excited to connect with you and assist you with Product.",
                 'title4': "SolitechSolar Pvt. Ltd.",
+                'title5': "Thank you 🙏",
+                'title6': " ",
+                'title7': " ",
+
             }
 
             encoded = urllib.parse.urlencode(params)
