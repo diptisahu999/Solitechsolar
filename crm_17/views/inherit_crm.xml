@@ -425,27 +425,6 @@
         </field>
     </record>
 
-    <record id="crm_lead_view_tree_lead_inherit" model="ir.ui.view">
-        <field name="name">crm.lead.view.tree.lead.inherit</field>
-        <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
-        <field name="arch" type="xml">
-
-            <xpath expr="//field[@name='contact_name']" position="after">
-                <field name="phone"/>
-                <field name="mobile"/>
-                <field name="kw" string="KW" optional="show"/>
-            </xpath>
-
-        </field>
-    </record>
-
-
-
-
-
-
-
 
 
 </odoo>
