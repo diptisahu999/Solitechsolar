@@ -21,7 +21,7 @@ class InheritCRM(models.Model):
     label_ids = fields.Many2many('label.mst',string="Label",tracking=True)
 
     sale_line_ids = fields.One2many('crm.lead.sale.line','sale_id',string="Lead Assigned")
-
+    kw = fields.Float(string="KW")
     create_date_formatted = fields.Char(
         string='Create Date (Formatted)',
         compute='_compute_create_date_formatted',
@@ -32,6 +32,7 @@ class InheritCRM(models.Model):
         compute='_compute_write_date_formatted',
         store=False
     )
+
     pi_no = fields.Integer(string='PI No.',store=True)
     team_leader_id = fields.Many2one(related='team_id.user_id')
     due_days = fields.Integer("Due Days",compute='_compute_due_days',store=False)
