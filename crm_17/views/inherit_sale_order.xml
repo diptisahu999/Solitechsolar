@@ -151,6 +151,10 @@
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="special_instruction_dcr"/>
                 <field name="special_instruction_mess"/>
+                <field name="advance_percentage"/>
+                <field name="before_dp_percentage"/>
+                <field name="lc_days"/>
+                <field name="delivery_type"/>
             </xpath>
         </field>
     </record>

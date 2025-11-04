@@ -36,9 +36,18 @@ class InheritSaleOrder(models.Model):
     ], string='DCR Instruction', index=True)
 
     special_instruction_mess = fields.Selection([
-        ('with_mess', 'WITH MESS'),
-        ('without_mess', 'WITHOUT MESS')
-    ], string='Mess Instruction', index=True)
+        ('with_mess', 'WITH MESH'),
+        ('without_mess', 'WITHOUT MESH')
+    ], string='Mesh Instruction', index=True)
+
+    advance_percentage = fields.Float(string='Advance %')
+    before_dp_percentage = fields.Float(string='Before DP %')
+    lc_days = fields.Integer(string='LC Days')
+
+    delivery_type = fields.Selection([
+        ('for', 'FOR'),
+        ('ex_works', 'Ex. Works')
+    ], string='Delivery Type', index=True)
 
     @api.onchange('fiscal_position_id')
     def _onchange_fiscal_position_id_update_taxes(self):
