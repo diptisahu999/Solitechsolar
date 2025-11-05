@@ -49,6 +49,106 @@ class InheritSaleOrder(models.Model):
         ('ex_works', 'Ex. Works')
     ], string='Delivery Type', index=True)
 
+    advance_display = fields.Char(
+        string="Advance %",
+        compute="_compute_advance_display",
+        inverse="_inverse_advance_display",
+        store=False
+    )
+    before_dp_display = fields.Char(
+        string="Before DP Amount",
+        compute="_compute_before_dp_display",
+        inverse="_inverse_before_dp_display",
+        store=False
+    )
+
+
+    @api.depends('advance_percentage', 'amount_total')
+    def _compute_advance_display(self):
+        for rec in self:
+            if rec.amount_total and rec.advance_percentage:
+                amt = rec.amount_total * rec.advance_percentage / 100
+                rec.advance_display = f"₹ {amt:.2f} ({rec.advance_percentage:.2f}%)"
+            else:
+                rec.advance_display = "₹ 0.00 (0%)"
+
+    def _inverse_advance_display(self):
+        for rec in self:
+            if not rec.advance_display:
+                continue
+            
+            text = rec.advance_display.replace("₹", "").replace(",", "").strip()
+
+            amount = 0.0
+            percentage = 0.0
+
+            # Extract entered amount
+            if "(" in text:
+                amount_text = text.split("(")[0].strip()
+                try:
+                    amount = float(amount_text)
+                except:
+                    amount = 0.0
+
+            # ✅ VALIDATION — BLOCK IF AMOUNT > TOTAL
+            if amount > rec.amount_total:
+                raise ValidationError(
+                    f"Advance amount (₹{amount:.2f}) cannot be greater than total amount (₹{rec.amount_total:.2f})."
+                )
+
+            # Extract percentage
+            if "%" in text:
+                percent_text = text.split("(")[1].replace(")", "").replace("%", "")
+                try:
+                    percentage = float(percent_text)
+                except:
+                    percentage = 0.0
+
+            # Recalculate % if amount entered
+            if amount > 0 and rec.amount_total > 0:
+                percentage = (amount / rec.amount_total) * 100
+
+            rec.advance_percentage = percentage
+            rec._compute_advance_display()
+
+
+    @api.depends('before_dp_percentage', 'amount_total')
+    def _compute_before_dp_display(self):
+        for rec in self:
+            if rec.amount_total and rec.before_dp_percentage:
+                amt = rec.amount_total * rec.before_dp_percentage / 100
+                rec.before_dp_display = f"₹ {amt:.2f} ({rec.before_dp_percentage:.2f}%)"
+            else:
+                rec.before_dp_display = "₹ 0.00 (0%)"
+
+    def _inverse_before_dp_display(self):
+        for rec in self:
+            txt = rec.before_dp_display or ""
+
+            # Extract amount
+            amount = 0.0
+            try:
+                amount_str = txt.split("(")[0].replace("₹", "").replace(",", "").strip()
+                amount = float(amount_str)
+            except:
+                amount = 0.0
+
+            # Validate
+            if amount > rec.amount_total:
+                raise ValidationError(
+                    f"Before DP amount (₹{amount:.2f}) cannot exceed total amount (₹{rec.amount_total:.2f})."
+                )
+
+            # Calculate %
+            percentage = 0.0
+            if rec.amount_total:
+                percentage = (amount / rec.amount_total) * 100
+
+            rec.before_dp_percentage = percentage
+            rec._compute_before_dp_display()
+
+
+
     @api.onchange('fiscal_position_id')
     def _onchange_fiscal_position_id_update_taxes(self):
         """
