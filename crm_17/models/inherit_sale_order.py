@@ -166,38 +166,6 @@ class InheritSaleOrder(models.Model):
                 # Apply the fiscal position's mapping to find the correct new tax
                 line.tax_id = self.fiscal_position_id.map_tax(product_taxes)
 
-    @api.depends(
-    'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
-    'order_line.product_uom_qty', 'order_line.price_unit',
-    'order_line.unit_price_per_nos', 'order_line.wattage',
-    'currency_id','company_id'
-    )
-    @api.depends('order_line.unit_price_per_nos', 'order_line.price_subtotal', 'order_line.price_tax')
-    def _compute_amounts(self):
-        for order in self:
-            untaxed = 0.0
-            tax = 0.0
-            for line in order.order_line:
-                untaxed += line.price_subtotal
-                tax += line.price_tax
-            order.update({
-                'amount_untaxed': untaxed,
-                'amount_tax': tax,
-                'amount_total': untaxed + tax,
-            })
-    
-    def _prepare_invoice(self):
-        res = super(InheritSaleOrder, self)._prepare_invoice()
-        res.update({
-            'sample_type':self.sample_type,
-            'tag_ids':self.tag_ids.ids,
-            'project_id':self.project_id.id,
-            # Pass the new field values when creating an invoice
-            'special_instruction_dcr': self.special_instruction_dcr,
-            'special_instruction_mess': self.special_instruction_mess,
-        })
-        return res
-    
     @api.depends('name')
     def _compute_action_link(self):
         menu_id = self.env.ref('sale.sale_order_menu').id
@@ -261,8 +229,7 @@ class InheritSaleOrder(models.Model):
             else:
                 rec.is_partner_vat = False
                 rec.partner_vat = ""
-
-            for line in self.order_line:
+            for line in rec.order_line:
                 line.compute_is_service()
 
             rec.is_group_admin = True if self.env.user.has_group('base.group_erp_manager') else False
@@ -373,7 +340,7 @@ class InheritSaleOrder(models.Model):
         check_note = False
         for rec in self:
             if rec.note:
-                if rec.note == False:
+                if rec.note is False:
                     check_note = True
                 if rec.note == '<p><br></p>':
                     check_note = True
@@ -430,28 +397,28 @@ class InheritSaleOrder(models.Model):
         }
     
     @api.depends(
-    'order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total',
-    'order_line.product_uom_qty', 'order_line.price_unit',
-    'order_line.unit_price_per_nos', 'order_line.wattage',
-    'currency_id','company_id'
+        'order_line.price_subtotal',
+        'order_line.price_tax',
+        'order_line.price_total',
+        'order_line.product_uom_qty',
+        'order_line.price_unit',
+        'order_line.unit_price_per_nos',
+        'order_line.wattage',
+        'currency_id', 'company_id'
     )
-    def _compute_amounts(self):
-        """Compute the total amounts of the SO."""
-        for record in self:
-            super(InheritSaleOrder, record)._compute_amounts() 
-
-    @api.depends_context('lang')
-    @api.depends('order_line.tax_id', 'order_line.price_unit', 'amount_total', 'amount_untaxed', 'currency_id')
-    def _compute_tax_totals(self):
-        # This will iterate over all orders and call the standard computation.
-        # It's important that your custom _compute_amounts runs first.
+    def _amount_all(self):
+        """Compute totals using each line's computed subtotal/tax (which we fix on the line)."""
         for order in self:
-            order_lines = order.order_line.filtered(lambda x: not x.display_type)
-            order.tax_totals = self.env['account.tax']._prepare_tax_totals(
-                # Use the existing amounts from the custom _compute_amounts
-                [x._convert_to_tax_base_line_dict() for x in order_lines],
-                order.currency_id or order.company_id.currency_id,
-            )
+            untaxed = 0.0
+            tax = 0.0
+            for line in order.order_line:
+                amount_untaxed += line.price_subtotal
+            amount_tax += line.price_tax
+            order.update({
+            'amount_untaxed': amount_untaxed,
+            'amount_tax': amount_tax,
+            'amount_total': amount_untaxed + amount_tax,
+        })
 
     def update_product_price(self):
         for line in self.order_line:
@@ -512,19 +479,23 @@ class InheritSaleOrderLine(models.Model):
     def _compute_unit_price_per_nos(self):
         """Calculates the price per unit number based on wattage."""
         for line in self:
-            line.unit_price_per_nos = line.wattage * line.price_unit
+            if line.wattage:
+                line.unit_price_per_nos = (line.wattage or 0.0) * (line.price_unit or 0.0)
+            else:
+                line.unit_price_per_nos = line.price_unit or 0.0
+
+    def _get_price_for_totals(self):
+        """Return the price per sellable unit that should feed totals/taxes."""
+        self.ensure_one()
+        if self.wattage and self.wattage > 0:
+            return self.unit_price_per_nos or 0.0
+        return self.price_unit or 0.0
 
     @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id', 'wattage', 'actual_price', 'unit_price_per_nos')
     def _compute_amount(self):
+        """Make totals use the per-panel price if wattage is set."""
         for line in self:
-            # choose the price that should be used for tax / subtotal:
-            if line.wattage and line.wattage > 0:
-                # price is per "nos" (already computed as wattage * base price)
-                price_for_taxes = line.unit_price_per_nos or 0.0
-            else:
-                price_for_taxes = line.price_unit or 0.0
-
-            # apply discount to that price
+            price_for_taxes = line._get_price_for_totals()
             price_after_discount = price_for_taxes * (1 - (line.discount or 0.0) / 100.0)
 
             taxes = line.tax_id.compute_all(
@@ -550,6 +521,44 @@ class InheritSaleOrderLine(models.Model):
 
             line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0) if line.discount else 0.0
 
+    # Make tax totals use the per-panel price instead of ₹/Wp
+    def _convert_to_tax_base_line_dict(self):
+        self.ensure_one()
+        res = super()._convert_to_tax_base_line_dict()
+        res.update({
+            'price_unit': self._get_price_for_totals(),  # pass undiscounted per-panel price
+            'quantity': self.product_uom_qty,
+            'discount': self.discount or 0.0,
+            'currency_id': self.order_id.currency_id,
+            'product': self.product_id,
+            'partner': self.order_id.partner_shipping_id,
+            'taxes': self.tax_id,
+        })
+        return res
+
+    # Ensure invoice uses the per-panel price
+    def _prepare_invoice_line(self, **optional_values):
+        res = super(InheritSaleOrderLine, self)._prepare_invoice_line(**optional_values)
+        res.update({
+            'inch_feet_type': self.inch_feet_type,
+            'height_length': self.height_length,
+            'width': self.width,
+            'sqft': self.sqft,
+            'sqft_rate': self.sqft_rate,
+            'tile_width': self.tile_width,
+            'tile_length': self.tile_length,
+            'layout': self.layout,
+            'tiles_per_box': self.tiles_per_box,
+            'tile_final': self.tile_final,
+            'remarks': self.remarks,
+            'actual_price': self.actual_price,
+            'diff_amount': self.diff_amount,
+            'diff_per': self.diff_per,
+            # Critical: invoice unit price should be per nos, not ₹/Wp
+            'price_unit': self._get_price_for_totals(),
+        })
+        return res
+
     @api.constrains('product_uom_qty')
     def _check_quantity_integer(self):
         for line in self:
@@ -574,8 +583,7 @@ class InheritSaleOrderLine(models.Model):
     @api.onchange('discount')
     def _onchange_discount(self):
         sale_per = self.env['ir.config_parameter'].sudo().get_param('saleperson_per')
-        # sale_per = self.env.user.dis_per
-        sale_per = float(sale_per)
+        sale_per = float(sale_per or 0.0)
         if self.env.user.has_group('sales_team.group_sale_salesman') and not self.user_has_groups('sales_team.group_sale_salesman_all_leads') and not self.user_has_groups('sales_team.group_sale_manager'):
             if sale_per and self.discount:
                 if self.discount > sale_per:
@@ -685,24 +693,6 @@ class InheritSaleOrderLine(models.Model):
                     gst_percentages.append(match.group())
             record.gst_tax = ' , '.join(gst_percentages)
 
-    def _prepare_invoice_line(self, **optional_values):
-        res = super(InheritSaleOrderLine, self)._prepare_invoice_line(**optional_values)
-        res.update({'inch_feet_type':self.inch_feet_type,
-                    'height_length':self.height_length,
-                    'width':self.width,
-                    'sqft':self.sqft,
-                    'sqft_rate':self.sqft_rate,
-                    'tile_width':self.tile_width,
-                    'tile_length':self.tile_length,
-                    'layout':self.layout,
-                    'tiles_per_box':self.tiles_per_box,
-                    'tile_final':self.tile_final,
-                    'remarks':self.remarks,
-                    'actual_price':self.actual_price,
-                    'diff_amount':self.diff_amount,
-                    'diff_per':self.diff_per})
-        return res
-    
     @api.onchange('product_id')
     def _onchange_product_id(self):
         for rec in self:

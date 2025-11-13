@@ -38,9 +38,9 @@
                 <!-- <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id), '|', ('company_id', '=', False), ('company_id', 'child_of', company_id)]</attribute> -->
             </xpath>
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="readonly">False</attribute>
+                <attribute name="class">o_list_renderer .o_list_table thead</attribute>
+                <attribute name="readonly">state == 'cancel' or locked or invoice_status != 'upselling' and state == 'sale'</attribute>
             </xpath>
-
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
                 <attribute name="options">{'no_create': True}</attribute>
             </xpath>
@@ -285,22 +285,46 @@
         </field>
     </record>
 
-    <record id="view_order_form_inherit_wattage" model="ir.ui.view">
-        <field name="name">sale.order.form.inherit.wattage</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
+  <record id="view_order_form_inherit_wattage" model="ir.ui.view">
+    <field name="name">sale.order.form.inherit.wattage</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
-                <attribute name="string">Unit Price (₹ per Wp)</attribute>
+                <attribute name="string">Unit Price (₹/Wp)</attribute>
+                <attribute name="readonly">False</attribute>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
-                <field name="unit_price_per_nos"/>
+
+      <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
+        <field name="wattage" string="Wattage (Wp)"/>
+      </xpath>
+
+      <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+        <field name="unit_price_per_nos"
+               string="Unit Price (₹/Nos)"
+               readonly="1"
+               options="{'currency_field': 'currency_id'}"/>
+      </xpath>
+
+      <!-- FORM (popup line editor) -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="attributes">
+                <attribute name="string">Unit Price (₹/Wp)</attribute>
+                <attribute name="readonly">False</attribute>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
-                <field name="wattage"/>
-            </xpath>
-        </field>
-    </record>
+
+      <xpath expr="//field[@name='order_line']/form//field[@name='product_uom_qty']" position="before">
+        <field name="wattage" string="Wattage (Wp)"/>
+      </xpath>
+
+      <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+        <field name="unit_price_per_nos"
+               string="Unit Price (₹/Nos)"
+               readonly="1"
+               options="{'currency_field': 'currency_id'}"/>
+      </xpath>
+
+    </field>
+  </record>
     
 
     <!-- templates menu -->

@@ -333,33 +333,46 @@
                                     </td>
                                 </tr>
 
-                                <!-- GST Conditional Logic -->
-                                <t t-if="o.partner_id.state_id.name == 'Gujarat'">
-                                    <!-- Within Gujarat: CGST + SGST -->
-                                    <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2"/>
+                                <!-- Dynamic GST Computation -->
+        <!-- Effective GST% for the whole order -->
+        <t t-set="effective_gst_rate" t-value="calculated_untaxed and ((calculated_tax_amount / calculated_untaxed) * 100.0) or 0.0"/>
+        <!-- Intrastate if company state equals partner state -->
+        <t t-set="is_intrastate" t-value="o.partner_id.state_id and o.company_id.state_id and (o.partner_id.state_id.id == o.company_id.state_id.id)"/>
 
-                                    <tr>
-                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST (2.5%)</td>
-                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST (2.5%)</td>
-                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-else="">
-                                    <!-- Outside Gujarat: IGST -->
-                                    <tr>
-                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">IGST (5%)</td>
-                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
-                                        </td>
-                                    </tr>
-                                </t>
+        <!-- GST Conditional Logic (Dynamic %) -->
+        <t t-if="is_intrastate">
+            <!-- Within same state: CGST + SGST -->
+            <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2.0"/>
+            <t t-set="half_rate" t-value="effective_gst_rate / 2.0"/>
+
+            <tr>
+                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                    CGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
+                </td>
+                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                    SGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
+                </td>
+                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                </td>
+            </tr>
+        </t>
+        <t t-else="">
+            <!-- Outside state: IGST -->
+            <tr>
+                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                    IGST (<t t-esc="('%0.2f' % effective_gst_rate).rstrip('0').rstrip('.')"/>%)
+                </td>
+                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                    ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
+                </td>
+            </tr>
+        </t>
 
                                 <!-- Final Total -->
                                 <tr style="font-weight:bold;">
