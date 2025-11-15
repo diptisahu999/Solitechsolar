@@ -472,7 +472,14 @@
                                         <strong>Payment Terms</strong>
                                     </td>
                                     <td colspan="2" class="value-cell">
-                                        <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
+                                        <t t-if="o.advance_percentage">
+                                            <span>
+                                                <t t-esc="('%.2f' % o.advance_percentage)"/>% (Advanced)
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
+                                        </t>
                                     </td>
                                     <td class="label-cell">
                                         <strong>Packing Type</strong>
@@ -483,10 +490,12 @@
                                 </tr>
                                 <tr>
                                     <td class="label-cell">
-                                        <strong>Delivery Terms</strong>
+                                        <strong>Delivery Type</strong>
                                     </td>
-                                    <td colspan="2" value-cell="value-cell">
-                                        <span t-esc="o.incoterm.name if o.incoterm else 'Ex-Works'"/>
+                                    <td colspan="2" class="value-cell">
+                                        <span t-if="o.delivery_type == 'for'">FOR</span>
+                                        <span t-if="o.delivery_type == 'ex_works'">Ex. Works</span>
+                                        <span t-if="not o.delivery_type">-</span>
                                     </td>
 
                                     <td class="label-cell">
@@ -506,6 +515,11 @@
                                 <tr>
                                     <td class="label-cell">
                                         <strong>Offer Validity</strong>
+                                    </td>
+                                    <td colspan="2" class="value-cell">
+                                        <t t-if="o.date_order">
+                                            <span>Valid until <t t-esc="(o.date_order + datetime.timedelta(days=15)).strftime('%d-%m-%Y')"/></span>
+                                        </t>
                                     </td>
                                     <td colspan="2" class="value-cell">
                                         <t t-if="o.validity_date">
