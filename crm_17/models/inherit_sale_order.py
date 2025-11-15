@@ -62,6 +62,23 @@ class InheritSaleOrder(models.Model):
         store=False
     )
 
+    salesperson_phone = fields.Char(
+        string="Salesperson Contact",
+        compute='_compute_salesperson_phone',
+        store=True,
+        readonly=False # Keep editable if needed, but the computed value is stored
+    )
+
+    @api.depends('user_id')
+    def _compute_salesperson_phone(self):
+        for rec in self:
+            phone = False
+            # Check if user_id and its linked partner_id exist
+            if rec.user_id and rec.user_id.partner_id:
+                # Use phone first, then mobile
+                phone = rec.user_id.partner_id.phone or rec.user_id.partner_id.mobile
+            rec.salesperson_phone = phone
+
 
     @api.depends('advance_percentage', 'amount_total')
     def _compute_advance_display(self):
