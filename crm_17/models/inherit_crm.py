@@ -194,16 +194,16 @@ class InheritCRM(models.Model):
                         tag_ids = rec.env['crm.tag'].search([('name', '=', tag.name)])
                         if tag_ids:
                             rec.tag_ids |= tag_ids
-            if rec.partner_id:                  
-                if not rec.partner_id.category_id:
-                    partner_id = rec.partner_id.name
-                    rec.partner_id = False
-                    return {
-                        'warning': {
-                            'title': "Validation",
-                            'message': f"Please add a tag to the ({partner_id}) customer.",
-                        }
-                    }
+            # if rec.partner_id:                  
+            #     if not rec.partner_id.category_id:
+            #         partner_id = rec.partner_id.name
+            #         rec.partner_id = False
+            #         return {
+            #             'warning': {
+            #                 'title': "Validation",
+            #                 'message': f"Please add a tag to the ({partner_id}) customer.",
+            #             }
+            #         }
 
     def action_assign_other_saleperson(self):
         vals = {"model":'crm.lead','id':self.ids,'default_type_model':'crm'}

@@ -67,3 +67,5 @@ crm.access_crm_stage_manager,crm.stage,crm.model_crm_stage,base.group_erp_manage
 utm.access_utm_source,access_utm_source,utm.model_utm_source,base.group_portal,1,0,0,0
 crm.access_crm_lost_reason_manager,crm.lost.reason.manager,crm.model_crm_lost_reason,sales_team.group_sale_manager,1,0,0,0
 access_crm_lost_reason_admin,crm.lost.reason.admin,crm.model_crm_lost_reason,base.group_erp_manager,1,1,1,1
+payment_term_user,Payment Term User,account.model_account_payment_term,base.group_user,1,1,1,1
+payment_term_line_user,Payment Term Line User,account.model_account_payment_term_line,base.group_user,1,1,1,1

@@ -435,5 +435,15 @@
             </xpath>
         </field>
     </record>
+    <record id="partner_form_tags_optional" model="ir.ui.view">
+        <field name="name">res.partner.form.tags.optional</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="attributes"> 
+                <attribute name="required">0</attribute>
+            </xpath>
+        </field>
+    </record>
 
 </odoo>
