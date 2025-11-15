@@ -148,7 +148,8 @@
                 <attribute name="force_save">True</attribute>
                 <attribute name="options">{'no_open': True}</attribute>
             </xpath>
-            <xpath expr="//field[@name='payment_term_id']" position="after">
+          <xpath expr="//field[@name='payment_term_id']" position="replace">
+                <field name="payment_term_id" string="Payment Terms" options="{'no_create': False}"/>
                 <field name="special_instruction_dcr"/>
                 <field name="special_instruction_mess"/>
                 <!-- <field name="advance_percentage"/>

@@ -334,45 +334,45 @@
                                 </tr>
 
                                 <!-- Dynamic GST Computation -->
-        <!-- Effective GST% for the whole order -->
-        <t t-set="effective_gst_rate" t-value="calculated_untaxed and ((calculated_tax_amount / calculated_untaxed) * 100.0) or 0.0"/>
-        <!-- Intrastate if company state equals partner state -->
-        <t t-set="is_intrastate" t-value="o.partner_id.state_id and o.company_id.state_id and (o.partner_id.state_id.id == o.company_id.state_id.id)"/>
+                                <!-- Effective GST% for the whole order -->
+                                <t t-set="effective_gst_rate" t-value="calculated_untaxed and ((calculated_tax_amount / calculated_untaxed) * 100.0) or 0.0"/>
+                                <!-- Intrastate if company state equals partner state -->
+                                <t t-set="is_intrastate" t-value="o.partner_id.state_id and o.company_id.state_id and (o.partner_id.state_id.id == o.company_id.state_id.id)"/>
 
-        <!-- GST Conditional Logic (Dynamic %) -->
-        <t t-if="is_intrastate">
-            <!-- Within same state: CGST + SGST -->
-            <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2.0"/>
-            <t t-set="half_rate" t-value="effective_gst_rate / 2.0"/>
+                                <!-- GST Conditional Logic (Dynamic %) -->
+                                <t t-if="is_intrastate">
+                                    <!-- Within same state: CGST + SGST -->
+                                    <t t-set="calculated_half_tax" t-value="calculated_tax_amount / 2.0"/>
+                                    <t t-set="half_rate" t-value="effective_gst_rate / 2.0"/>
 
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
-                    CGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
-                </td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
-                    SGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
-                </td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
-                </td>
-            </tr>
-        </t>
-        <t t-else="">
-            <!-- Outside state: IGST -->
-            <tr>
-                <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
-                    IGST (<t t-esc="('%0.2f' % effective_gst_rate).rstrip('0').rstrip('.')"/>%)
-                </td>
-                <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
-                    ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
-                </td>
-            </tr>
-        </t>
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                                            CGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
+                                        </td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                                            SGST (<t t-esc="('%0.2f' % half_rate).rstrip('0').rstrip('.')"/>%)
+                                        </td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_half_tax)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-else="">
+                                    <!-- Outside state: IGST -->
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">
+                                            IGST (<t t-esc="('%0.2f' % effective_gst_rate).rstrip('0').rstrip('.')"/>%)
+                                        </td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">
+                                            ₹ <t t-esc="'{:,.2f}'.format(calculated_tax_amount)"/>
+                                        </td>
+                                    </tr>
+                                </t>
 
                                 <!-- Final Total -->
                                 <tr style="font-weight:bold;">
@@ -461,84 +461,74 @@
                         
                         <!-- Commercial Terms -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
-                            <thead>
-                                <tr>
-                                    <td colspan="6" class="section-header"> Commercial Terms </td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="label-cell">
-                                        <strong>Payment Terms</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <t t-if="o.advance_percentage">
-                                            <span>
-                                                <t t-esc="('%.2f' % o.advance_percentage)"/>% (Advanced)
-                                            </span>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
-                                        </t>
-                                    </td>
-                                    <td class="label-cell">
-                                        <strong>Packing Type</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <span>Standard Export Packing</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">
-                                        <strong>Delivery Type</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <span t-if="o.delivery_type == 'for'">FOR</span>
-                                        <span t-if="o.delivery_type == 'ex_works'">Ex. Works</span>
-                                        <span t-if="not o.delivery_type">-</span>
-                                    </td>
+                        <thead>
+                            <tr>
+                                <td colspan="6" class="section-header">Commercial Terms</td>
+                            </tr>
+                        </thead>
 
-                                    <td class="label-cell">
-                                        <strong>Delivery Location</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <t t-if="o.partner_shipping_id">
-                                            <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
-                                            <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
-                                            <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
-                                            <t t-if="not (o.partner_shipping_id.city or o.partner_shipping_id.state_id)">
-                                                <span t-esc="o.partner_shipping_id.name"/>
-                                            </t>
-                                        </t>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">
-                                        <strong>Offer Validity</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <t t-if="o.date_order">
-                                            <span>Valid until <t t-esc="(o.date_order + datetime.timedelta(days=15)).strftime('%d-%m-%Y')"/></span>
-                                        </t>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <t t-if="o.validity_date">
-                                            <span>Valid until <t t-esc="o.validity_date.strftime('%d-%m-%Y')"/></span>
-                                        </t>
-                                        <t t-else="">
-                                            <span>15 days from quotation date</span>
-                                        </t>
-                                    </td>
+                        <tbody>
 
-                                    <td class="label-cell">
-                                        <strong>Delivery Schedule</strong>
-                                    </td>
-                                    <td colspan="2" class="value-cell">
-                                        <span>As per mutual agreement</span>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <!-- Row 1 -->
+                            <tr>
+                                <td class="label-cell"><strong>Payment Terms</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-if="o.advance_percentage">
+                                        <span>
+                                            <t t-esc="('%.2f' % o.advance_percentage)"/>% (Advanced)
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
+                                    </t>
+                                </td>
+
+                                <td class="label-cell"><strong>Packing Type</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <span>Standard Export Packing</span>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2 -->
+                            <tr>
+                                <td class="label-cell"><strong>Delivery Type</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <span t-if="o.delivery_type == 'for'">FOR</span>
+                                    <span t-if="o.delivery_type == 'ex_works'">Ex. Works</span>
+                                    <span t-if="not o.delivery_type">-</span>
+                                </td>
+
+                                <td class="label-cell"><strong>Delivery Location</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-if="o.partner_shipping_id">
+                                        <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
+                                        <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
+                                        <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
+                                        <t t-if="not (o.partner_shipping_id.city or o.partner_shipping_id.state_id)">
+                                            <span t-esc="o.partner_shipping_id.name"/>
+                                        </t>
+                                    </t>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr>
+                                <td class="label-cell"><strong>Offer Validity</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-if="o.date_order">
+                                        <span>Valid until <t t-esc="(o.date_order + datetime.timedelta(days=15)).strftime('%d-%m-%Y')"/></span>
+                                    </t>
+                                </td>
+
+                                <td class="label-cell"><strong>Delivery Schedule</strong></td>
+                                <td colspan="2" class="value-cell">
+                                    <span>As per mutual agreement</span>
+                                </td>
+                            </tr>
+
+                        </tbody>
                         </table>
+
 
                         <!-- Terms & Conditions -->
                         <table class="excel-table" style="width:100%; border-collapse:collapse; border:1px solid #000;">
