@@ -471,16 +471,11 @@
 
                             <!-- Row 1 -->
                             <tr>
-                                <td class="label-cell"><strong>Payment Terms</strong></td>
+                                <td class="label-cell">
+                                    <strong>Payment Terms</strong>
+                                </td>
                                 <td colspan="2" class="value-cell">
-                                    <t t-if="o.advance_percentage">
-                                        <span>
-                                            <t t-esc="('%.2f' % o.advance_percentage)"/>% (Advanced)
-                                        </span>
-                                    </t>
-                                    <t t-else="">
-                                        <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
-                                    </t>
+                                    <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
                                 </td>
 
                                 <td class="label-cell"><strong>Packing Type</strong></td>
