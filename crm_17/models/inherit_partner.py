@@ -115,13 +115,13 @@ class InheritPartner(models.Model):
     
     @api.model
     def create(self, vals):
-        if 'street' in vals and vals['street'] and len(vals['street']) >= 100:
+        if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).create(vals)
         return res
 
     def write(self, vals):
-        if 'street' in vals and vals['street'] and len(vals['street']) >= 100:
+        if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).write(vals)
         return res
