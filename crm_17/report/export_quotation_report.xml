@@ -216,7 +216,9 @@
                                 <td class="label-cell">Contact No</td>
                                 <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
                                 <td class="label-cell">Delivery Start Date</td>
-                                <td class="value-cell"><span t-field="o.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
+                                <td class="value-cell">
+                                    <span t-field="o.start_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="label-cell">CIN No</td>
@@ -510,8 +512,9 @@
                             <tr>
                                 <td class="label-cell"><strong>Offer Validity</strong></td>
                                 <td colspan="2" class="value-cell">
-                                    <t t-if="o.date_order">
-                                        <span>Valid until <t t-esc="(o.date_order + datetime.timedelta(days=15)).strftime('%d-%m-%Y')"/></span>
+                                    <t t-if="o.offer_validity">
+                                        <span t-field="o.offer_validity"
+                                            t-options='{"widget": "datetime", "format": "dd-MM-yyyy"}'/>
                                     </t>
                                 </td>
 
@@ -539,7 +542,12 @@
                                         <td style="width:3%; text-align:center; padding:1px; border-right:1px solid #000;">1</td>
                                         <td style="padding:1px;">
                                             <p style="margin: 0; padding-bottom: 3px;">
-                                                This quotation is valid for **15 days** from the date of issuance unless extended in writing. Any changes to this quotation must be mutually agreed upon and documented in writing.
+                                                This quotation is valid for
+                                                <t t-if="o.offer_validity and o.start_date">
+                                                    <t t-set="days_diff" t-value="(o.offer_validity.date() - o.start_date).days"/>
+                                                    <strong>**<t t-esc="days_diff"/> days**</strong>
+                                                </t>
+                                                from the date of issuance unless extended in writing. Any changes to this quotation must be mutually agreed upon and documented in writing.
                                             </p>
                                         </td>
                                     </tr>
@@ -571,7 +579,11 @@
                                         <td style="text-align:center; padding:1px; border-right:1px solid #000;">5</td>
                                         <td style="padding:1px;">
                                             <p style="margin: 0; padding-bottom: 3px;">
-                                                Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control. Any legal dispute arising out of this transaction will fall under the jurisdiction of the **Surat, Gujarat courts only.**
+                                                Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control.
+                                                Any legal dispute arising out of this transaction will fall under the jurisdiction of the
+                                                <strong>
+                                                    <t t-esc="o.jurisdiction_state"/> courts only.
+                                                </strong>
                                             </p>
                                         </td>
                                     </tr>

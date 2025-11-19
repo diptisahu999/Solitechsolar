@@ -151,6 +151,14 @@
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="salesperson_phone"/>
             </xpath>
+            <xpath expr="//page[@name='other_information']/group/group[1]" position="inside">
+                
+                <field name="offer_validity"/>
+                
+                <field name="jurisdiction_state" options="{'no_create': False, 'no_open': True}"/>
+                
+                <field name="start_date"/>
+            </xpath>
           <xpath expr="//field[@name='payment_term_id']" position="replace">
                 <field name="payment_term_id" string="Payment Terms" options="{'no_create': False}"/>
                 <field name="special_instruction_dcr"/>

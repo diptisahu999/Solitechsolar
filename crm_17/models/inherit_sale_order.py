@@ -69,6 +69,15 @@ class InheritSaleOrder(models.Model):
         readonly=False # Keep editable if needed, but the computed value is stored
     )
 
+
+    offer_validity = fields.Datetime(string='Offer Validity') 
+    jurisdiction_state = fields.Char(
+        string="Jurisdiction (State/City)",
+        default="Surat, Gujarat",
+        help="Select the applicable state or region."
+    )
+    start_date = fields.Date(string='Start Date')
+
     @api.depends('user_id')
     def _compute_salesperson_phone(self):
         for rec in self:
