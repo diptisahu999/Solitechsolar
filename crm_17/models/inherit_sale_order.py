@@ -78,6 +78,10 @@ class InheritSaleOrder(models.Model):
     )
     start_date = fields.Date(string='Start Date')
 
+    def action_print_so_custom_report(self):
+        # This ID (crm_17.action_report_so_custom) MUST match the record id in the XML file below
+        return self.env.ref('crm_17.action_report_so_custom').report_action(self)
+        
     @api.depends('user_id')
     def _compute_salesperson_phone(self):
         for rec in self:

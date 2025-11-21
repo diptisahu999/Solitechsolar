@@ -48,6 +48,7 @@
             'report/export_proforma_invoice_report.xml',
             'report/export_quotation_report.xml',
             'report/product_pricelist_pdf.xml',
+            'report/SO_report.xml',
 
             'views/inherit_partner.xml',
             'views/inherit_crm.xml',
