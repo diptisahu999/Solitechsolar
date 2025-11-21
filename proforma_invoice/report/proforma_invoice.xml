@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+    
         <template id="report_proforma">
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="o">
