@@ -36,30 +36,3 @@ function _forwardToFlutter(messageContent) {
     }
 }
 
-/**
- * Patch 1: The Discuss Service
- * This catches notifications related to mail threads, activities, etc.
- */
-patch(DiscussService.prototype, "my_flutter_bridge.DiscussService", {
-    notify(notification, options = {}) {
-        const result = super.notify(...arguments);
-        _forwardToFlutter(notification.message);
-        return result;
-    },
-});
-
-/**
- * Patch 2: The Core Notification Service
- * This is a more generic service that catches many other UI notifications,
- * including those from direct messages in Discuss.
- */
-patch(NotificationService.prototype, "my_flutter_bridge.NotificationService", {
-    add(props, options = {}) {
-        const result = super.add(...arguments);
-        // The structure here is different. The message is often in props.message or props.title.
-        // We combine title and message for a more complete notification.
-        const message = props.message ? `${props.title}: ${props.message}` : props.title;
-        _forwardToFlutter(message);
-        return result;
-    },
-});

@@ -162,6 +162,32 @@ class NotificationManager(models.AbstractModel):
     _name = 'notification.manager'
     _description = 'Push Notification Manager'
 
+    def send_fcm_notification(self, user_ids, title, message):
+        """Sends push notification via FCM to the users' mobile app."""
+        # Get user FCM tokens
+        users = self.env['res.users'].browse(user_ids)
+        tokens = [u.fcm_token for u in users if u.fcm_token]
+        if not tokens:
+            _logger.warning("No FCM tokens found for user(s): %s", user_ids)
+            return
+
+        # Path to your Firebase service account json and project_id
+        service_account_file = '/absolute/path/to/service-account.json'
+        project_id = 'your-firebase-project-id'
+
+        fcm = FCMNotification(
+            service_account_file=service_account_file,
+            project_id=project_id
+        )
+        # Send to each token
+        for token in tokens:
+            result = fcm.notify(
+                fcm_token=token,
+                notification_title=title,
+                notification_body=message,
+            )
+            _logger.info(f"FCM notification result for token {token}: {result}")
+
     # Optional alias if other code still calls this name
     def send_push_notification(self, user_ids, title, message, notification_type='info'):
         """
@@ -181,20 +207,21 @@ class NotificationManager(models.AbstractModel):
             'message': message,
             'type': notification_type,
         }
-        
-        # Prepare the list of channels to send to
+
         channels = [(user.partner_id, 'odoos_notification', payload) for user in users]
         _logger.info(f"--- DEBUG: Preparing to send to channels: {channels} ---")
 
-
+        # Call FCM for mobile push (asynchronously, no user blocking)
+        self.send_fcm_notification(user_ids, title, message)
 
         try:
             self.env['bus.bus']._sendmany(channels)
             _logger.info("--- DEBUG: _sendmany command executed successfully. ---")
         except Exception as e:
             _logger.error(f"--- DEBUG: Error executing _sendmany: {e} ---")
-            
+
         return self.send_chat_notification(user_ids, title, message)
+
 
     def send_chat_notification(self, user_ids, title, message):
         """
