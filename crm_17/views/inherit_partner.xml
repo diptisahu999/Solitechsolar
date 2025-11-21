@@ -72,6 +72,15 @@
                 <field name="vat" invisible="0"/>
                 <field name="l10n_in_pan" invisible="0"/>
             </xpath>
+            <xpath expr="//label[@for='vat']" position="attributes">
+                <attribute name="string">GST No</attribute>
+            </xpath>
+
+            <!-- Change Field Placeholder / Tooltip -->
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="string">GST No</attribute>
+                <attribute name="placeholder">e.g. 24ABCDE1234F1Z5</attribute>
+            </xpath>
         </field>
     </record>
 

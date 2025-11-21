@@ -84,6 +84,8 @@
         <xpath expr="//field[@name='sing']" position="after">
             <field name="quotation_invoice_image" widget="image" class="oe_avatar" />
             <field name="quotation_image" widget="image" class="oe_avatar" />
+            <field name="sale_image" widget="image" class="oe_avatar" />
+
         </xpath>
         </field>
     </record>
