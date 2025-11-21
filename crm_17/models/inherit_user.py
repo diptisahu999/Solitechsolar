@@ -20,6 +20,7 @@ class InheritResUsers(models.Model):
         ('services', 'Services'),
     ], string="User Type")
     email_signature = fields.Html(string="Email Signature")
+    fcm_token = fields.Char("FCM Token")
     
     def _compute_state(self):
         for user in self:
