@@ -5,24 +5,72 @@
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="o">
                     <style>
+                        /* Increased base font to be readable on A4 while still fitting one page */
                         .excel-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
-                        .excel-table td, .excel-table th { border: 1px solid #000; padding: 4px 8px; font-size: 11px; }
-                        .section-header { background-color: #D9D9D9; font-weight: bold; text-align: center; font-size: 12px; }
+                        .excel-table td, .excel-table th { border: 1px solid #000; padding: 4px 6px; font-size: 11px; vertical-align: top; }
+                        .section-header { background-color: #D9D9D9; font-weight: bold; text-align: center; font-size: 14px; padding: 6px 4px; }
                         .label-cell { background-color: #F2F2F2; font-weight: bold; width: 15%; }
                         .value-cell { background-color: white; }
                         .text-center { text-align: center; }
                         .text-right { text-align: right; }
                         .note-content p { margin: 0; }
+                        /* Slightly less shrink (0.88) to keep content single page but larger */
+                        .proforma_page {
+                            zoom: 0.88;
+                            line-height: 1.05;
+                            padding: 8px;
+                            margin: 0;
+                        }
+                        .terms_wrapper {
+                            page-break-inside: avoid !important;
+                        }
+                        .terms_wrapper table {
+                            page-break-inside: avoid !important;
+                        }
+                        .terms_wrapper tr,
+                        .terms_wrapper td {
+                            page-break-inside: avoid !important;
+                        }
+                        .terms_wrapper td {
+                            font-size: 11px;      
+                            padding: 3px 4px;     
+                            line-height: 1.05;
+                        }
+                        /* Small helper sizes */
+                        .small { font-size: 10px !important; }
+                        .xsmall { font-size: 9px !important; }
                     </style>
+<!-- A4 LANDSCAPE with very small margins -->
+        <record id="paperformat_proforma_one_page" model="report.paperformat">
+            <field name="name"></field>
+            <field name="format"></field>
+            <field name="orientation"></field>
+            <field name="margin_top"></field>
+            <field name="margin_bottom"></field>
+            <field name="margin_left"></field>
+            <field name="margin_right"></field>
+            <field name="header_line" eval="False"/>
+            <field name="disable_shrinking" eval="False"/>
+        </record>
 
-                    <div class="page">
+        <!-- link this paperformat to your report action -->
+        <record id="action_report_proforma" model="ir.actions.report">
+            <!-- use your actual values for these fields -->
+            <field name="name"></field>
+            <field name="model"></field>
+            <field name="report_type"></field>
+            <field name="report_name"></field>
+            <field name="paperformat_id" ref="your_module.paperformat_proforma_one_page"/>
+        </record>
+
+                    <div class="page proforma_page">
                         <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                             <tr>
                                                                 <!-- Column 1: Logo spanning 3 rows -->
                                 <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
                                 <img t-if="o.company_id.quotation_image" 
                                     t-att-src="image_data_uri(o.company_id.quotation_image)" 
-                                    style="max-height: 86px;"/>
+                                    style="max-height: 100px; display:block;"/>
 
                                 </td>
                                 <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
@@ -256,7 +304,128 @@
                                 </tr>
                             </tbody>
                         </table>
-                        
+ <div class="terms_wrapper">
+    <table class="excel-table"
+           style="width:100%; border-collapse:collapse; border:1px solid #000;">
+        <thead>
+            <tr>
+                <td colspan="6"
+                    class="section-header"
+                    style="text-align:center; font-weight:bold;">
+                    Terms &amp; Conditions
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 1–6: terms rows -->
+            <tr>
+                <td style="width:3%; text-align:center; border:1px solid #000;">1</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    This quotation is valid for from the date of issuance unless extended in writing.
+                    Any changes to this quotation must be mutually agreed upon and documented in writing.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:1px solid #000;">2</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    Any change in government duties, taxes, or levies will be charged at actuals.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:1px solid #000;">3</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    Delivery shall be made as per the mutually agreed delivery schedule. Transit insurance
+                    shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard
+                    export‑quality packaging suitable for safe transportation and handling.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:1px solid #000;">4</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    Material is subject to pre‑dispatch inspection (if required) at our facility. Any
+                    external damage during transit should be reported immediately to the transporter and
+                    Solitech within <strong>48 hours</strong> of delivery.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:1px solid #000;">5</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    Solitech shall not be held responsible for delays or non‑performance due to acts of God,
+                    war, strike, pandemics, natural disasters, or any other force majeure conditions beyond
+                    its control. Any legal dispute arising out of this transaction will fall under the
+                    jurisdiction of the <strong>Surat, Gujarat courts only.</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; border:1px solid #000;">6</td>
+                <td colspan="5" style="border:1px solid #000;">
+                    All designs, specifications, and product data shared are confidential and remain the
+                    property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced
+                    without written consent.
+                </td>
+            </tr>
+
+            <!-- Prepared / Approved / Company -->
+            <tr>
+                <td colspan="2"
+                    style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    Prepared By
+                </td>
+                <td colspan="2"
+                    style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    Approved By
+                </td>
+                <td colspan="2"
+                    style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    For SOLITECH GREEN ENERGY PRIVATE LIMITED
+                </td>
+            </tr>
+
+            <!-- empty signature row -->
+            <tr>
+                <td colspan="2" style="border:1px solid #000; height:30px;"></td>
+                <td colspan="2" style="border:1px solid #000;"></td>
+                <td colspan="2" style="border:1px solid #000;"></td>
+            </tr>
+
+            <!-- designations -->
+            <tr>
+                <td colspan="2" style="border:1px solid #000; text-align:center;">
+                    Executive - Sales
+                </td>
+                <td colspan="2" style="border:1px solid #000; text-align:center;">
+                    Head - Sales and Marketing
+                </td>
+                <td colspan="2"
+                    style="border:1px solid #000; text-align:center; text-decoration:underline;">
+                    Authorised Signatory
+                </td>
+            </tr>
+
+            <!-- revision / confidentiality -->
+            <tr>
+                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    Revision No
+                </td>
+                <td style="border:1px solid #000; text-align:center;">
+                    00
+                </td>
+                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    Revision Date
+                </td>
+                <td style="border:1px solid #000; text-align:center;">
+                    NA
+                </td>
+                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
+                    Confidentiality
+                </td>
+                <td style="border:1px solid #000; text-align:center;">
+                    Internal Use / Customer Shared
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
                         </div>
                 </t>
             </t>

@@ -91,7 +91,7 @@
                                 <!-- Column 1: Logo spanning 3 rows -->
                                 <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
                                     <img t-if="o.company_id.quotation_invoice_image" 
-                                        t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                        t-att-src="image_data_uri(o.company_id.sale_image)" 
                                         style="max-height: 85px;"/>
                                 </td>
                                 <!-- Column 3: Document No -->
