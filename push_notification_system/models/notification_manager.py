@@ -155,6 +155,7 @@
 
 from odoo import models
 import logging
+from pyfcm import FCMNotification
 
 _logger = logging.getLogger(__name__)
 
