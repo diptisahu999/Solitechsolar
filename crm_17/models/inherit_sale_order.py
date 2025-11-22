@@ -78,9 +78,25 @@ class InheritSaleOrder(models.Model):
     )
     start_date = fields.Date(string='Start Date')
 
+    def action_print_quotation_report(self):
+            """Triggers the report using the Quotation action ID, setting print_type='quotation'."""
+            report_action = self.env.ref('crm_17.action_report_quotation_custom').report_action(self)
+            
+            # 1. Update the context to indicate it's a QUOTATION print
+            report_action.update({
+                'context': {'print_type': 'quotation'} 
+            })
+            return report_action
+        
     def action_print_so_custom_report(self):
-        # This ID (crm_17.action_report_so_custom) MUST match the record id in the XML file below
-        return self.env.ref('crm_17.action_report_so_custom').report_action(self)
+        """Triggers the report using the SO action ID, setting print_type='sale'."""
+        report_action = self.env.ref('crm_17.action_report_so_custom').report_action(self)
+        
+        # 2. Update the context to indicate it's a SALE print
+        report_action.update({
+            'context': {'print_type': 'sale'}
+        })
+        return report_action
         
     @api.depends('user_id')
     def _compute_salesperson_phone(self):
