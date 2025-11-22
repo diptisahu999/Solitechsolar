@@ -192,9 +192,12 @@ class InheritSaleOrder(models.Model):
             if line.product_id:
                 # Get the default taxes from the product
                 product_taxes = line.product_id.taxes_id.filtered(lambda t: t.company_id == self.company_id)
-                
+
                 # Apply the fiscal position's mapping to find the correct new tax
-                line.tax_id = self.fiscal_position_id.map_tax(product_taxes)
+                # If the fiscal position mapping returns no taxes (mapping not configured),
+                # keep the original product taxes so tax is not removed for interstate cases.
+                mapped_taxes = self.fiscal_position_id.map_tax(product_taxes) or product_taxes
+                line.tax_id = mapped_taxes
 
     @api.depends('name')
     def _compute_action_link(self):
@@ -380,11 +383,43 @@ class InheritSaleOrder(models.Model):
     
     @api.onchange('l10n_in_gst_treatment','order_line','partner_id')
     def _onchange_l10n_in_gst_treatment(self):
-        if self.l10n_in_gst_treatment in ['overseas','special_economic_zone']:
-            for line in self.order_line:
+        """When GST treatment changes, update line taxes accordingly.
+        For overseas/SEZ: remove taxes.
+        For intrastate/interstate: apply product taxes or fiscal position mapped taxes.
+        """
+        for line in self.order_line:
+            if not line.product_id:
+                continue
+            
+            if self.l10n_in_gst_treatment in ['overseas','special_economic_zone']:
+                # Remove taxes for overseas and SEZ
                 line.tax_id = [(5, 0, 0)]
-        else:
-            pass
+            else:
+                # For intrastate and interstate: apply product taxes with fiscal position mapping
+                product_taxes = line.product_id.taxes_id.filtered(lambda t: t.company_id == self.company_id)
+                if self.fiscal_position_id:
+                    mapped = self.fiscal_position_id.map_tax(product_taxes) or product_taxes
+                    line.tax_id = mapped
+                else:
+                    # No fiscal position: use product taxes as-is
+                    line.tax_id = product_taxes
+
+    @api.onchange('partner_id', 'partner_shipping_id', 'company_id')
+    def _onchange_partner_apply_taxes(self):
+        """Ensure order lines have taxes when partner changes.
+        If a fiscal position exists we map product taxes; otherwise fall back
+        to product default taxes so taxes don't disappear for interstate partners.
+        """
+        for order in self:
+            for line in order.order_line:
+                if not line.product_id:
+                    continue
+                product_taxes = line.product_id.taxes_id.filtered(lambda t: t.company_id == order.company_id)
+                if order.fiscal_position_id:
+                    mapped = order.fiscal_position_id.map_tax(product_taxes) or product_taxes
+                    line.tax_id = mapped
+                else:
+                    line.tax_id = product_taxes
     # def _update_order_line_info(self, product_id, quantity, **kwargs):
     #     res = super(InheritSaleOrder, self)._update_order_line_info(product_id, quantity, **kwargs)
     #     self.order_line.onchange_gst_product()
@@ -442,13 +477,13 @@ class InheritSaleOrder(models.Model):
             untaxed = 0.0
             tax = 0.0
             for line in order.order_line:
-                amount_untaxed += line.price_subtotal
-            amount_tax += line.price_tax
+                untaxed += line.price_subtotal
+                tax += line.price_tax
             order.update({
-            'amount_untaxed': amount_untaxed,
-            'amount_tax': amount_tax,
-            'amount_total': amount_untaxed + amount_tax,
-        })
+                'amount_untaxed': untaxed,
+                'amount_tax': tax,
+                'amount_total': untaxed + tax,
+            })
 
     def update_product_price(self):
         for line in self.order_line:
