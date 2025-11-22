@@ -97,6 +97,22 @@ class InheritSaleOrder(models.Model):
             'context': {'print_type': 'sale'}
         })
         return report_action
+    
+
+    def action_confirm(self):
+        for order in self:
+            partner = order.partner_id
+
+            # GST No
+            gst_number = partner.vat
+            # BLOCK CONFIRM WHEN GST NO IS EMPTY
+            if not gst_number:
+                raise UserError(
+                    "GST Number is required.\n\n"
+                    "Please update the customer's GST No before confirming the quotation."
+                )
+
+        return super(InheritSaleOrder, self).action_confirm()
         
     @api.depends('user_id')
     def _compute_salesperson_phone(self):
@@ -311,6 +327,37 @@ class InheritSaleOrder(models.Model):
             # inv_wizard.create_invoices()
             self.state = 'pi'
             return self.action_view_invoice(invoices=invoices)
+        
+
+
+    def action_create_proforma(self):
+        """Create a Proforma Invoice from this Sale Order and open it."""
+        self.ensure_one()
+        pi_model = self.env['proforma.invoice']
+        pi = pi_model.create_from_sale_order(self)
+        # Open the created PI in form view
+        action = self.env.ref('proforma_invoice.action_proforma_invoice_form', False)
+        if not action:
+            # Fallback to a generic window action
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'proforma.invoice',
+                'view_mode': 'form',
+                'res_id': pi.id,
+                'target': 'current',
+            }
+        # If action exists, update it to open the new record
+        result = action.read()[0]
+        result.update({'res_id': pi.id, 'views': [(self.env.ref('proforma_invoice.view_proforma_invoice_form').id, 'form')]})
+        return result
+
+    def action_create_proforma_invoice(self):
+        """Compatibility wrapper called by view button `action_create_proforma_invoice`.
+
+        Previously the button called this name; it now delegates to
+        `action_create_proforma` implemented above.
+        """
+        return self.action_create_proforma()
         
     def _prepare_invoice(self):
         res = super(InheritSaleOrder, self)._prepare_invoice()
