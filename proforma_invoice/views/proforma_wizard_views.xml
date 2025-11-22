@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="proforma_invoice_po_wizard_form" model="ir.ui.view">
+        <field name="name">proforma.invoice.po.wizard.form</field>
+        <field name="model">proforma.invoice.po.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="sale_order_id" readonly="1" />
+                    <field name="po_number" placeholder="Enter Purchase Order Number" />
+                </group>
+                <footer>
+                    <button name="action_create_proforma" string="Create Proforma Invoice" type="object" class="oe_highlight" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

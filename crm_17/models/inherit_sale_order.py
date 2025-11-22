@@ -331,25 +331,19 @@ class InheritSaleOrder(models.Model):
 
 
     def action_create_proforma(self):
-        """Create a Proforma Invoice from this Sale Order and open it."""
+        """Create a Proforma Invoice from this Sale Order and open it.
+        
+        Shows a wizard popup to capture PO Number (mandatory) before creating PI.
+        """
         self.ensure_one()
-        pi_model = self.env['proforma.invoice']
-        pi = pi_model.create_from_sale_order(self)
-        # Open the created PI in form view
-        action = self.env.ref('proforma_invoice.action_proforma_invoice_form', False)
-        if not action:
-            # Fallback to a generic window action
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'proforma.invoice',
-                'view_mode': 'form',
-                'res_id': pi.id,
-                'target': 'current',
-            }
-        # If action exists, update it to open the new record
-        result = action.read()[0]
-        result.update({'res_id': pi.id, 'views': [(self.env.ref('proforma_invoice.view_proforma_invoice_form').id, 'form')]})
-        return result
+        # Show a popup wizard to capture PO Number (mandatory) before creating PI
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'proforma.invoice.po.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_sale_order_id': self.id},
+        }
 
     def action_create_proforma_invoice(self):
         """Compatibility wrapper called by view button `action_create_proforma_invoice`.

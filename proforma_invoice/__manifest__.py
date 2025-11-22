@@ -13,6 +13,7 @@
         'views/proforma_invoice_views.xml',
         'views/crm_lead_views.xml', 
         'views/sale_order_views.xml',
+        'views/proforma_wizard_views.xml',
         'security/ir.model.access.csv',
         'security/proforma_invoice_security.xml',
     ],
