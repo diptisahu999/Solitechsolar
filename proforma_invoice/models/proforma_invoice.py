@@ -67,6 +67,19 @@ class ProformaInvoice(models.Model):
         copy=False
     )
 
+    def get_company_header_image(self):
+        """
+        1. Switches to Superuser (sudo) to bypass the 'account.move' Access Error.
+        2. Tries to get the custom Quotation Image (Document Layout header).
+        3. If that is empty, falls back to the standard Company Logo.
+        """
+        self.ensure_one()
+        # Use sudo() to ignore permissions and get the record
+        company = self.company_id.sudo()
+        
+        # return the custom header if it exists, otherwise return the standard logo
+        return company.quotation_image or company.logo
+        
     def amount_to_text(self, amount, currency='INR'):
         """
         Converts a numeric amount to its text representation in words.
