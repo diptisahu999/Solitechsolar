@@ -62,16 +62,18 @@
                                     <field name="discount"/>
                                     <field name="product_type"/>
                                     <field name="quantity"/>
-                                    <field name="price_unit" string="Price"/>
-                                    <field name="actual_price"/>
-                                    <field name="diff_per" string="Difference (%)"/>
+                                    <field name="price_unit" string="Price (₹/Wp)"/>
+                                    <field name="actual_price" string="Actual Price (₹/Nos)"/>
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="price_subtotal" string="Tax excl." widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="remarks"/>
                                 </tree>
                             </field>
-                             <group class="oe_subtotal_footer oe_right">
+                            <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="cgst_amount" string="CGST" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="sgst_amount" string="SGST" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="igst_amount" string="IGST" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </group>

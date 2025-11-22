@@ -48,6 +48,9 @@ class ProformaInvoice(models.Model):
     amount_untaxed = fields.Monetary(string='Untaxed Amount', compute='_compute_amounts')
     amount_tax = fields.Monetary(string='Taxes', compute='_compute_amounts')
     amount_total = fields.Monetary(string='Total', compute='_compute_amounts')
+    cgst_amount = fields.Monetary(string='CGST', compute='_compute_amounts')
+    sgst_amount = fields.Monetary(string='SGST', compute='_compute_amounts')
+    igst_amount = fields.Monetary(string='IGST', compute='_compute_amounts')
 
     is_manager = fields.Boolean(string='Manager', default=False)
     project_id = fields.Many2one('project.project', string="Project", tracking=True)
@@ -83,9 +86,35 @@ class ProformaInvoice(models.Model):
     @api.depends('line_ids.price_subtotal', 'line_ids.price_total')
     def _compute_amounts(self):
         for pi in self:
-            pi.amount_untaxed = sum(pi.line_ids.mapped('price_subtotal'))
-            pi.amount_total = sum(pi.line_ids.mapped('price_total'))
-            pi.amount_tax = pi.amount_total - pi.amount_untaxed
+            untaxed = sum(pi.line_ids.mapped('price_subtotal'))
+            tax_total = sum(pi.line_ids.mapped('price_tax'))
+            total = untaxed + tax_total
+
+            # Compute tax breakdown by iterating lines and recomputing their tax entries
+            cgst = 0.0
+            sgst = 0.0
+            igst = 0.0
+            for line in pi.line_ids:
+                # price used for tax calculation should be consistent with line logic
+                price_for_taxes = getattr(line, '_get_price_for_totals', lambda: line.price_unit)()
+                price_after_discount = price_for_taxes * (1 - (line.discount or 0.0) / 100.0)
+                taxes = line.tax_ids.compute_all(price_after_discount, pi.currency_id, line.quantity, product=line.product_id, partner=pi.partner_id)
+                for t in taxes.get('taxes', []):
+                    tname = (t.get('name') or '').upper()
+                    amt = t.get('amount', 0.0)
+                    if 'CGST' in tname:
+                        cgst += amt
+                    elif 'SGST' in tname:
+                        sgst += amt
+                    elif 'IGST' in tname:
+                        igst += amt
+
+            pi.amount_untaxed = untaxed
+            pi.amount_tax = tax_total
+            pi.amount_total = total
+            pi.cgst_amount = cgst
+            pi.sgst_amount = sgst
+            pi.igst_amount = igst
     
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -134,6 +163,63 @@ class ProformaInvoice(models.Model):
     def action_post(self):
         self.write({'state': 'posted'})
 
+    @api.model
+    def create_from_sale_order(self, sale_order):
+        """Create a Proforma Invoice by copying a Sale Order's header and lines.
+
+        `sale_order` can be a `sale.order` record or an id.
+        Returns the created `proforma.invoice` record.
+        """
+        if not sale_order:
+            raise ValidationError(_('No Sale Order provided to create Proforma Invoice.'))
+
+        so_model = self.env['sale.order']
+        if isinstance(sale_order, int):
+            so = so_model.browse(sale_order)
+        else:
+            so = sale_order
+
+        if not so or not so.exists():
+            raise ValidationError(_('Sale Order not found.'))
+
+        pi_vals = {
+            'partner_id': so.partner_id.id,
+            'partner_shipping_id': so.partner_shipping_id.id if so.partner_shipping_id else so.partner_id.id,
+            'invoice_payment_term_id': so.payment_term_id.id if hasattr(so, 'payment_term_id') else False,
+            'sale_order_id': so.id,
+            'company_id': so.company_id.id,
+            'user_id': so.user_id.id,
+            'narration': so.note or False,
+        }
+
+        pi = self.create(pi_vals)
+
+        line_vals = []
+        for sol in so.order_line:
+            lv = {
+                'proforma_id': pi.id,
+                'product_id': sol.product_id.id or False,
+                'name': sol.name or (sol.product_id.get_product_multiline_description_sale() if sol.product_id else ''),
+                'quantity': sol.product_uom_qty,
+                # Keep `price_unit` as the sale order's unit price (₹/Wp)
+                'price_unit': sol.price_unit,
+                'discount': sol.discount,
+                'tax_ids': [(6, 0, sol.tax_id.ids)],
+                # Store the per-sellable-unit price as `actual_price` (₹ per Nos)
+                'actual_price': sol._get_price_for_totals() if hasattr(sol, '_get_price_for_totals') else (sol.actual_price or (sol.product_id.list_price if sol.product_id else 0.0)),
+                'remarks': sol.remarks,
+                'sale_line_id': sol.id,
+                'wattage': sol.wattage,
+            }
+            line_vals.append((0, 0, lv))
+
+        if line_vals:
+            pi.write({'line_ids': line_vals})
+
+        # Recompute amounts after writing lines
+        pi._compute_amounts()
+        return pi
+
 
 class ProformaInvoiceLine(models.Model):
     _name = "proforma.invoice.line"
@@ -153,26 +239,57 @@ class ProformaInvoiceLine(models.Model):
     inch_feet_type = fields.Selection([('inch', 'Inch'), ('feet', 'Feet'), ('mm', 'MM'), ('tile', 'Tile'), ('basic', 'Basic')], 'Inch/Feet', default="basic")
     discount = fields.Float(string='Discount (%)')
     actual_price = fields.Float(string="Actual Price")
-    diff_per = fields.Float(string="Difference (%)", compute="_compute_diff")
+
     remarks = fields.Char(string='Remarks')
     sale_line_id = fields.Many2one('sale.order.line', string='Source SO Line', readonly=True, copy=False)
 
-    @api.depends('price_unit', 'actual_price')
-    def _compute_diff(self):
-        for line in self:
-            if line.actual_price:
-                diff_amount = line.price_unit - line.actual_price
-                line.diff_per = (diff_amount / line.actual_price) * 100 if line.actual_price != 0 else 0
-            else:
-                line.diff_per = 0
+    # Additional fields to mirror `sale.order.line` customizations so totals/structure match
+    wattage = fields.Float(string="Wattage (Wp)")
+    unit_price_per_nos = fields.Monetary(string="Unit Price (₹ per Nos)", compute='_compute_unit_price_per_nos', store=True)
+    up_after_disc_amt = fields.Float(string="Unit Price After Discount")
+    diff_amount = fields.Float(string="Difference Amount")
+    price_tax = fields.Monetary(string='Tax Amount', compute='_compute_amounts', store=True)
+
+    # _compute_diff removed (difference field not required)
 
     @api.depends('quantity', 'price_unit', 'tax_ids', 'discount')
     def _compute_amounts(self):
         for line in self:
-            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = line.tax_ids.compute_all(price, line.currency_id, line.quantity, product=line.product_id, partner=line.proforma_id.partner_id)
-            line.price_total = taxes['total_included']
-            line.price_subtotal = taxes['total_excluded']
+            # Determine price used for tax calculations (per sale.order.line logic)
+            price_for_taxes = line._get_price_for_totals()
+            price_after_discount = price_for_taxes * (1 - (line.discount or 0.0) / 100.0)
+
+            taxes = line.tax_ids.compute_all(price_after_discount, line.currency_id, line.quantity, product=line.product_id, partner=line.proforma_id.partner_id)
+            line.price_tax = sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+            line.price_total = taxes.get('total_included', 0.0)
+            line.price_subtotal = taxes.get('total_excluded', 0.0)
+
+            # Preserve diff/up-after-disc amounts similar to sale.order.line
+            if line.actual_price:
+                line.diff_amount = line.price_unit - line.actual_price
+                line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            else:
+                line.diff_amount = 0.0
+                line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+
+    def _get_price_for_totals(self):
+        """Return the price per sellable unit used for tax/total calculations.
+
+        Mirrors `sale.order.line._get_price_for_totals` logic: if wattage present,
+        taxes should be computed on per-panel price (unit_price_per_nos), otherwise on price_unit.
+        """
+        self.ensure_one()
+        if self.wattage and self.wattage > 0:
+            return self.unit_price_per_nos or 0.0
+        return self.price_unit or 0.0
+
+    @api.depends('wattage', 'price_unit')
+    def _compute_unit_price_per_nos(self):
+        for line in self:
+            if line.wattage:
+                line.unit_price_per_nos = (line.wattage or 0.0) * (line.price_unit or 0.0)
+            else:
+                line.unit_price_per_nos = line.price_unit or 0.0
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
