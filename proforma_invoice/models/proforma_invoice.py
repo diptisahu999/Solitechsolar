@@ -228,9 +228,12 @@ class ProformaInvoiceLine(models.Model):
     proforma_id = fields.Many2one('proforma.invoice', string='Proforma', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', required=True)
     name = fields.Char(string='Description', required=True)
-    product_type = fields.Selection(related='product_id.detailed_type', string="Product Type") # NEW FIELD
+    product_type = fields.Selection(related='product_id.detailed_type', string="Product Type")
     quantity = fields.Float(string='Quantity', default=1.0)
+    
+    # Base Price (e.g. 13.00)
     price_unit = fields.Float(string='Price')
+    
     tax_ids = fields.Many2many('account.tax', string='Taxes') 
     price_subtotal = fields.Monetary(string='Tax excl.', compute='_compute_amounts', store=True)
     price_total = fields.Monetary(string='Total', compute='_compute_amounts', store=True)
@@ -243,19 +246,19 @@ class ProformaInvoiceLine(models.Model):
     remarks = fields.Char(string='Remarks')
     sale_line_id = fields.Many2one('sale.order.line', string='Source SO Line', readonly=True, copy=False)
 
-    # Additional fields to mirror `sale.order.line` customizations so totals/structure match
+    # --- FIX: Removed "related" attribute to prevent KeyError ---
     wattage = fields.Float(string="Wattage (Wp)")
+    
+    # Calculated Price (Wattage * Price)
     unit_price_per_nos = fields.Monetary(string="Unit Price (₹ per Nos)", compute='_compute_unit_price_per_nos', store=True)
+    
     up_after_disc_amt = fields.Float(string="Unit Price After Discount")
     diff_amount = fields.Float(string="Difference Amount")
     price_tax = fields.Monetary(string='Tax Amount', compute='_compute_amounts', store=True)
 
-    # _compute_diff removed (difference field not required)
-
-    @api.depends('quantity', 'price_unit', 'tax_ids', 'discount')
+    @api.depends('quantity', 'price_unit', 'tax_ids', 'discount', 'wattage', 'unit_price_per_nos')
     def _compute_amounts(self):
         for line in self:
-            # Determine price used for tax calculations (per sale.order.line logic)
             price_for_taxes = line._get_price_for_totals()
             price_after_discount = price_for_taxes * (1 - (line.discount or 0.0) / 100.0)
 
@@ -264,7 +267,6 @@ class ProformaInvoiceLine(models.Model):
             line.price_total = taxes.get('total_included', 0.0)
             line.price_subtotal = taxes.get('total_excluded', 0.0)
 
-            # Preserve diff/up-after-disc amounts similar to sale.order.line
             if line.actual_price:
                 line.diff_amount = line.price_unit - line.actual_price
                 line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
@@ -273,11 +275,6 @@ class ProformaInvoiceLine(models.Model):
                 line.up_after_disc_amt = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
 
     def _get_price_for_totals(self):
-        """Return the price per sellable unit used for tax/total calculations.
-
-        Mirrors `sale.order.line._get_price_for_totals` logic: if wattage present,
-        taxes should be computed on per-panel price (unit_price_per_nos), otherwise on price_unit.
-        """
         self.ensure_one()
         if self.wattage and self.wattage > 0:
             return self.unit_price_per_nos or 0.0
@@ -298,3 +295,9 @@ class ProformaInvoiceLine(models.Model):
         self.name = self.product_id.get_product_multiline_description_sale()
         self.price_unit = self.product_id.list_price
         self.actual_price = self.product_id.list_price
+        
+        # --- FIX: Safely try to get wattage from product, default to 0 if not found ---
+        if hasattr(self.product_id, 'wattage'):
+            self.wattage = self.product_id.wattage
+        else:
+            self.wattage = 0.0

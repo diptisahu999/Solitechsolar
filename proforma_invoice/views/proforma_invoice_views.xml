@@ -62,8 +62,15 @@
                                     <field name="discount"/>
                                     <field name="product_type"/>
                                     <field name="quantity"/>
+                                    
+                                    <field name="wattage" optional="show"/>
+                                    
                                     <field name="price_unit" string="Price (₹/Wp)"/>
-                                    <field name="actual_price" string="Actual Price (₹/Nos)"/>
+                                    
+                                    <field name="unit_price_per_nos" string="Actual Price (₹/Nos)" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    
+                                    <field name="actual_price" column_invisible="1"/>
+                                    
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="price_subtotal" string="Tax excl." widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="remarks"/>
