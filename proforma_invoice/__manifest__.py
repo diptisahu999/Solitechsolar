@@ -8,6 +8,7 @@
     'data': [
         'report/proforma_invoice.xml',
         'data/sales_dashboard_data.xml',
+        'data/proforma_invoice_data.xml',
         'views/sales_dashboard_views.xml',
         'views/proforma_invoice_views.xml',
         'views/crm_lead_views.xml', 
