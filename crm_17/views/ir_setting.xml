@@ -12,6 +12,10 @@
                     <label for="saleperson_per"/>
                     <field name="saleperson_per"/>
                </setting>
+               <setting id="min_unit_price_watt_setting" groups="base.group_system" invisible="0">
+                   <label for="min_unit_price_watt"/>
+                   <field name="min_unit_price_watt"/>
+               </setting>
             </xpath>
         </field>
     </record>
