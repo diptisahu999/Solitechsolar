@@ -71,7 +71,7 @@
         name="Opportunity"
         action="crm.action_your_pipeline"
         parent="main_home_menu"
-        sequence="1"/>
+        sequence="2"/>
 
     <menuitem id="menu_action_quotations_home"
         name="Quotations"
@@ -100,7 +100,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_product_template_action_product_home"
+<menuitem id="menu_product_template_action_product_home"
         name="Products"
         action="product_template_action_product_home"
         parent="main_home_menu"
@@ -149,7 +149,7 @@
         name="Leads"
         action="action_crm_leads_home"
         parent="main_home_menu"
-        sequence="2"/>
+        sequence="1"/>
 
 
 
