@@ -65,7 +65,7 @@
         name="Contacts"
         action="action_contacts_home"
         parent="main_home_menu"
-        sequence="2"/>
+        sequence="3"/>
 
     <menuitem id="menu_crm_opportunities_home"
         name="Opportunity"
@@ -77,13 +77,13 @@
         name="Quotations"
         action="sale.action_quotations"
         parent="main_home_menu"
-        sequence="3"/>
+        sequence="4"/>
 
     <menuitem id="menu_action_move_out_invoice_type_home"
         name="PI"
         action="account.action_move_out_invoice_type"
         parent="main_home_menu"
-        sequence="4"/>
+        sequence="5"/>
 
     <record id="product_template_action_product_home" model="ir.actions.act_window">
         <field name="name">Products</field>
@@ -104,7 +104,7 @@
         name="Products"
         action="product_template_action_product_home"
         parent="main_home_menu"
-        sequence="5"/>
+        sequence="6"/>
 
     <record id="open_view_project_all_group_stage_home" model="ir.actions.act_window">
         <field name="name">Projects</field>
