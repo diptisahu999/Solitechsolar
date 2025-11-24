@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- This connects Python to the Template -->
+        <record id="action_report_so_custom" model="ir.actions.report">
+            <field name="name">SO Print</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">crm_17.export_quotation_report</field> 
+            <field name="report_file">crm_17.export_quotation_report</field>
+            <field name="print_report_name">'SO - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_quotation_custom" model="ir.actions.report">
+            <field name="name">Quotation Print</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">crm_17.export_quotation_report</field> 
+            <field name="report_file">crm_17.export_quotation_report</field>
+            <field name="print_report_name">'Quotation - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>
