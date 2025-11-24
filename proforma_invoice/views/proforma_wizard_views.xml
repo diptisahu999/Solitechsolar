@@ -6,7 +6,10 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="sale_order_id" readonly="1" />
+                    <!-- Hidden fields to hold context data -->
+                    <field name="sale_order_id" invisible="1" />
+                    <field name="custom_sale_order_id" invisible="1" />
+                    
                     <field name="po_number" placeholder="Enter Purchase Order Number" />
                 </group>
                 <footer>

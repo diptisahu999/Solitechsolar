@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="client_order_ref" string="PO Number" placeholder="e.g. PO/2025/001"/>
                 <field name="custom_so_id" invisible="1"/>
             </xpath>
 

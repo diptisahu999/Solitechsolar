@@ -74,15 +74,18 @@ class CustomSaleOrder(models.Model):
         }
         
     def action_create_proforma_from_custom_so(self):
+        """ Launches the Wizard to ask for PO Number before creating PI """
         self.ensure_one()
-        pi = self.env['proforma.invoice'].create_from_sale_order(self.origin_quotation_id.id)
-        pi.custom_so_id = self.id
         return {
             'type': 'ir.actions.act_window',
-            'res_model': 'proforma.invoice',
-            'res_id': pi.id,
+            'name': _('Create Proforma Invoice'),
+            'res_model': 'proforma.invoice.po.wizard',
             'view_mode': 'form',
-            'target': 'current',
+            'target': 'new',
+            'context': {
+                'default_custom_sale_order_id': self.id,
+                'default_sale_order_id': self.origin_quotation_id.id 
+            }
         }
 
 class CustomSaleOrderLine(models.Model):

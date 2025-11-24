@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -8,7 +9,21 @@ class SaleOrder(models.Model):
 
     def action_confirm_custom_so(self):
         for order in self:
-            # 1. Prepare Header Data (Copy NAMES)
+            partner = order.partner_id
+            if not partner.vat:
+                raise UserError(_(
+                    "Invalid Operation\n"
+                    "GST Number is required.\n\n"
+                    "Please update the customer's GST No before confirming the quotation."
+                ))
+
+            if not order.client_order_ref:
+                 raise UserError(_(
+                    "Missing PO Number\n"
+                    "Please enter the Customer Reference (PO Number) on the Quotation "
+                    "before confirming the Sale Order."
+                ))
+
             so_vals = {
                 'origin_quotation_id': order.id,
                 'partner_id': order.partner_id.id,
