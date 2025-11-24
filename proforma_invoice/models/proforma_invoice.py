@@ -66,6 +66,7 @@ class ProformaInvoice(models.Model):
         domain="[('type', '=', 'opportunity')]",
         copy=False
     )
+    custom_so_id = fields.Many2one('custom.sale.order', string="Related Custom SO", readonly=True)
 
     def get_company_header_image(self):
         """

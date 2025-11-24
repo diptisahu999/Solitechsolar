@@ -4,11 +4,83 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
     proforma_invoice_ids = fields.One2many('proforma.invoice', 'sale_order_id', string='Proforma Invoices')
     proforma_invoice_count = fields.Integer(string='Proforma Count', compute='_compute_proforma_invoice_count')
+    custom_so_id = fields.Many2one('custom.sale.order', string="Confirmed SO Doc", readonly=True, copy=False)
+
+    def action_confirm_custom_so(self):
+        for order in self:
+            # 1. Prepare Header Data (Copy NAMES)
+            so_vals = {
+                'origin_quotation_id': order.id,
+                'partner_id': order.partner_id.id,
+                'partner_invoice_id': order.partner_invoice_id.id,
+                'partner_shipping_id': order.partner_shipping_id.id,
+                'date_order': fields.Datetime.now(),
+                'validity_date': order.validity_date,
+                'user_id': order.user_id.id,
+                'company_id': order.company_id.id,
+                'client_order_ref': order.client_order_ref,
+                
+                # FIX: Safety check. If ID is False, return '' instead of crashing on .name
+                'payment_term_name': order.payment_term_id.name if order.payment_term_id else '',
+                'fiscal_position_name': order.fiscal_position_id.name if order.fiscal_position_id else '',
+                'incoterm_name': order.incoterm.name if order.incoterm else '',
+                'incoterm_location': order.incoterm_location,
+                
+                'note': order.note,
+                'amount_untaxed': order.amount_untaxed,
+                'amount_tax': order.amount_tax,
+                'amount_total': order.amount_total,
+            }
+
+            custom_so = self.env['custom.sale.order'].create(so_vals)
+
+            line_vals_list = []
+            for line in order.order_line:
+                if line.display_type: continue 
+                
+                # Join tax names into a string "GST 18%, Tax 5%"
+                tax_str = ", ".join(line.tax_id.mapped('name'))
+                
+                line_vals_list.append({
+                    'order_id': custom_so.id,
+                    'product_id': line.product_id.id,
+                    'name': line.name,
+                    'product_uom_qty': line.product_uom_qty,
+                    'price_unit': line.price_unit,
+                    'tax_names': tax_str, # Store text
+                    'price_subtotal': line.price_subtotal,
+                    'wattage': line.wattage,
+                    'unit_price_per_nos': line.unit_price_per_nos,
+                })
+            
+            self.env['custom.sale.order.line'].create(line_vals_list)
+            order.custom_so_id = custom_so.id
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Confirmed Sale Order'),
+            'res_model': 'custom.sale.order',
+            'res_id': self.custom_so_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     @api.depends('proforma_invoice_ids')
     def _compute_proforma_invoice_count(self):
         for order in self:
             order.proforma_invoice_count = len(order.proforma_invoice_ids)
+
+    def action_view_custom_so(self):
+        """ Open the specific Confirmed SO record in Form View """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Confirmed Sale Order'),
+            'res_model': 'custom.sale.order',
+            'res_id': self.custom_so_id.id,  # <--- The specific ID to open
+            'view_mode': 'form',             # <--- Force Form View
+            'target': 'current',
+        }
 
     def action_view_proforma_invoices(self):
         self.ensure_one()

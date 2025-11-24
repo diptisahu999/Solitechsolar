@@ -2,7 +2,7 @@
     'name': "Push Notification System",
     'version': '17.0.1.0.0',
     'summary': "Sends real-time UI notifications for business events.",
-    'author': "Your Name",
+    'author': "Pratham",
     'category': 'Tools',
     'depends': ['base', 'web', 'bus'],
     'assets': {
