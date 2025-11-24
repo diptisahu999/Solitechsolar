@@ -79,9 +79,9 @@
         parent="main_home_menu"
         sequence="4"/>
 
-    <menuitem id="menu_action_move_out_invoice_type_home"
+    <menuitem id="menu_proforma_invoice_home"
         name="PI"
-        action="account.action_move_out_invoice_type"
+        action="proforma_invoice.action_proforma_invoice"
         parent="main_home_menu"
         sequence="5"/>
 
