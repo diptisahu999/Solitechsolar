@@ -6,10 +6,10 @@ class CustomSaleOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
 
+    # --- Header Fields ---
     name = fields.Char(string='SO Number', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     origin_quotation_id = fields.Many2one('sale.order', string='Source Quotation', readonly=True)
     
-    # --- Contact Info ---
     partner_id = fields.Many2one('res.partner', string='Customer')
     partner_invoice_id = fields.Many2one('res.partner', string='Invoice Address')
     partner_shipping_id = fields.Many2one('res.partner', string='Delivery Address')
@@ -20,11 +20,11 @@ class CustomSaleOrder(models.Model):
     company_id = fields.Many2one('res.company', string='Company')
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
     
-    # --- Business Terms (Stored as Text now) ---
+    # --- Business Terms ---
     client_order_ref = fields.Char(string='Customer Reference')
-    payment_term_name = fields.Char(string='Payment Terms')      # Changed from ID to Name
-    fiscal_position_name = fields.Char(string='Fiscal Position') # Changed from ID to Name
-    incoterm_name = fields.Char(string='Incoterm')               # Changed from ID to Name
+    payment_term_name = fields.Char(string='Payment Terms')
+    fiscal_position_name = fields.Char(string='Fiscal Position')
+    incoterm_name = fields.Char(string='Incoterm')
     incoterm_location = fields.Char(string='Incoterm Location')
     
     # --- Lines & Totals ---
@@ -88,6 +88,32 @@ class CustomSaleOrder(models.Model):
             }
         }
 
+    # --- NEW METHOD: Redirect Print to Source Quotation ---
+    def action_print_so_custom_report(self):
+        """ 
+        Triggers the Report Action but passes the 'origin_quotation_id' (Sale Order)
+        instead of 'self' (Custom SO). This keeps the report model consistent.
+        """
+        self.ensure_one()
+        if not self.origin_quotation_id:
+            return
+            
+        # We use the ID 'action_report_so_custom'. 
+        # Since you moved the report to this module, we look in 'proforma_invoice'.
+        # If your module technical name is different, change 'proforma_invoice' below.
+        try:
+            action = self.env.ref('proforma_invoice.action_report_so_custom').report_action(self.origin_quotation_id)
+        except ValueError:
+            # Fallback if the ID is still under the old module name in the DB
+            action = self.env.ref('crm_17.action_report_so_custom').report_action(self.origin_quotation_id)
+            
+        # Add context to ensure it prints as a "Sale Order"
+        if 'context' not in action:
+            action['context'] = {}
+        action['context'].update({'print_type': 'sale'})
+        
+        return action
+
 class CustomSaleOrderLine(models.Model):
     _name = "custom.sale.order.line"
     _description = "Custom SO Line"
@@ -97,12 +123,8 @@ class CustomSaleOrderLine(models.Model):
     name = fields.Text(string='Description')
     product_uom_qty = fields.Float(string='Quantity')
     price_unit = fields.Float(string='Unit Price')
-    
-    # Tax stored as simple text (e.g. "GST 18%, Cess 1%")
     tax_names = fields.Char(string='Taxes') 
-    
     price_subtotal = fields.Monetary(string='Subtotal')
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
-    
     wattage = fields.Float(string="Wattage (Wp)")
     unit_price_per_nos = fields.Monetary(string="Unit Price (₹/Nos)")

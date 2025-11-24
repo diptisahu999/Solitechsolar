@@ -6,12 +6,20 @@
         <field name="arch" type="xml">
             <form string="Sales Order" create="0" edit="0">
                 <header>
+                    <!-- PI Button -->
                     <button name="action_create_proforma_from_custom_so" 
                             string="Create Proforma Invoice" 
                             type="object" 
                             class="oe_highlight"/>
+                    
+                    <!-- NEW: SO Print Button -->
+                    <button name="action_print_so_custom_report"
+                            string="SO Print"
+                            type="object"
+                            class="oe_highlight"/>
                 </header>
                 <sheet>
+                    <!-- Hidden Fields for Buttons -->
                     <field name="origin_quotation_id" invisible="1"/>
                     <field name="proforma_count" invisible="1"/>
 
@@ -26,6 +34,7 @@
                                 <span class="o_stat_text">Quotation</span>
                             </div>
                         </button>
+
                          <button name="action_view_proformas"
                             type="object"
                             class="oe_stat_button"
@@ -65,7 +74,8 @@
                                     <field name="product_uom_qty"/>
                                     <field name="price_unit"/>
                                     <field name="unit_price_per_nos" optional="show"/>
-                                    <field name="tax_names" string="Taxes"/> <field name="price_subtotal"/>
+                                    <field name="tax_names" string="Taxes"/>
+                                    <field name="price_subtotal"/>
                                 </tree>
                             </field>
                             <group name="note_group" col="6" class="mt-2 mt-md-0">

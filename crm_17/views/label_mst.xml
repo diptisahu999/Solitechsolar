@@ -104,7 +104,8 @@
         name="Products"
         action="product_template_action_product_home"
         parent="main_home_menu"
-        sequence="6"/>
+        sequence="6"
+        groups="base.group_system"/>
 
     <record id="open_view_project_all_group_stage_home" model="ir.actions.act_window">
         <field name="name">Projects</field>
