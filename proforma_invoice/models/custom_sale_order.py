@@ -35,6 +35,11 @@ class CustomSaleOrder(models.Model):
     amount_tax = fields.Monetary(string='Taxes')
     amount_total = fields.Monetary(string='Total')
 
+    # --- NEW: Tax Breakdown Fields (Snapshot) ---
+    cgst_amount = fields.Monetary(string='CGST')
+    sgst_amount = fields.Monetary(string='SGST')
+    igst_amount = fields.Monetary(string='IGST')
+
     # --- Smart Buttons ---
     proforma_ids = fields.One2many('proforma.invoice', 'custom_so_id', string='Proforma Invoices')
     proforma_count = fields.Integer(compute='_compute_proforma_count')

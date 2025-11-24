@@ -176,6 +176,29 @@ class ProformaInvoice(models.Model):
 
     def action_post(self):
         self.write({'state': 'posted'})
+        
+    # --- NEW: Navigation Actions for Smart Buttons ---
+    def action_view_source_quotation(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Source Quotation'),
+            'res_model': 'sale.order',
+            'res_id': self.sale_order_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_view_custom_so(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Confirmed Sale Order'),
+            'res_model': 'custom.sale.order',
+            'res_id': self.custom_so_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     @api.model
     def create_from_sale_order(self, sale_order):

@@ -24,6 +24,29 @@ class SaleOrder(models.Model):
                     "before confirming the Sale Order."
                 ))
 
+            # --- NEW: Calculate Tax Breakdown for Snapshot ---
+            cgst = 0.0
+            sgst = 0.0
+            igst = 0.0
+            
+            for line in order.order_line:
+                if line.display_type: continue
+                
+                # Compute taxes for this line
+                base_price = line.unit_price_per_nos if line.wattage else line.price_unit
+                price = base_price * (1 - (line.discount or 0.0) / 100.0)
+                taxes = line.tax_id.compute_all(price, order.currency_id, line.product_uom_qty, product=line.product_id, partner=order.partner_id)
+                
+                for t in taxes.get('taxes', []):
+                    tname = (t.get('name') or '').upper()
+                    amt = t.get('amount', 0.0)
+                    if 'CGST' in tname:
+                        cgst += amt
+                    elif 'SGST' in tname:
+                        sgst += amt
+                    elif 'IGST' in tname:
+                        igst += amt
+
             so_vals = {
                 'origin_quotation_id': order.id,
                 'partner_id': order.partner_id.id,
@@ -45,6 +68,11 @@ class SaleOrder(models.Model):
                 'amount_untaxed': order.amount_untaxed,
                 'amount_tax': order.amount_tax,
                 'amount_total': order.amount_total,
+                
+                # --- Store the breakdown ---
+                'cgst_amount': cgst,
+                'sgst_amount': sgst,
+                'igst_amount': igst,
             }
 
             custom_so = self.env['custom.sale.order'].create(so_vals)
