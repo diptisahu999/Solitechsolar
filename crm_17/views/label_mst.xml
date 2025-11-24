@@ -83,7 +83,7 @@
         name="PI"
         action="proforma_invoice.action_proforma_invoice"
         parent="main_home_menu"
-        sequence="5"/>
+        sequence="6"/>
 
     <record id="product_template_action_product_home" model="ir.actions.act_window">
         <field name="name">Products</field>
@@ -104,7 +104,7 @@
         name="Products"
         action="product_template_action_product_home"
         parent="main_home_menu"
-        sequence="6"
+        sequence="7"
         groups="base.group_system"/>
 
     <record id="open_view_project_all_group_stage_home" model="ir.actions.act_window">
@@ -131,7 +131,7 @@
         action="open_view_project_all_group_stage_home"
         parent="main_home_menu"
         groups="project.group_project_stages"
-        sequence="6"/>
+        sequence="8"/>
 
 
     <!-- Leads action -->
@@ -151,6 +151,20 @@
         action="action_crm_leads_home"
         parent="main_home_menu"
         sequence="1"/>
+
+    <record id="action_custom_sale_order" model="ir.actions.act_window">
+        <field name="name">Confirmed SOs</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_custom_sale_order_home" 
+              name="SO" 
+              parent="main_home_menu" 
+              action="action_custom_sale_order" 
+              sequence="5"/>
 
 
 

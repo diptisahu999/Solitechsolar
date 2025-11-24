@@ -886,88 +886,58 @@ class InheritSaleOrderLine(models.Model):
     def _is_admin_user(self):
         return self.env.user.has_group('base.group_system')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Allow creating lines (notes/sections) without initial validation.
+        # Validation is deferred to the constraint.
+        return super(InheritSaleOrderLine, self).create(vals_list)
+
     def write(self, vals):
-        """Override write to enforce minimum unit price and track changes.
-
-        - If the user is not an admin, they cannot set `price_unit` below the
-          configured minimal value.
-        - Log changes to quantity and unit price in the parent sale order's
-          chatter (Log note).
-        """
-        min_price = self._get_min_unit_price()
-
+        # Logging only. No validation here.
         for line in self:
-            # Enforce min price for non-admins
-            if 'price_unit' in vals and not self._is_admin_user():
-                try:
-                    new_price = float(vals.get('price_unit') or 0.0)
-                except Exception:
-                    new_price = 0.0
-                if new_price < min_price:
-                    raise ValidationError(f"You cannot use a Unit Price below ₹{min_price:.2f}.")
-
             changes = []
-            # Track quantity changes
             if 'product_uom_qty' in vals:
                 old_qty = line.product_uom_qty
                 new_qty = vals['product_uom_qty']
                 if old_qty != new_qty:
                     changes.append(f"Quantity changed from {old_qty} to {new_qty}")
-
-            # Track unit price changes (price_unit - ₹/Wp or base price)
             if 'price_unit' in vals:
                 old_price = line.price_unit
                 new_price = vals['price_unit']
                 if old_price != new_price:
-                    changes.append(f"Unit Price (₹/Wp) changed from ₹{old_price:.2f} to ₹{new_price:.2f}")
-
-            # Post message to order log if any changes detected
+                    changes.append(f"Unit Price changed from ₹{old_price:.2f} to ₹{new_price:.2f}")
             if changes and line.order_id:
                 message_body = "<br/>".join(changes)
-                line.order_id.message_post(
-                    body=message_body,
-                    subject="Order Line Updated"
-                )
-
+                line.order_id.message_post(body=message_body, subject="Order Line Updated")
         return super(InheritSaleOrderLine, self).write(vals)
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Enforce the minimal unit price on creation as well."""
-        min_price = self._get_min_unit_price()
-        if not self._is_admin_user():
-            for vals in vals_list:
-                if 'price_unit' in vals:
-                    try:
-                        new_price = float(vals.get('price_unit') or 0.0)
-                    except Exception:
-                        new_price = 0.0
-                    if new_price < min_price:
-                        raise ValidationError(f"You cannot use a Unit Price below ₹{min_price:.2f}.")
-        lines = super(InheritSaleOrderLine, self).create(vals_list)
-        # Optionally log creation price/qty (not requested explicitly)
-        return lines
-
-    @api.constrains('price_unit')
+    @api.constrains('price_unit', 'product_id', 'display_type')
     def _check_price_unit_minimum(self):
-        """Constraint to ensure price_unit is not below configured minimum.
-
-        This runs after create/write, so it catches indirect updates and
-        computed/ onchange-driven changes that may not include `price_unit` in
-        the write `vals`.
-        """
         min_price = self._get_min_unit_price()
-        # If the current user is admin, bypass the check
         if self._is_admin_user():
             return
+        
         for line in self:
+            # 1. SKIP Notes and Sections explicitly
+            if line.display_type in ['line_note', 'line_section']:
+                continue
+            
+            # 2. SKIP if there is NO product (e.g. text only)
+            if not line.product_id:
+                continue
+
+            # 3. SKIP if price is 0 AND product is missing (Safety Catch)
+            if line.price_unit == 0.0 and not line.product_id:
+                continue
+
+            # 4. Perform Check
             try:
                 price = float(line.price_unit or 0.0)
             except Exception:
                 price = 0.0
-            if price < min_price:
+                
+            if price < (min_price - 0.01):
                 raise ValidationError(f"You cannot use a Unit Price below ₹{min_price:.2f}.")
-
     def write(self, vals):
         """Override write to track quantity and unit price changes in log note."""
         for line in self:
