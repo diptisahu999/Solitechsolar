@@ -256,6 +256,37 @@ class ProformaInvoice(models.Model):
         # Recompute amounts after writing lines
         pi._compute_amounts()
         return pi
+    def get_remaining_qty(self, so_id, product_id):
+        # FIX: Ensure 'custom.sale.order' model exists
+        order = self.env['custom.sale.order'].browse(so_id)
+        
+        # FIX: Check if 'line_ids' is the correct field name on custom.sale.order
+        so_line = order.line_ids.filtered(lambda l: l.product_id.id == product_id)
+        total_qty = so_line.product_uom_qty if so_line else 0
+
+        # FIX: 'proformaids' likely needs to be 'proforma_ids' (check your custom.sale.order model)
+        # FIX: Changed state 'confirmed' to 'posted' to match your selection field
+        confirmed_pis = order.proforma_ids.filtered(lambda pi: pi.state == 'posted')
+        
+        used_qty = sum(
+            line.quantity for pi in confirmed_pis for line in pi.line_ids if line.product_id.id == product_id
+        )
+        return total_qty - used_qty
+
+    def action_confirm(self):
+        for pi in self:
+            if not pi.custom_so_id:
+                continue # Skip if no custom SO is linked
+                
+            so = pi.custom_so_id
+            for line in pi.line_ids:
+                remaining = self.get_remaining_qty(so.id, line.product_id.id)
+                if line.quantity > remaining:
+                    raise ValidationError(
+                        f"You have only {remaining} quantity left for product '{line.product_id.name}'."
+                    )
+        # Assuming you want to change state to posted after validation
+        self.write({'state': 'posted'})
 
 
 class ProformaInvoiceLine(models.Model):
@@ -292,6 +323,21 @@ class ProformaInvoiceLine(models.Model):
     up_after_disc_amt = fields.Float(string="Unit Price After Discount")
     diff_amount = fields.Float(string="Difference Amount")
     price_tax = fields.Monetary(string='Tax Amount', compute='_compute_amounts', store=True)
+
+    @api.onchange('quantity')
+    def onchangequantity(self):
+        # --- FIX 2: Corrected Field Names (proformaid -> proforma_id, etc.) ---
+        if self.proforma_id and self.proforma_id.custom_so_id and self.product_id:
+            # Note: This calls get_remaining_qty on the PARENT (Invoice), ensure it exists there
+            remaining = self.proforma_id.get_remaining_qty(self.proforma_id.custom_so_id.id, self.product_id.id)
+            if self.quantity > remaining:
+                self.quantity = remaining
+                return {
+                    'warning': {
+                        'title': "Quantity Exceeded",
+                        'message': f"You have only {remaining} quantity left for this product."
+                    }
+                }
 
     @api.depends('quantity', 'price_unit', 'tax_ids', 'discount', 'wattage', 'unit_price_per_nos')
     def _compute_amounts(self):
