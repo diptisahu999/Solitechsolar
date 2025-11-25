@@ -145,4 +145,9 @@
               parent="sale.sale_order_menu" 
               action="action_custom_sale_order" 
               sequence="15"/>
+    <!-- Add SO to Top Menu Bar -->
+    <menuitem id="menu_custom_sale_order_top" 
+            name="SO" 
+            action="action_custom_sale_order" 
+            sequence="5"/>          
 </odoo>

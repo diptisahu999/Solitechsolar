@@ -152,20 +152,27 @@
         parent="main_home_menu"
         sequence="1"/>
 
-    <record id="action_custom_sale_order" model="ir.actions.act_window">
-        <field name="name">Confirmed SOs</field>
-        <field name="res_model">sale.order</field>
-        <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+    <!-- SO Home Menu - Point to Custom SO Model -->
+    <record id="action_custom_sale_order_home" model="ir.actions.act_window">
+        <field name="name">Confirmed Sales Orders</field>
+        <field name="res_model">custom.sale.order</field>
+        <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No confirmed sales orders yet
+            </p>
+            <p>
+                Confirmed sales orders will appear here.
+            </p>
+        </field>
     </record>
 
     <menuitem id="menu_custom_sale_order_home" 
-              name="SO" 
-              parent="main_home_menu" 
-              action="action_custom_sale_order" 
-              sequence="5"/>
-
+            name="SO" 
+            parent="main_home_menu" 
+            action="action_custom_sale_order_home" 
+            sequence="5"/>
 
 
 </odoo>
