@@ -57,31 +57,32 @@
                             <span invisible="state == 'draft'"><field name="name" readonly="1"/></span>
                         </h1>
                     </div>
-                    <group>
                         <group>
-                            <field name="partner_id"/>
-                            <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user" class="oe_link"/>
-                            <field name="partner_shipping_id" string="Place of supply"/>
-                            <field name="l10n_in_gst_treatment" string="GST Treatment"/>
+                            <group>
+                                <field name="partner_id" string="Customer" domain="[('parent_id','=',partner_id)]"/>
+                                <!-- <button name="action_open_partner_view" type="object"/> -->
+                                <field name="partner_shipping_id" string="Place of supply" domain="[('parent_id','=',partner_id)]" options="{'no_create': True, 'no_quick_create': True}"  create="false"/>
+                                <field name="l10n_in_gst_treatment" string="GST Treatment"/>
+                            </group>
+
+                            <group>
+                                <field name="po_number"/>
+                                <field name="po_date"/>
+                                <field name="pi_chr"/>
+                                <field name="pi_date"/>
+                                <field name="invoice_date"/>
+                                <field name="invoice_date_due"/>
+                                <field name="invoice_payment_term_id"/>
+                                <field name="sample_type"/>
+                                <field name="source_id"/>
+                                <field name="project_id"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
                         </group>
-                        <group>
-                            <field name="po_number"/>
-                            <field name="po_date"/>
-                            <field name="pi_chr"/>
-                            <field name="pi_date"/>
-                            <field name="invoice_date"/>
-                            <field name="invoice_date_due"/>
-                            <field name="invoice_payment_term_id"/>
-                            <field name="sample_type"/>
-                            <field name="source_id"/>
-                            <field name="project_id"/>
-                            <field name="currency_id" invisible="1"/>
-                        </group>
-                    </group>
                     <notebook>
                         <page string="Invoice Lines" name="invoice_lines">
                             <field name="line_ids" nolabel="1">
-                                <tree create="false" edit="false" delete="false">
+                                <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="name" string="Description" column_invisible="1"/>
                                     <!-- <field name="inch_feet_type" string="Inch/Feet"/> -->
@@ -97,7 +98,7 @@
                                     <field name="remarks"/>
                                 </tree>
 
-                                <form string="Invoice Line" create="false" edit="false">
+                                <!-- <form string="Invoice Line" create="false" edit="false">
                                     <sheet>
                                         <group>
                                             <group>
@@ -118,7 +119,7 @@
                                     <footer>
                                         <button string="Close" class="btn-secondary" special="cancel"/>
                                     </footer>
-                                </form>
+                                </form> -->
                             </field>
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -132,7 +133,7 @@
                         </page>
                         <page string="Other Info" name="other_info">
                             <group>
-                               <field name="user_id" string="Salesperson"/>
+                               <!-- <field name="user_id" string="Salesperson"/> -->
                             </group>
                         </page>
                     </notebook>
