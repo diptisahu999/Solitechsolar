@@ -318,6 +318,14 @@
                                         <t t-set="calculated_tax_amount" t-value="calculated_tax_amount + (line.price_total - line.price_subtotal)"/>
                                         <t t-set="calculated_total" t-value="calculated_total + line.price_total"/>
                                     </t>
+                                    <!-- NEW: Show product notes and section lines underneath product lines -->
+                                    <t t-elif="line.display_type in ('line_note', 'line_section')">
+                                        <tr>
+                                            <td colspan="13" class="value-cell" style="font-style: italic; background: #F8F8F8; white-space: pre-line;">
+                                                <strong>Note:- </strong><t t-esc="line.name"/>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>
 
                                 <!-- Totals Row -->
