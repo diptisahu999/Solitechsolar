@@ -16,7 +16,7 @@
         <field name="name">proforma.invoice.form</field>
         <field name="model">proforma.invoice</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                     <button name="action_post" string="Confirm" class="oe_highlight" type="object" invisible="state != 'draft'"/>
                     <button string="PI Print" type="action" name="%(proforma_invoice.action_report_proforma_invoice)d" class="oe_highlight"/>
