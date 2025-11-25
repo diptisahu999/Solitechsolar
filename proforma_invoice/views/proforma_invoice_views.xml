@@ -81,26 +81,44 @@
                     <notebook>
                         <page string="Invoice Lines" name="invoice_lines">
                             <field name="line_ids" nolabel="1">
-                                <tree editable="bottom">
+                                <tree create="false" edit="false" delete="false">
                                     <field name="product_id"/>
                                     <field name="name" string="Description" column_invisible="1"/>
-                                    <field name="inch_feet_type" string="Inch/Feet"/>
+                                    <!-- <field name="inch_feet_type" string="Inch/Feet"/> -->
                                     <field name="discount"/>
                                     <field name="product_type"/>
                                     <field name="quantity"/>
-                                    
                                     <field name="wattage" optional="show"/>
-                                    
                                     <field name="price_unit" string="Price (₹/Wp)"/>
-                                    
                                     <field name="unit_price_per_nos" string="Actual Price (₹/Nos)" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    
                                     <field name="actual_price" column_invisible="1"/>
-                                    
                                     <field name="tax_ids" widget="many2many_tags"/>
                                     <field name="price_subtotal" string="Tax excl." widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="remarks"/>
                                 </tree>
+
+                                <form string="Invoice Line" create="false" edit="false">
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="product_id" readonly="1"/>
+                                                <field name="name" readonly="1"/>
+                                                <field name="product_type" readonly="1"/>
+                                            </group>
+                                            <group>
+                                                <field name="quantity" readonly="1"/>
+                                                <field name="price_unit" readonly="1"/>
+                                                <field name="tax_ids" widget="many2many_tags" readonly="1"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="remarks" readonly="1"/>
+                                        </group>
+                                    </sheet>
+                                    <footer>
+                                        <button string="Close" class="btn-secondary" special="cancel"/>
+                                    </footer>
+                                </form>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
