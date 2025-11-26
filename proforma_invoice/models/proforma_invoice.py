@@ -175,7 +175,56 @@ class ProformaInvoice(models.Model):
         self.write({'is_manager': True, 'state': 'draft'})
 
     def action_post(self):
+        """
+        Confirms the Proforma Invoice (moves state to 'posted').
+
+        Adds validation to prevent confirming PIs that would exceed the SO line's
+        quantity if that quantity is already fully confirmed on other PIs.
+        """
+
+        # 1. Get all *posted* PIs (excluding the current one) for the same SO.
+        if self.sale_order_id:
+            posted_pis = self.search([
+                ('sale_order_id', '=', self.sale_order_id.id),
+                ('state', '=', 'posted'),
+                ('id', '!=', self.id),
+            ])
+
+            # Map product ID to total confirmed qty from other PIs
+            confirmed_qty_map = {}
+            for pi in posted_pis:
+                for line in pi.line_ids:
+                    product_id = line.product_id.id
+                    confirmed_qty_map[product_id] = confirmed_qty_map.get(product_id, 0.0) + line.quantity
+
+            # 2. Validate current PI lines
+            for pi_line in self.line_ids:
+                so_line = pi_line.sale_line_id
+                if not so_line:
+                    continue  # Not linked to SO line → skip
+
+                so_qty = so_line.product_uom_qty
+                product_id = pi_line.product_id.id
+
+                already_confirmed_qty = confirmed_qty_map.get(product_id, 0.0)
+                total_confirmed = already_confirmed_qty + pi_line.quantity
+
+                if total_confirmed > so_qty:
+                    raise UserError(_(
+                        "You cannot confirm this Proforma Invoice.\n"
+                        "The total confirmed quantity for product '%s' would become %.2f units, "
+                        "which exceeds the Source Quotation quantity of %.2f units.\n"
+                        "%.2f units are already confirmed on other Proforma Invoices."
+                    ) % (
+                        pi_line.product_id.name,
+                        total_confirmed,
+                        so_qty,
+                        already_confirmed_qty
+                    ))
+
+        # Final: mark as posted
         self.write({'state': 'posted'})
+
         
     # --- NEW: Navigation Actions for Smart Buttons ---
     def action_view_source_quotation(self):
