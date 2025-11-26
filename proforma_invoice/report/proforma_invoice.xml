@@ -56,27 +56,29 @@
 
         <!-- link this paperformat to your report action -->
         <record id="action_report_proforma" model="ir.actions.report">
-            <field name="name">Proforma Invoice</field>
-            <field name="model">proforma.invoice</field> <field name="report_type">qweb-pdf</field>
-            <field name="report_name">proforma_invoice.report_proforma</field>
-            <field name="report_file">proforma_invoice.report_proforma</field>
-            <field name="binding_model_id" ref="model_proforma_invoice"/> <field name="binding_type">report</field>
+            <field name="name"></field>
+            <field name="model"></field> <field name="report_type"></field>
+            <field name="report_name"></field>
+            <field name="report_file"></field>
+            <field name="binding_model_id" ref="model_proforma_invoice"/> <field name="binding_type"></field>
             <field name="paperformat_id" ref="paperformat_proforma_one_page"/>
         </record>
+        <record id="action_report_proforma_invoice" model="ir.actions.report">
+            <field name="name"></field>
+            <field name="model"></field>  <!-- MUST be proforma.invoice -->
+            <field name="report_type"></field>
+            <field name="report_name"></field>
+            <field name="report_file"></field>
+            <field name="binding_model_id" ref="model_proforma_invoice"/>
+            <field name="binding_type"></field>
+        </record>
+
 
                     <div class="page proforma_page">
                         <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                             <tr>
-                                                                <!-- Column 1: Logo spanning 3 rows -->
-                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
-                                    <t t-if="o._name == 'proforma.invoice'">
-                                        <t t-set="header_img" t-value="o.get_company_header_image()"/>
-                                    </t>
-                                    <t t-else="">
-                                        <t t-set="header_img" t-value="o.company_id.logo"/>
-                                    </t>
-                                    
-                                    <img t-if="header_img" t-att-src="image_data_uri(header_img)" style="max-height: 100px; display:block;"/>   
+                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%; " rowspan="3">
+                             
                                 </td>
                                 <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
                                 <td style="width: 13%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/></td>
@@ -255,7 +257,7 @@
                                     <td class="value-cell" style="width:40%; border-left:1px solid #000; padding:4px; font-weight:bold;"><span t-esc="o.line_ids[0].name if o.line_ids else ''"/></td>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody> 
                                 <tr style="border-top:1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right:1px solid #000; padding:4px;">1</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;">Bank Name</td>
@@ -283,92 +285,120 @@
                             </tbody>
                         </table>
                         
-                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
-                           <thead><tr><td colspan="6" class="section-header"> Commercial Terms </td></tr></thead>
+
+                        <!-- ═══════════════════════════════════════════════════════ -->
+                        <!-- DYNAMIC COMMERCIAL TERMS (PULLED FROM SO) -->
+                        <!-- ═══════════════════════════════════════════════════════ -->
+                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:5px;">
+                            <thead><tr><td colspan="6" class="section-header">Commercial Terms</td></tr></thead>
                             <tbody>
                                 <tr>
                                     <td class="label-cell"><strong>Payment Terms</strong></td>
-                                    <td colspan="2" class="value-cell"><span t-esc="o.invoice_payment_term_id.name if o.invoice_payment_term_id else ''"/></td>
+                                    <td colspan="2" class="value-cell">
+                                        <span t-esc="o.invoice_payment_term_id.name if o.invoice_payment_term_id else ''"/>
+                                    </td>
                                     <td class="label-cell"><strong>Packing Type</strong></td>
                                     <td colspan="2" class="value-cell"><span>Standard Export Packing</span></td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell"><strong>Delivery Terms</strong></td>
-                                    <td colspan="2" class="value-cell"><span t-esc="o.sale_order_id.incoterm.name if o.sale_order_id.incoterm else 'Ex-Works'"/></td>
+                                    <td colspan="2" class="value-cell">
+                                        <t t-if="o.sale_order_id and o.sale_order_id.incoterm">
+                                            <span t-esc="o.sale_order_id.incoterm.name"/>
+                                        </t>
+                                        <t t-elif="o.sale_order_id and o.sale_order_id.delivery_type">
+                                            <span t-if="o.sale_order_id.delivery_type == 'for'">FOR</span>
+                                            <span t-if="o.sale_order_id.delivery_type == 'ex'">Ex-Works</span>
+                                        </t>
+                                        <span t-else="">-</span>
+                                    </td>
                                     <td class="label-cell"><strong>Delivery Location</strong></td>
-                                    <td colspan="2" class="value-cell"><t t-if="o.partner_shipping_id"><span t-esc="o.partner_shipping_id.city"/>, <span t-esc="o.partner_shipping_id.state_id.name"/></t></td>
+                                    <td colspan="2" class="value-cell">
+                                        <t t-if="o.partner_shipping_id">
+                                            <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
+                                            <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
+                                            <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
+                                            <t t-if="not o.partner_shipping_id.city or o.partner_shipping_id.state_id">
+                                                <span t-esc="o.partner_shipping_id.name"/>
+                                            </t>
+                                        </t>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell"><strong>Offer Validity</strong></td>
                                     <td colspan="2" class="value-cell">
-                                        <t t-if="o.sale_order_id.validity_date"><span>Valid until <t t-esc="o.sale_order_id.validity_date.strftime('%d-%m-%Y')"/></span></t>
-                                        <t t-else=""><span>15 days from proforma date</span></t>
+                                        <t t-if="o.sale_order_id.offer_validity">
+                                            <span t-field="o.sale_order_id.offer_validity" t-options='{"widget": "datetime", "format": "dd-MM-yyyy"}'/>
+                                        </t>
                                     </td>
                                     <td class="label-cell"><strong>Delivery Schedule</strong></td>
                                     <td colspan="2" class="value-cell"><span>As per mutual agreement</span></td>
                                 </tr>
                             </tbody>
                         </table>
- <div class="terms_wrapper">
-    <table class="excel-table"
-           style="width:100%; border-collapse:collapse; border:1px solid #000;">
-        <thead>
-            <tr>
-                <td colspan="6"
-                    class="section-header"
-                    style="text-align:center; font-weight:bold;">
-                    Terms &amp; Conditions
-                </td>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- 1–6: terms rows -->
-            <tr>
-                <td style="width:3%; text-align:center; border:1px solid #000;">1</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    This quotation is valid for from the date of issuance unless extended in writing.
-                    Any changes to this quotation must be mutually agreed upon and documented in writing.
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center; border:1px solid #000;">2</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    Any change in government duties, taxes, or levies will be charged at actuals.
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center; border:1px solid #000;">3</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    Delivery shall be made as per the mutually agreed delivery schedule. Transit insurance
-                    shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard
-                    export‑quality packaging suitable for safe transportation and handling.
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center; border:1px solid #000;">4</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    Material is subject to pre‑dispatch inspection (if required) at our facility. Any
-                    external damage during transit should be reported immediately to the transporter and
-                    Solitech within <strong>48 hours</strong> of delivery.
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center; border:1px solid #000;">5</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    Solitech shall not be held responsible for delays or non‑performance due to acts of God,
-                    war, strike, pandemics, natural disasters, or any other force majeure conditions beyond
-                    its control. Any legal dispute arising out of this transaction will fall under the
-                    jurisdiction of the <strong>Surat, Gujarat courts only.</strong>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:center; border:1px solid #000;">6</td>
-                <td colspan="5" style="border:1px solid #000;">
-                    All designs, specifications, and product data shared are confidential and remain the
-                    property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced
-                    without written consent.
-                </td>
-            </tr>
+                        <!-- ═══════════════════════════════════════════════════════ -->
+                        <!-- DYNAMIC TERMS & CONDITIONS (PULLED FROM SO) -->
+                        <!-- ═══════════════════════════════════════════════════════ -->
+                        <div class="terms-wrapper">
+                            <table class="excel-table" style="width:100%; border-collapse:collapse; border:1px solid #000;">
+                                <thead>
+                                    <tr>
+                                        <td colspan="6" class="section-header" style="text-align:center; font-weight:bold;">Terms &amp; Conditions</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+          
+                                    <tr>
+                                        <td style="width:3%; text-align:center; border:1px solid #000;">1</td>
+                                        <td colspan="5" style="border:1px solid #000;">
+                                            This quotation is valid for 
+                                            <t t-if="o.sale_order_id.offer_validity and o.sale_order_id.start_date">
+                                                <t t-set="days_diff" t-value="(o.sale_order_id.offer_validity.date() - o.sale_order_id.start_date).days"/>
+                                                <strong><t t-esc="days_diff"/> days</strong>
+                                            </t>
+                                            from the date of issuance unless extended in writing.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center; border:1px solid #000;">2</td>
+                                        <td colspan="5" style="border:1px solid #000;">
+                                            Any change in government duties, taxes, or levies will be charged at actuals.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center; border:1px solid #000;">3</td>
+                                        <td colspan="5" style="border:1px solid #000;">
+                                            Delivery shall be made as per the mutually agreed delivery schedule. Transit insurance
+                                            shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard
+                                            export quality packaging suitable for safe transportation and handling.
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">6</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Material is subject to pre-dispatch inspection (if required) at our facility. Any external damage during transit should be reported immediately to the transporter and Solitech within <strong>48 hours</strong> of delivery.
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                   <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">9</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                 Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control. Any legal dispute arising out of this transaction will fall under the jurisdiction of the <strong><t t-esc="o.sale_order_id.jurisdiction_state"/> courts only.</strong>
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="text-align:center; border:1px solid #000;">6</td>
+                                        <td colspan="5" style="border:1px solid #000;">
+                                            All designs, specifications, and product data shared are confidential and remain the
+                                            property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced
+                                            without written consent.
+                                        </td>
+                                    </tr>
 
             <!-- Prepared / Approved / Company -->
             <tr>
