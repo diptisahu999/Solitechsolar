@@ -1,137 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    
+
         <template id="report_proforma">
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="o">
+
                     <style>
-                        /* Increased base font to be readable on A4 while still fitting one page */
-                        .excel-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
-                        .excel-table td, .excel-table th { border: 1px solid #000; padding: 4px 6px; font-size: 11px; vertical-align: top; }
-                        .section-header { background-color: #D9D9D9; font-weight: bold; text-align: center; font-size: 14px; padding: 6px 4px; }
-                        .label-cell { background-color: #F2F2F2; font-weight: bold; width: 15%; }
-                        .value-cell { background-color: white; }
-                        .text-center { text-align: center; }
-                        .text-right { text-align: right; }
-                        .note-content p { margin: 0; }
-                        /* Slightly less shrink (0.88) to keep content single page but larger */
-                        .proforma_page {
+                        /* Increased base font to be readable on A4, while still fitting one page */
+                        .excel-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-family: Arial, sans-serif;
+                        }
+                        .excel-table td, .excel-table th {
+                            border: 1px solid #000;
+                            padding: 4px 6px;
+                            font-size: 11px;
+                            vertical-align: top;
+                        }
+                        .section-header {
+                            background-color: #D9D9D9;
+                            font-weight: bold;
+                            text-align: center;
+                            font-size: 14px;
+                            padding: 6px 4px;
+                        }
+                        .label-cell {
+                            background-color: #F2F2F2;
+                            font-weight: bold;
+                        }
+                        .value-cell {
+                            background-color: white;
+                        }
+                        .text-center {
+                            text-align: center;
+                        }
+                        .text-right {
+                            text-align: right;
+                        }
+                        .note-content p {
+                            margin: 0;
+                        }
+                        /* Page styling with header and footer space */
+                        .proforma-page {
                             zoom: 0.88;
                             line-height: 1.05;
                             padding: 8px;
                             margin: 0;
+                            position: relative;
+                            min-height: 297mm;
+                            padding-top: 130px;
+                            padding-bottom: 240px;
+                            page-break-after: always;
                         }
-                        .terms_wrapper {
+                        /* Header styling - repeats on all pages */
+                        .page-header {
+                            position: absolute;
+                            top: 0px;
+                            left: 8px;
+                            right: 8px;
+                            width: calc(100% - 16px);
+                            background: white;
+                            z-index: 10;
+                            box-sizing: border-box;
+                        }
+                        .terms-wrapper {
                             page-break-inside: avoid !important;
                         }
-                        .terms_wrapper table {
+                        .terms-wrapper table {
                             page-break-inside: avoid !important;
                         }
-                        .terms_wrapper tr,
-                        .terms_wrapper td {
+                        .terms-wrapper tr, .terms-wrapper td {
                             page-break-inside: avoid !important;
                         }
-                        .terms_wrapper td {
-                            font-size: 11px;      
-                            padding: 3px 4px;     
+                        .terms-wrapper td {
+                            font-size: 11px;
+                            padding: 3px 4px;
                             line-height: 1.05;
                         }
+                        .terms-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            border: 1px solid #000;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .terms-table td {
+                            border: 1px solid #000;
+                            padding: 3px 4px;
+                            font-size: 11px;
+                            vertical-align: top;
+                            line-height: 1.3;
+                        }
+                        .terms-header {
+                            background-color: #D9D9D9;
+                            font-weight: bold;
+                            text-align: center;
+                            padding: 4px;
+                        }
+                        .term-number {
+                            width: 3%;
+                            text-align: center;
+                            background-color: #F2F2F2;
+                            font-weight: bold;
+                        }
+                        .term-content {
+                            width: 97%;
+                        }
+                        .term-content p {
+                            margin: 0;
+                            padding: 0;
+                        }
                         /* Small helper sizes */
-                        .small { font-size: 10px !important; }
-                        .xsmall { font-size: 9px !important; }
+                        .small {
+                            font-size: 10px !important;
+                        }
+                        .xsmall {
+                            font-size: 9px !important;
+                        }
+                        .report-footer {
+                            position: absolute;
+                            bottom: 10px;
+                            left: 8px;
+                            right: 8px;
+                            width: calc(100% - 16px);
+                            background: white;
+                            z-index: 10;
+                            box-sizing: border-box;
+                        }
+                        .page-break {
+                            page-break-after: always;
+                            clear: both;
+                        }
+                        /* Content wrapper to prevent overlap */
+                        .page-content {
+                            position: relative;
+                            z-index: 1;
+                        }
+
                     </style>
-<!-- A4 LANDSCAPE with very small margins -->
-        <record id="paperformat_proforma_one_page" model="report.paperformat">
-            <field name="name"></field>
-            <field name="format"></field>
-            <field name="orientation"></field>
-            <field name="margin_top"></field>
-            <field name="margin_bottom"></field>
-            <field name="margin_left"></field>
-            <field name="margin_right"></field>
-            <field name="header_line" eval="False"/>
-            <field name="disable_shrinking" eval="False"/>
-        </record>
 
-        <!-- link this paperformat to your report action -->
-        <record id="action_report_proforma" model="ir.actions.report">
-            <field name="name"></field>
-            <field name="model"></field> <field name="report_type"></field>
-            <field name="report_name"></field>
-            <field name="report_file"></field>
-            <field name="binding_model_id" ref="model_proforma_invoice"/> <field name="binding_type"></field>
-            <field name="paperformat_id" ref="paperformat_proforma_one_page"/>
-        </record>
-        <record id="action_report_proforma_invoice" model="ir.actions.report">
-            <field name="name"></field>
-            <field name="model"></field>  <!-- MUST be proforma.invoice -->
-            <field name="report_type"></field>
-            <field name="report_name"></field>
-            <field name="report_file"></field>
-            <field name="binding_model_id" ref="model_proforma_invoice"/>
-            <field name="binding_type"></field>
-        </record>
+                    <!-- A4 LANDSCAPE with very small margins -->
+                    <record id="paperformat_proforma_onepage" model="report.paperformat">
+                        <field name="name"></field>
+                        <field name="format"></field>
+                        <field name="orientation"></field>
+                        <field name="margin_top"></field>
+                        <field name="margin_bottom"></field>
+                        <field name="margin_left"></field>
+                        <field name="margin_right"></field>
+                        <field name="header_line" eval="False"/>
+                        <field name="disable_shrinking" eval="False"/>
+                    </record>
 
+                    <!-- link this paperformat to your report action -->
+                    <record id="action_report_proforma" model="ir.actions.report">
+                        <field name="name"></field>
+                        <field name="model"></field>
+                        <field name="report_type"></field>
+                        <field name="report_name"></field>
+                        <field name="report_file"></field>
+                        <field name="binding_model_id" ref="model_proforma_invoice"/>
+                        <field name="binding_type"></field>
+                        <field name="paperformat_id" ref="paperformat_proforma_onepage"/>
+                    </record>
 
-                    <div class="page proforma_page">
-                        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
-                            <tr>
-                                <td style="width: 15%; text-align: left; vertical-align: middle; padding: 3px; height: 100%;" rowspan="3">
-                                    <t t-if="o._name == 'proforma.invoice'">
-                                        <t t-set="header_img" t-value="o.get_company_header_image()"/>
-                                    </t>
-                                    <t t-else="">
-                                        <t t-set="header_img" t-value="o.company_id.logo"/>
-                                    </t>
-                                    
-                                    <img t-if="header_img" t-att-src="image_data_uri(header_img)" style="max-height: 100px; display:block;"/>   
-                                </td>
-                                <td style="width: 12%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
-                                <td style="width: 13%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/></td>
-                            </tr>
-                            <tr>
-                                <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
-                                <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
-                            </tr>
-                            <tr>
-                                <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
-                                <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
-                            </tr>
-                        </table>
+                    <!-- PAGE 1: Header + Main Content + Footer -->
+                    <div class="page proforma-page">
+                        <!-- Header with Document Info -->
+                        <div class="page-header">
+                            <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
+                                <tr>
+                                    <!-- Column 1: Logo - KEPT EXACTLY AS IS -->
+                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120px;" rowspan="3">
+                                        <t t-if="print_type == 'quotation'">
+                                            <img t-if="o.company_id.quotation_invoice_image" 
+                                                t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                                style="max-height: 85px; display: block;"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img t-if="o.company_id.sale_image" 
+                                                t-att-src="image_data_uri(o.company_id.sale_image)" 
+                                                style="max-height: 85px; display: block;"/>
+                                        </t>   
+                                    </td>
+                                    <!-- Document No Column -->
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/></td>
+                                    <!-- Quotation # Column -->
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation #</td>
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.date_order else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Validity Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.validity_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.validity_date else ''"/></td>
+                                </tr>
+                            </table>
+                        </div>
 
-                        <table class="excel-table" style="width: 100%; border-collapse: collapse;">
+                        <!-- Page 1 Content -->
+                        <!-- Company Details Section -->
+                        <table class="excel-table" style="width: 100%; border-collapse: collapse; margin-top:-5.5px;">
                             <tr><td colspan="6" class="section-header">Company Details</td></tr>
                             <tr>
-                                <td class="label-cell">Name</td>
-                                <td class="value-cell"><t t-esc="o.company_id.name"/></td>
-                                <td class="label-cell">GSTIN No</td>
-                                <td class="value-cell"><t t-esc="o.company_id.vat or ''"/></td>
-                                <td class="label-cell">Proforma #</td>
-                                <td class="value-cell"><t t-esc="o.name"/></td>
+                                <td class="label-cell" style="width: 15%;">Name</td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.name"/></td>
+                                <td class="label-cell" style="width: 15%;">GSTIN No</td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.vat or ''"/></td>
+                                <td class="label-cell" style="width: 15%;">Proforma #</td>
+                                <td class="value-cell" style="width: 15%;"><t t-esc="o.name"/></td>
                             </tr>
                             <tr>
-                                <td class="label-cell" rowspan="3">Address</td>
-                                <td class="value-cell" rowspan="3"><div t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/></td>
-                                <td class="label-cell">Sales Person</td>
-                                <td class="value-cell"><t t-esc="o.user_id.name if o.user_id else ''"/></td>
-                                <td class="label-cell">Proforma Date</td>
-                                <td class="value-cell"><t t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
+                                <td class="label-cell" style="width: 15%;">Address</td>
+                                <td class="value-cell" style="width: 20%;"><div t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/></td>
+                                <td class="label-cell" style="width: 15%;">Sales Person</td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.user_id.name if o.user_id else ''"/></td>
+                                <td class="label-cell" style="width: 15%;">Proforma Date</td>
+                                <td class="value-cell" style="width: 15%;"><t t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
                             </tr>
                             <tr>
-                                <td class="label-cell">Contact No</td>
-                                <td class="value-cell"><t t-esc="o.company_id.phone or ''"/></td>
-                                <td class="label-cell" rowspan="2">Customer Reference</td>
-                                <td class="value-cell" rowspan="2"><t t-esc="o.po_number or ''"/></td>
+                                <td class="label-cell" style="width: 15%;"></td>
+                                <td class="value-cell" style="width: 20%;"></td>
+                                <td class="label-cell" style="width: 15%;">Contact No</td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.phone or ''"/></td>
+                                <td class="label-cell" style="width: 15%;">Customer Reference</td>
+                                <td class="value-cell" style="width: 15%;"><t t-esc="o.po_number or ''"/></td>
                             </tr>
                             <tr>
-                                <td class="label-cell">Email ID</td>
-                                <td class="value-cell"><t t-esc="o.company_id.email or ''"/></td>
+                                <td class="label-cell" style="width: 15%;"></td>
+                                <td class="value-cell" style="width: 20%;"></td>
+                                <td class="label-cell" style="width: 15%;">Email ID</td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.email or ''"/></td>
+                                <td class="label-cell" style="width: 15%;"></td>
+                                <td class="value-cell" style="width: 15%;"></td>
                             </tr>
                         </table>
 
+                        <!-- Customer Details Section -->
                         <table class="excel-table" style="width:100%; border-collapse: collapse; margin-top: 0px;">
-                            <colgroup><col style="width:12%;"/><col style="width:21%;"/><col style="width:12%;"/><col style="width:21%;"/><col style="width:12%;"/><col style="width:22%;"/></colgroup>
+                            <colgroup><col style="width:12%"/><col style="width:21%"/><col style="width:12%"/><col style="width:21%"/><col style="width:12%"/><col style="width:22%"/></colgroup>
                             <tr><td colspan="6" class="section-header">Customer Details</td></tr>
                             <tr>
                                 <td class="label-cell">Bill To</td>
@@ -147,14 +263,14 @@
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
                                 <td class="label-cell">Contact Person</td>
-                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).name"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_shipping_id or o.partner_id.name"/></td>
                                 <td colspan="2" class="label-cell">Supply Timeline Requirement</td>
                             </tr>
                             <tr>
                                 <td class="label-cell">PAN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.l10n_in_pan"/></td>
                                 <td class="label-cell">Contact No</td>
-                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_shipping_id or o.partner_id.phone"/></td>
                                 <td class="label-cell">Delivery Start Date</td>
                                 <td class="value-cell"><span t-field="o.sale_order_id.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
@@ -162,12 +278,13 @@
                                 <td class="label-cell">CIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.company_registry"/></td>
                                 <td class="label-cell">Email ID</td>
-                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).email"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_shipping_id or o.partner_id.email"/></td>
                                 <td class="label-cell">Delivery End Date</td>
                                 <td class="value-cell"><span t-field="o.sale_order_id.commitment_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
                         </table>
 
+                        <!-- Product &amp; Pricing Details -->
                         <table class="excel-table" style="width:100%; border-collapse:collapse;">
                             <thead>
                                 <tr><td colspan="13" class="section-header">Product &amp; Pricing Details</td></tr>
@@ -194,52 +311,58 @@
                                     <tr>
                                         <td class="value-cell text-center"><t t-esc="line_no"/></td>
                                         <td class="value-cell" colspan="2"><t t-esc="line.product_id.name"/></td>
-                                        <td class="value-cell text-center"><span t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
+                                        <td class="value-cell text-center"><t t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
                                         <td class="value-cell text-center"><t t-esc="line.sale_line_id.wattage"/></td>
-                                        <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
-                                        <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.sale_line_id.unit_price_per_nos"/></td>
+                                        <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'%.2f' % line.price_unit"/></td>
+                                        <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'%.2f' % line.sale_line_id.unit_price_per_nos"/></td>
                                         <td class="value-cell text-center"><t t-esc="'%.0f' % line.quantity"/></td>
-                                        <td class="value-cell text-center"><t t-esc="'%.2f' % ((line.quantity * line.sale_line_id.wattage) / 1000000)"/></td>
-                                        <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+                                        <td class="value-cell text-center"><t t-esc="'%.2f' % (line.quantity * line.sale_line_id.wattage / 1000000)"/></td>
+                                        <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
                                         <td class="value-cell text-center">
                                             <t t-set="tax_rate" t-value="0"/>
                                             <t t-foreach="line.tax_ids" t-as="tax">
-                                                <t t-if="tax.amount_type == 'group'"><t t-foreach="tax.children_tax_ids" t-as="child_tax"><t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/></t></t>
-                                                <t t-else=""><t t-set="tax_rate" t-value="tax_rate + tax.amount"/></t>
+                                                <t t-if="tax.amount_type == 'group'">
+                                                    <t t-foreach="tax.children_tax_ids" t-as="child_tax">
+                                                        <t t-set="tax_rate" t-value="tax_rate + child_tax.amount"/>
+                                                    </t>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-set="tax_rate" t-value="tax_rate + tax.amount"/>
+                                                </t>
                                             </t>
                                             <t t-esc="'%.0f' % tax_rate"/>%
                                         </td>
-                                        <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total - line.price_subtotal)"/></td>
-                                        <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(line.price_total)"/></td>
+                                        <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(line.price_total - line.price_subtotal)"/></td>
+                                        <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(line.price_total)"/></td>
                                     </tr>
                                     <t t-set="line_no" t-value="line_no + 1"/>
                                     <t t-set="total_qty" t-value="total_qty + line.quantity"/>
-                                    <t t-set="total_mw" t-value="total_mw + ((line.quantity * line.sale_line_id.wattage) / 1000000)"/>
+                                    <t t-set="total_mw" t-value="total_mw + (line.quantity * line.sale_line_id.wattage / 1000000)"/>
                                 </t>
                                 <tr class="value-cell" style="font-weight:bold; background-color:#E7E6E6;">
                                     <td colspan="7" class="label-cell text-right">Total</td>
                                     <td class="value-cell text-center"><t t-esc="'%.0f' % total_qty"/></td>
                                     <td class="value-cell text-center"><t t-esc="'%.2f' % total_mw"/></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(o.amount_untaxed)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(o.amount_untaxed)"/></td>
                                     <td class="value-cell"></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(o.amount_tax)"/></td>
-                                    <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'{:,.2f}'.format(o.amount_total)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(o.amount_tax)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap;"><t t-esc="'{:,.2f}'.format(o.amount_total)"/></td>
                                 </tr>
                                 <tr>
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(o.amount_untaxed)"/></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_untaxed)"/></td>
                                 </tr>
                                 <tr>
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST</td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
                                 </tr>
                                 <tr style="font-weight:bold;">
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;">₹ <t t-esc="'{:,.2f}'.format(o.amount_total)"/></td>
+                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_total)"/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -250,7 +373,9 @@
                                 <td colspan="11" class="value-cell"><t t-esc="o.amount_to_text(o.amount_total)"/> Only</td>
                             </tr>
                         </table>
-                        
+
+                        <!-- Bank Details &amp; Special Instructions -->
+                        <style type="text/css">.note-content p { margin: 0; }</style>
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
                                 <tr>
@@ -264,39 +389,36 @@
                                     <td class="value-cell" style="width:40%; border-left:1px solid #000; padding:4px; font-weight:bold;"><span t-esc="o.line_ids[0].name if o.line_ids else ''"/></td>
                                 </tr>
                             </thead>
-                            <tbody> 
+                            <tbody>
                                 <tr style="border-top:1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right:1px solid #000; padding:4px;">1</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;">Bank Name</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;"><span t-esc="o.company_id.bank_name"/></td>
-                                    <td class="value-cell" style="padding:4px;"><span t-esc="dict(o.sale_order_id._fields['special_instruction_dcr'].selection).get(o.sale_order_id.special_instruction_dcr, '') if o.sale_order_id.special_instruction_dcr else ''"/></td>
+                                    <td class="value-cell" style="padding:4px;"><span t-esc="dict(o.sale_order_id._fields['special_instruction_dcr'].selection).get(o.sale_order_id.special_instruction_dcr, '') if o.sale_order_id and o.sale_order_id.special_instruction_dcr else ''"/></td>
                                 </tr>
                                 <tr style="border-top:1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right:1px solid #000; padding:4px;">2</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;">Account Name</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;"><span t-esc="o.company_id.bank_ac_name"/></td>
-                                    <td class="value-cell" style="padding:4px;"><span t-esc="dict(o.sale_order_id._fields['special_instruction_mess'].selection).get(o.sale_order_id.special_instruction_mess, '') if o.sale_order_id.special_instruction_mess else ''"/></td>
+                                    <td class="value-cell" style="padding:4px;"><span t-esc="dict(o.sale_order_id._fields['special_instruction_mess'].selection).get(o.sale_order_id.special_instruction_mess, '') if o.sale_order_id and o.sale_order_id.special_instruction_mess else ''"/></td>
                                 </tr>
                                 <tr style="border-top:1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right:1px solid #000; padding:4px;">3</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;">Account Number</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;"><span t-esc="o.company_id.bank_ac_no"/></td>
-                                    <td class="value-cell" style="padding:4px;">Note</td>
+                                    <td class="value-cell" style="padding:4px;">Note:</td>
                                 </tr>
                                 <tr style="border-top:1px solid #000;">
                                     <td class="value-cell" style="text-align:center; border-right:1px solid #000; padding:4px;">4</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;">IFSC Code</td>
                                     <td class="value-cell" style="border-right:1px solid #000; padding:4px;"><span t-esc="o.company_id.bank_branch_ifsc"/></td>
-                                    <td class="value-cell note-content" style="vertical-align: top; padding:4px;"><span t-field="o.narration" t-options="{'widget':'html'}"/></td>
+                                    <td class="value-cell note-content" style="vertical-align: top; padding:4px;"><span t-field="o.narration" t-options='{"widget":"html"}'/></td>
                                 </tr>
                             </tbody>
                         </table>
-                        
 
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- DYNAMIC COMMERCIAL TERMS (PULLED FROM SO) -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:5px;">
+                        <!-- Commercial Terms -->
+                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:5px; margin-bottom: 69px;">
                             <thead><tr><td colspan="6" class="section-header">Commercial Terms</td></tr></thead>
                             <tbody>
                                 <tr>
@@ -317,7 +439,7 @@
                                             <span t-if="o.sale_order_id.delivery_type == 'for'">FOR</span>
                                             <span t-if="o.sale_order_id.delivery_type == 'ex'">Ex-Works</span>
                                         </t>
-                                        <span t-else="">-</span>
+                                        <span t-else="">Ex-Works</span>
                                     </td>
                                     <td class="label-cell"><strong>Delivery Location</strong></td>
                                     <td colspan="2" class="value-cell">
@@ -334,7 +456,7 @@
                                 <tr>
                                     <td class="label-cell"><strong>Offer Validity</strong></td>
                                     <td colspan="2" class="value-cell">
-                                        <t t-if="o.sale_order_id.offer_validity">
+                                        <t t-if="o.sale_order_id and o.sale_order_id.offer_validity">
                                             <span t-field="o.sale_order_id.offer_validity" t-options='{"widget": "datetime", "format": "dd-MM-yyyy"}'/>
                                         </t>
                                     </td>
@@ -343,9 +465,93 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <!-- ═══════════════════════════════════════════════════════ -->
-                        <!-- DYNAMIC TERMS & CONDITIONS (PULLED FROM SO) -->
-                        <!-- ═══════════════════════════════════════════════════════ -->
+
+                        <!-- Footer on Page 1 -->
+                        <div class="report-footer">
+                            <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center;">
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
+                                            <strong>Prepared By</strong>
+                                        </td>
+                                        <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
+                                            <strong>Approved By</strong>
+                                        </td>
+                                        <td colspan="2" style="width:33.33%; padding:4px;">
+                                            <strong>For <t t-esc="o.company_id.name"/></strong>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="height: 29px; border-right: 1px solid #000;"></td>
+                                        <td colspan="2" style="height: 29px; border-right: 1px solid #000;"></td>
+                                        <td colspan="2" style="height: 29px;"></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="padding:4px; border-right: 1px solid #000;">
+                                            Executive - Sales
+                                        </td>
+                                        <td colspan="2" style="padding:4px; border-right: 1px solid #000;">
+                                            Head - Sales and Marketing
+                                        </td>
+                                        <td colspan="2" style="padding:4px;">
+                                            <i style="text-decoration: underline;">Authorised Signatory</i>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
+                                        <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 2: Terms &amp; Conditions with Header and Footer -->
+                    <div class="page proforma-page">
+                        <!-- Header with Document Info on Page 2 -->
+                        <div class="page-header">
+                            <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
+                                <tr>
+                                    <!-- Column 1: Logo - KEPT EXACTLY AS IS -->
+                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120px;" rowspan="3">
+                                        <t t-if="print_type == 'quotation'">
+                                            <img t-if="o.company_id.quotation_invoice_image" 
+                                                t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                                style="max-height: 85px; display: block;"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img t-if="o.company_id.sale_image" 
+                                                t-att-src="image_data_uri(o.company_id.sale_image)" 
+                                                style="max-height: 85px; display: block;"/>
+                                        </t>   
+                                    </td>
+                                    <!-- Document No Column -->
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/></td>
+                                    <!-- Quotation # Column -->
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation #</td>
+                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.date_order.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.date_order else ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Validity Date</td>
+                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.validity_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.validity_date else ''"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Terms &amp; Conditions -->
                         <div class="terms-wrapper">
                             <table class="excel-table" style="width:100%; border-collapse:collapse; border:1px solid #000;">
                                 <thead>
@@ -354,32 +560,60 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-          
+                                    <!-- Term 1: Offer Validity with Dynamic Days Calculation -->
                                     <tr>
                                         <td style="width:3%; text-align:center; border:1px solid #000;">1</td>
                                         <td colspan="5" style="border:1px solid #000;">
                                             This quotation is valid for 
-                                            <t t-if="o.sale_order_id.offer_validity and o.sale_order_id.start_date">
+                                            <t t-if="o.sale_order_id and o.sale_order_id.offer_validity and o.sale_order_id.start_date">
                                                 <t t-set="days_diff" t-value="(o.sale_order_id.offer_validity.date() - o.sale_order_id.start_date).days"/>
                                                 <strong><t t-esc="days_diff"/> days</strong>
                                             </t>
                                             from the date of issuance unless extended in writing.
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td style="text-align:center; border:1px solid #000;">2</td>
-                                        <td colspan="5" style="border:1px solid #000;">
-                                            Any change in government duties, taxes, or levies will be charged at actuals.
+
+                                    <!-- Term 2: Duties and Taxes -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">2</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Any change in government duties, taxes, or levies will be charged at actuals.
+                                            </p>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td style="text-align:center; border:1px solid #000;">3</td>
-                                        <td colspan="5" style="border:1px solid #000;">
-                                            Delivery shall be made as per the mutually agreed delivery schedule. Transit insurance
-                                            shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard
-                                            export quality packaging suitable for safe transportation and handling.
+
+                                    <!-- Term 3: Delivery Schedule -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">3</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Delivery shall be made as per the mutually agreed delivery schedule.
+                                            </p>
                                         </td>
                                     </tr>
+
+                                    <!-- Term 4: Transit Insurance &amp; Packing -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">4</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Transit insurance shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard export-quality packaging suitable for safe transportation and handling.
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Term 5: Packing -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">5</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Modules will be packed in standard export-quality packaging suitable for safe transportation and handling.
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Term 6: Inspection &amp; Damage Reporting -->
                                     <tr style="border-top:1px solid #000;">
                                         <td style="text-align:center; padding:1px; border-right:1px solid #000;">6</td>
                                         <td colspan="5" style="padding:1px;">
@@ -389,86 +623,99 @@
                                         </td>
                                     </tr>
 
-                                   <tr style="border-top:1px solid #000;">
-                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">9</td>
+                                    <!-- Term 7: Damage Reporting -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">7</td>
                                         <td colspan="5" style="padding:1px;">
                                             <p style="margin: 0; padding-bottom: 3px;">
-                                                 Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control. Any legal dispute arising out of this transaction will fall under the jurisdiction of the <strong><t t-esc="o.sale_order_id.jurisdiction_state"/> courts only.</strong>
+                                                Any external damage during transit should be reported immediately to the transporter and Solitech within <strong>48 hours</strong> of delivery.
                                             </p>
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td style="text-align:center; border:1px solid #000;">6</td>
-                                        <td colspan="5" style="border:1px solid #000;">
-                                            All designs, specifications, and product data shared are confidential and remain the
-                                            property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced
-                                            without written consent.
+                                    <!-- Term 8: Force Majeure -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">8</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control.
+                                            </p>
                                         </td>
                                     </tr>
 
-            <!-- Prepared / Approved / Company -->
-            <tr>
-                <td colspan="2"
-                    style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    Prepared By
-                </td>
-                <td colspan="2"
-                    style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    Approved By
-                </td>
-                <td colspan="2"
-                    style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    For SOLITECH GREEN ENERGY PRIVATE LIMITED
-                </td>
-            </tr>
+                                    <!-- Term 9: Jurisdiction -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">9</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                Any legal dispute arising out of this transaction will fall under the jurisdiction of the <t t-if="o.sale_order_id"><strong><t t-esc="o.sale_order_id.jurisdiction_state"/></strong></t> courts only.
+                                            </p>
+                                        </td>
+                                    </tr>
 
-            <!-- empty signature row -->
-            <tr>
-                <td colspan="2" style="border:1px solid #000; height:30px;"></td>
-                <td colspan="2" style="border:1px solid #000;"></td>
-                <td colspan="2" style="border:1px solid #000;"></td>
-            </tr>
+                                    <!-- Term 10: Confidentiality -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="text-align:center; padding:1px; border-right:1px solid #000;">10</td>
+                                        <td colspan="5" style="padding:1px;">
+                                            <p style="margin: 0; padding-bottom: 3px;">
+                                                All designs, specifications, and product data shared are confidential and remain the property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced without written consent.
+                                            </p>
+                                        </td>
+                                    </tr>
 
-            <!-- designations -->
-            <tr>
-                <td colspan="2" style="border:1px solid #000; text-align:center;">
-                    Executive - Sales
-                </td>
-                <td colspan="2" style="border:1px solid #000; text-align:center;">
-                    Head - Sales and Marketing
-                </td>
-                <td colspan="2"
-                    style="border:1px solid #000; text-align:center; text-decoration:underline;">
-                    Authorised Signatory
-                </td>
-            </tr>
-
-            <!-- revision / confidentiality -->
-            <tr>
-                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    Revision No
-                </td>
-                <td style="border:1px solid #000; text-align:center;">
-                    00
-                </td>
-                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    Revision Date
-                </td>
-                <td style="border:1px solid #000; text-align:center;">
-                    NA
-                </td>
-                <td style="border:1px solid #000; text-align:center; font-weight:bold;">
-                    Confidentiality
-                </td>
-                <td style="border:1px solid #000; text-align:center;">
-                    Internal Use / Customer Shared
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+                                    <!-- Term 11: Empty row for spacing -->
+                                    <tr style="border-top:1px solid #000;">
+                                        <td style="padding:2px; border-right:1px solid #000;"></td>
+                                        <td colspan="5" style="padding:2px;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+
+                        <!-- Footer on Page 2 -->
+                        <div class="report-footer">
+                            <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center;">
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
+                                            <strong>Prepared By</strong>
+                                        </td>
+                                        <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
+                                            <strong>Approved By</strong>
+                                        </td>
+                                        <td colspan="2" style="width:33.33%; padding:4px;">
+                                            <strong>For <t t-esc="o.company_id.name"/></strong>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="height: 29px; border-right: 1px solid #000;"></td>
+                                        <td colspan="2" style="height: 29px; border-right: 1px solid #000;"></td>
+                                        <td colspan="2" style="height: 29px;"></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #000;">
+                                        <td colspan="2" style="padding:4px; border-right: 1px solid #000;">
+                                            Executive - Sales
+                                        </td>
+                                        <td colspan="2" style="padding:4px; border-right: 1px solid #000;">
+                                            Head - Sales and Marketing
+                                        </td>
+                                        <td colspan="2" style="padding:4px;">
+                                            <i style="text-decoration: underline;">Authorised Signatory</i>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
+                                        <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </t>
             </t>
         </template>
