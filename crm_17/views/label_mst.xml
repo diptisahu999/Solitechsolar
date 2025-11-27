@@ -63,7 +63,7 @@
     
     <menuitem id="res_partner_menu_contacts_home"
         name="Contacts"
-        action="action_contacts_home"
+        action="contacts.action_contacts"
         parent="main_home_menu"
         sequence="3"/>
 
