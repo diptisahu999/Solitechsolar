@@ -25,6 +25,23 @@ class InheritPartner(models.Model):
         # Do nothing, blocking the l10n_in module logic
         pass
 
+    @api.constrains('vat')
+    def _check_unique_gst(self):
+        for rec in self:
+            gst = (rec.vat or "").strip().upper()
+            if gst:
+                # Search for same GST number in other partners
+                duplicate = self.env['res.partner'].search([
+                    ('vat', '=', gst),
+                    ('id', '!=', rec.id)
+                ], limit=1)
+
+                if duplicate:
+                    raise ValidationError(
+                        _("GST Number '%s' already exists for another contact (%s). "
+                          "Duplicate GST is not allowed.") % (gst, duplicate.name)
+                    )
+
     @api.depends('email')
     def _compute_email_color(self):
         for rec in self:
@@ -32,6 +49,20 @@ class InheritPartner(models.Model):
                 rec.email_color = 'no'
             else:
                 rec.email_color = 'green'
+
+
+    @api.onchange('vat')
+    def onchange_vat(self):
+        """Extracts the 10-character PAN from the GST number (vat), excluding the 2-digit state code."""
+        for rec in self:
+            gst_number = (rec.vat or "").strip().upper()
+            # Check if GST is valid (min 15 characters for a complete GSTIN)
+            if gst_number and len(gst_number) >= 12: 
+                # PAN is characters from index 2 up to index 12 (10 characters total)
+                pan_number = gst_number[2:12]
+                rec.l10n_in_pan = pan_number
+            else:
+                rec.l10n_in_pan = False
 
     @api.depends('name')
     def _compute_action_link(self):
