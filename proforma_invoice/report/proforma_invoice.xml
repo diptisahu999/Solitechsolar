@@ -39,6 +39,7 @@
                         .text-right {
                             text-align: right;
                         }
+                        /* Already defined in main CSS block, keeping for reference: */
                         .note-content p {
                             margin: 0;
                         }
@@ -374,8 +375,6 @@
                             </tr>
                         </table>
 
-                        <!-- Bank Details &amp; Special Instructions -->
-                        <style type="text/css">.note-content p { margin: 0; }</style>
                         <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
                             <thead>
                                 <tr>
@@ -514,10 +513,9 @@
                     <div class="page proforma-page">
                         <!-- Header with Document Info on Page 2 -->
                         <div class="page-header">
-                            <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
+                            <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 0px;">
                                 <tr>
-                                    <!-- Column 1: Logo - KEPT EXACTLY AS IS -->
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120px;" rowspan="3">
+                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 60px;" rowspan="3">
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_invoice_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
@@ -551,8 +549,7 @@
                             </table>
                         </div>
 
-                        <!-- Terms &amp; Conditions -->
-                        <div class="terms-wrapper">
+                        <div class="terms-wrapper" style="margin-top: 0px;">
                             <table class="excel-table" style="width:100%; border-collapse:collapse; border:1px solid #000;">
                                 <thead>
                                     <tr>
