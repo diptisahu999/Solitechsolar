@@ -25,15 +25,38 @@ class InheritPartner(models.Model):
         # Do nothing, blocking the l10n_in module logic
         pass
 
+    ##########  add restriction for delivery address gst duplicate  ##########
+
+    # @api.constrains('vat')
+    # def _check_unique_gst(self):
+    #     for rec in self:
+    #         gst = (rec.vat or "").strip().upper()
+    #         if gst:
+    #             # Search for same GST number in other partners
+    #             duplicate = self.env['res.partner'].search([
+    #                 ('vat', '=', gst),
+    #                 ('id', '!=', rec.id)
+    #             ], limit=1)
+
+    #             if duplicate:
+    #                 raise ValidationError(
+    #                     _("GST Number '%s' already exists for another contact (%s). "
+    #                       "Duplicate GST is not allowed.") % (gst, duplicate.name)
+    #                 )
+
+
     @api.constrains('vat')
     def _check_unique_gst(self):
         for rec in self:
             gst = (rec.vat or "").strip().upper()
+            if rec.parent_id:
+                continue
+
             if gst:
-                # Search for same GST number in other partners
                 duplicate = self.env['res.partner'].search([
                     ('vat', '=', gst),
-                    ('id', '!=', rec.id)
+                    ('id', '!=', rec.id),
+                    ('parent_id', '=', False) 
                 ], limit=1)
 
                 if duplicate:
