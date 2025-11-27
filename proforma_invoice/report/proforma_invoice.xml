@@ -173,7 +173,7 @@
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
                                 <tr>
                                     <!-- Column 1: Logo - KEPT EXACTLY AS IS -->
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120px;" rowspan="3">
+                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 60px;" rowspan="3">
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_invoice_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
@@ -209,7 +209,7 @@
 
                         <!-- Page 1 Content -->
                         <!-- Company Details Section -->
-                        <table class="excel-table" style="width: 100%; border-collapse: collapse; margin-top:-5.5px;">
+                        <table class="excel-table" style="width: 100%; border-collapse: collapse; margin-top: -38px;">
                             <tr><td colspan="6" class="section-header">Company Details</td></tr>
                             <tr>
                                 <td class="label-cell" style="width: 15%;">Name</td>
