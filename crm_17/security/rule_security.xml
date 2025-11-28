@@ -1,72 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'crm'), ('name','=','crm_rule_all_lead')] "/>
+    <!-- ============================================ -->
+    <!-- CRM LEAD RULES - HIERARCHY ONLY             -->
+    <!-- ============================================ -->
+    
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'crm'), ('name','=','crm_rule_all_lead')]"/>
         </function>
-        <value eval ="{'noupdate': False}"/>
+        <value eval="{'noupdate': False}"/>
     </function>
 
     <record id="crm_rule_all_lead" model="ir.rule">
-        <field name="name">All Leads</field>
+        <field name="name">CRM Lead - Hierarchy</field>
         <field ref="crm.model_crm_lead" name="model_id"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
     </record>
 
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'crm'), ('name','=','crm.crm_rule_all_lead')] "/>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'crm'), ('name','=','crm.crm_rule_all_lead')]"/>
         </function>
-        <value eval ="{'noupdate': True}"/>
+        <value eval="{'noupdate': True}"/>
     </function>
 
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'sale'), ('name','=','sale_order_see_all')] "/>
+    <!-- Same rule for "Own Documents" users -->
+    <record id="crm_rule_personal_hierarchy" model="ir.rule">
+        <field name="name">CRM Lead - Personal Hierarchy</field>
+        <field ref="crm.model_crm_lead" name="model_id"/>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- SALE ORDER RULES - HIERARCHY ONLY           -->
+    <!-- ============================================ -->
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'sale'), ('name','=','sale_order_see_all')]"/>
         </function>
-        <value eval ="{'noupdate': False}"/>
+        <value eval="{'noupdate': False}"/>
     </function>
 
     <record id="sale.sale_order_see_all" model="ir.rule">
-        <field name="name">All Orders</field>
+        <field name="name">Sale Order - Hierarchy</field>
         <field ref="sale.model_sale_order" name="model_id"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
     </record>
 
-
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'sale'), ('name','=','sale.sale_order_see_all')] "/>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'sale'), ('name','=','sale.sale_order_see_all')]"/>
         </function>
-        <value eval ="{'noupdate': True}"/>
+        <value eval="{'noupdate': True}"/>
     </function>
 
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'sale'), ('name','=','account_invoice_rule_see_all')] "/>
+    <record id="sale_order_personal_hierarchy" model="ir.rule">
+        <field name="name">Sale Order - Personal Hierarchy</field>
+        <field ref="sale.model_sale_order" name="model_id"/>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- INVOICE RULES - HIERARCHY ONLY              -->
+    <!-- ============================================ -->
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'sale'), ('name','=','account_invoice_rule_see_all')]"/>
         </function>
-        <value eval ="{'noupdate': False}"/>
+        <value eval="{'noupdate': False}"/>
     </function>
 
     <record id="sale.account_invoice_rule_see_all" model="ir.rule">
-        <field name="name">All Invoices</field>
-        <field name="model_id" ref="sale.model_account_move"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id) ,('user_id', 'in', user.dol_team_id.member_ids.ids)]</field>
+        <field name="name">Invoice - Hierarchy</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
     </record>
 
-
-    <function name = "write" model = "ir.model.data">
-        <function name = "search" model = "ir.model.data">
-            <value eval = "[('module', '=', 'sale'), ('name','=','sale.account_invoice_rule_see_all')] "/>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'sale'), ('name','=','sale.account_invoice_rule_see_all')]"/>
         </function>
-        <value eval ="{'noupdate': True}"/>
+        <value eval="{'noupdate': True}"/>
     </function>
 
-    <!-- repair.order rule -->
+    <record id="account_move_personal_hierarchy" model="ir.rule">
+        <field name="name">Invoice - Personal Hierarchy</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">['|',
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- REPAIR ORDER RULES (PRESERVED)              -->
+    <!-- ============================================ -->
+
     <record id="repair_order_personal_rule" model="ir.rule">
         <field name="name">Personal Repair Orders</field>
         <field ref="repair.model_repair_order" name="model_id"/>
@@ -79,6 +132,50 @@
         <field ref="repair.model_repair_order" name="model_id"/>
         <field name="domain_force">[(1,'=',1)]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'),ref('sales_team.group_sale_manager'))]"/>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- CUSTOM MODELS - HIERARCHY ONLY              -->
+    <!-- ============================================ -->
+
+    <record id="proforma_invoice_hierarchy_rule" model="ir.rule">
+        <field name="name">Proforma Invoice - Hierarchy</field>
+        <field name="model_id" ref="proforma_invoice.model_proforma_invoice"/>
+        <field name="domain_force">['|', 
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+    <record id="proforma_invoice_personal_hierarchy_rule" model="ir.rule">
+        <field name="name">Proforma Invoice - Personal Hierarchy</field>
+        <field name="model_id" ref="proforma_invoice.model_proforma_invoice"/>
+        <field name="domain_force">['|', 
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+
+    <record id="custom_sale_order_hierarchy_rule" model="ir.rule">
+        <field name="name">Custom Sale Order - Hierarchy</field>
+        <field name="model_id" ref="proforma_invoice.model_custom_sale_order"/>
+        <field name="domain_force">['|', 
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+    <record id="custom_sale_order_personal_hierarchy_rule" model="ir.rule">
+        <field name="name">Custom Sale Order - Personal Hierarchy</field>
+        <field name="model_id" ref="proforma_invoice.model_custom_sale_order"/>
+        <field name="domain_force">['|', 
+            ('user_id', '=', user.id),
+            ('user_id', 'child_of', user.id)
+        ]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
     </record>
 
 </odoo>

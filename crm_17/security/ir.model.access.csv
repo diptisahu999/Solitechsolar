@@ -69,3 +69,8 @@ crm.access_crm_lost_reason_manager,crm.lost.reason.manager,crm.model_crm_lost_re
 access_crm_lost_reason_admin,crm.lost.reason.admin,crm.model_crm_lost_reason,base.group_erp_manager,1,1,1,1
 payment_term_user,Payment Term User,account.model_account_payment_term,base.group_user,1,1,1,1
 payment_term_line_user,Payment Term Line User,account.model_account_payment_term_line,base.group_user,1,1,1,1
+
+access_proforma_invoice_line,proforma_invoice_line,proforma_invoice.model_proforma_invoice_line,,1,1,1,1
+access_custom_sale_order_line,custom_sale_order_line,proforma_invoice.model_custom_sale_order_line,,1,1,1,1
+access_proforma_invoice,proforma_invoice,proforma_invoice.model_proforma_invoice,,1,1,1,1
+access_custom_sale_order,custom_sale_order,proforma_invoice.model_custom_sale_order,,1,1,1,1

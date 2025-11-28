@@ -21,6 +21,18 @@ class InheritResUsers(models.Model):
     ], string="User Type")
     email_signature = fields.Html(string="Email Signature")
     fcm_token = fields.Char("FCM Token")
+
+    parent_id = fields.Many2one(
+        'res.users', 
+        string='Reports To',
+        help='Direct manager/supervisor in the sales hierarchy',
+        domain="[('share', '=', False)]"  
+    )
+    child_ids = fields.One2many(
+        'res.users', 
+        'parent_id', 
+        string='Direct Subordinates'
+    )
     
     def _compute_state(self):
         for user in self:
