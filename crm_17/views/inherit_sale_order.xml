@@ -362,4 +362,48 @@
         action="action_email_template_tree_all_sale"
         groups="base.group_erp_manager"
         sequence="71"/>
+
+
+    <record id="view_sale_order_form_help_upload" model="ir.ui.view">
+        <field name="name">sale.order.form.help.upload.buttons</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+
+                <!-- Help Button (visible to all users) -->
+                <button name="action_open_help_quotation"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-question-circle">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Help</span>
+                    </div>
+                </button>
+
+                <!-- Upload Button (Admin only) -->
+                <button type="action"
+                        name="%(base.action_attachment)d"
+                        class="oe_stat_button"
+                        icon="fa-paperclip"
+                        groups="base.group_system"
+                        context="{
+                            'default_res_model': 'sale.order',
+                            'default_res_id': active_id,
+                            'form_view_initial_mode': 'edit',
+                            'open_for_new_record': True,
+                            'default_type': 'binary'
+                        }">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Upload</span>
+                    </div>
+                </button>
+
+            </xpath>
+        </field>
+    </record>
+
+
+
+    
 </odoo>

@@ -81,6 +81,7 @@ class InheritSaleOrder(models.Model):
     )
 
 
+
     offer_validity = fields.Datetime(string='Offer Validity') 
     jurisdiction_state = fields.Char(
         string="Jurisdiction (State/City)",
@@ -98,6 +99,16 @@ class InheritSaleOrder(models.Model):
                 'context': {'print_type': 'quotation'} 
             })
             return report_action
+    
+
+    def action_open_help_quotation(self):
+        HELP_ATTACHMENT_ID = 1537  # your global PDF ID
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
         
     def action_print_so_custom_report(self):
         """Triggers the report using the SO action ID, setting print_type='sale'."""
