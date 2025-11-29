@@ -109,6 +109,15 @@ class InheritSaleOrder(models.Model):
             'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
             'target': 'new',
         }
+    
+    def action_open_workflow_sale_image(self):
+        IMAGE_ATTACHMENT_ID = 1549
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{IMAGE_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
         
     def action_print_so_custom_report(self):
         """Triggers the report using the SO action ID, setting print_type='sale'."""
