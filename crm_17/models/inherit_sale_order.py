@@ -102,7 +102,7 @@ class InheritSaleOrder(models.Model):
     
 
     def action_open_help_quotation(self):
-        HELP_ATTACHMENT_ID = 1537  # your global PDF ID
+        HELP_ATTACHMENT_ID = 1544  # your global PDF ID
 
         return {
             'type': 'ir.actions.act_url',
