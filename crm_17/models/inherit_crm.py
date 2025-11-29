@@ -64,8 +64,8 @@ class InheritCRM(models.Model):
                 self.lost_reason_id = False
 
 
-    def action_open_help_document(self):
-        HELP_ATTACHMENT_ID = 1536 
+    def action_open_help(self):
+        HELP_ATTACHMENT_ID = 1537  # your global PDF ID
 
         return {
             'type': 'ir.actions.act_url',
