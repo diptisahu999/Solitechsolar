@@ -149,5 +149,33 @@
     <menuitem id="menu_custom_sale_order_top" 
             name="SO" 
             action="action_custom_sale_order" 
-            sequence="5"/>          
+            sequence="5"/> 
+
+    <record id="view_custom_sale_order_form_buttons" model="ir.ui.view">
+        <field name="name">custom.sale.order.form.help.upload.buttons</field>
+        <field name="model">custom.sale.order</field>
+        <field name="inherit_id" ref="proforma_invoice.view_custom_sale_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_print_so_custom_report']" position="after">
+                
+                <button name="action_open_help_so"
+                        type="object"
+                        string="Help"
+                        icon="fa-question-circle"/>
+
+                <button type="action"
+                        name="%(base.action_attachment)d"
+                        string="Upload"
+                        icon="fa-paperclip"
+                        groups="base.group_system"
+                        context="{
+                            'default_res_model': 'custom.sale.order',
+                            'default_res_id': active_id
+                        }"/>
+            </xpath>
+        </field>
+    </record>
+
+
+         
 </odoo>

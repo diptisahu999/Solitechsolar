@@ -167,4 +167,22 @@
 
     <menuitem id="menu_proforma_root" name="Proforma Invoices" sequence="25"/>
     <menuitem id="menu_proforma_list" name="Proforma Invoices" parent="menu_proforma_root" action="action_proforma_invoice"/>
+
+    <record id="view_proforma_invoice_form_buttons_new" model="ir.ui.view">
+        <field name="name">proforma.invoice.form.add.buttons</field>
+        <field name="model">proforma.invoice</field>
+        <field name="inherit_id" ref="proforma_invoice.proforma_invoice_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[2]" position="after">
+                
+                <button name="action_open_help_pi"
+                        type="object"
+                        string="Help"
+                        icon="fa-question-circle"/>
+
+                
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

@@ -80,6 +80,32 @@ class ProformaInvoice(models.Model):
         
         # return the custom header if it exists, otherwise return the standard logo
         return company.quotation_image or company.logo
+    
+
+    def action_open_help_pi(self):
+        HELP_ATTACHMENT_ID = 1546
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+    
+    def action_open_upload_wizard(self):
+        """Action for the 'Upload' button. Opens a dialog to manage attachments."""
+        self.ensure_one()
+        return {
+            'name': _('Upload Attachments'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ir.attachment',
+            'view_mode': 'tree,form',
+            'domain': [('res_model', '=', self._name), ('res_id', '=', self.id)],
+            'context': {
+                'default_res_model': self._name,
+                'default_res_id': self.id,
+            },
+            'target': 'new', # Opens the attachment view in a new dialog/window
+        }
+    
         
     def amount_to_text(self, amount, currency='INR'):
         """

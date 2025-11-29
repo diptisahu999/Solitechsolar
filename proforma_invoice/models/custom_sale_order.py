@@ -49,6 +49,15 @@ class CustomSaleOrder(models.Model):
         for rec in self:
             rec.proforma_count = len(rec.proforma_ids)
 
+
+    def action_open_help_so(self):
+        HELP_ATTACHMENT_ID = 1545  # your PDF attachment ID
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
