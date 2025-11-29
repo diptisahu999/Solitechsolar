@@ -63,6 +63,17 @@ class InheritCRM(models.Model):
             if not self.stage_id.is_lost:
                 self.lost_reason_id = False
 
+
+    def action_open_help_document(self):
+        HELP_ATTACHMENT_ID = 1536 
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+
+
     @api.depends('name')
     def _compute_action_link(self):
         menu_id = self.env.ref('crm.menu_crm_opportunities').id
