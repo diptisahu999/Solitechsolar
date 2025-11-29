@@ -190,6 +190,7 @@
                         name="%(base.action_attachment)d"
                         class="oe_stat_button"
                         icon="fa-upload"
+                        groups="base.group_system"
                         context="{
                             'default_res_model': 'res.partner',
                             'default_res_id': active_id,
@@ -201,6 +202,7 @@
                         <span class="o_stat_text">Upload</span>
                     </div>
                 </button>
+
 
                 <!-- Help Button -->
                 <button name="action_open_help_document"
