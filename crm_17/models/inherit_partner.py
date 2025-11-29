@@ -27,10 +27,7 @@ class InheritPartner(models.Model):
 
 
     def action_open_help_document(self):
-        self.ensure_one()
-
-        # CHANGE THIS: use a fixed global Help PDF ID
-        HELP_ATTACHMENT_ID = 1245   # <<< replace with real attachment ID
+        HELP_ATTACHMENT_ID = 1534  # Replace with your real PDF ID
 
         return {
             'type': 'ir.actions.act_url',
