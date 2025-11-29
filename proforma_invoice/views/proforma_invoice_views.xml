@@ -180,6 +180,14 @@
                         string="Help"
                         icon="fa-question-circle"/>
 
+                <button name="action_open_workflow_pi_image"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sitemap"> <div class="o_stat_info">
+                        <span class="o_stat_text">Workflow</span>
+                    </div>
+                </button>
+
                 
             </xpath>
         </field>

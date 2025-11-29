@@ -90,6 +90,15 @@ class ProformaInvoice(models.Model):
             'target': 'new',
         }
     
+    def action_open_workflow_pi_image(self):
+        IMAGE_ATTACHMENT_ID = 1551
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{IMAGE_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+    
     def action_open_upload_wizard(self):
         """Action for the 'Upload' button. Opens a dialog to manage attachments."""
         self.ensure_one()

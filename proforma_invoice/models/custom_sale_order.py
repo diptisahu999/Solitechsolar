@@ -57,6 +57,15 @@ class CustomSaleOrder(models.Model):
             'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
             'target': 'new',
         }
+    
+    def action_open_workflow_so_image(self):
+        IMAGE_ATTACHMENT_ID = 1550
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{IMAGE_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
 
     @api.model_create_multi
     def create(self, vals_list):
