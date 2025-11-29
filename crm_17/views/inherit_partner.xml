@@ -177,8 +177,46 @@
         </field>
     </record>
 
-    <record id="contacts.action_contacts" model="ir.actions.act_window">
-        <field name="domain">['|', ('is_company','=', True), ('parent_id','=', False)]</field>
-    </record>
+<record id="view_res_partner_help_button" model="ir.ui.view">
+    <field name="name">res.partner.help.button</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//div[@class='oe_button_box']" position="inside">
+
+            <!-- Upload Document Button -->
+            <button type="action"
+                    name="%(base.action_attachment)d"
+                    class="oe_stat_button"
+                    icon="fa-upload"
+                    context="{
+                        'default_res_model': 'res.partner',
+                        'default_res_id': active_id,
+                        'form_view_initial_mode': 'edit',
+                        'open_for_new_record': True,
+                        'default_type': 'binary'
+                    }">
+                <div class="o_stat_info">
+                    <span class="o_stat_text">Upload</span>
+                </div>
+            </button>
+
+            <!-- Help Button -->
+            <button name="action_open_help_document"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-question-circle">
+                <div class="o_stat_info">
+                    <span class="o_stat_text">Help</span>
+                </div>
+            </button>
+
+        </xpath>
+    </field>
+</record>
+
+
+
     
 </odoo>

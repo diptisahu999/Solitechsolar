@@ -25,6 +25,21 @@ class InheritPartner(models.Model):
         # Do nothing, blocking the l10n_in module logic
         pass
 
+
+    def action_open_help_document(self):
+        self.ensure_one()
+
+        # CHANGE THIS: use a fixed global Help PDF ID
+        HELP_ATTACHMENT_ID = 1245   # <<< replace with real attachment ID
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+
+
+
     ##########  add restriction for delivery address gst duplicate  ##########
 
     # @api.constrains('vat')
