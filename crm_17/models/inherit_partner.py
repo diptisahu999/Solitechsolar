@@ -27,7 +27,7 @@ class InheritPartner(models.Model):
 
 
     def action_open_help_document(self):
-        HELP_ATTACHMENT_ID = 1534  # Replace with your real PDF ID
+        HELP_ATTACHMENT_ID = 1536  # Replace with your real PDF ID
 
         return {
             'type': 'ir.actions.act_url',
