@@ -65,11 +65,20 @@ class InheritCRM(models.Model):
 
 
     def action_open_help(self):
-        HELP_ATTACHMENT_ID = 1537  # your global PDF ID
+        HELP_ATTACHMENT_ID = 1537
 
         return {
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
+            'target': 'new',
+        }
+    
+    def action_open_workflow_image(self):
+        IMAGE_ATTACHMENT_ID = 1548
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{IMAGE_ATTACHMENT_ID}?download=false',
             'target': 'new',
         }
 

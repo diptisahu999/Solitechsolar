@@ -464,6 +464,14 @@
                     </div>
                 </button>
 
+                <button name="action_open_workflow_image"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sitemap"> <div class="o_stat_info">
+                        <span class="o_stat_text">Workflow</span>
+                    </div>
+                </button>
+
                 <!-- Correct Attachments Button -->
                 <button type="action"
                         name="%(base.action_attachment)d"
