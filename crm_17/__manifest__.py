@@ -82,6 +82,7 @@
     'assets': {
         'web.assets_backend': [
             'crm_17/static/src/css/sticky_header.css',
+            'crm_17/static/src/js/user_menu.js',
         ],
     },
 }
