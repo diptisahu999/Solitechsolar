@@ -9,13 +9,13 @@ class SaleOrder(models.Model):
 
     def action_confirm_custom_so(self):
         for order in self:
-            partner = order.partner_id
-            if not partner.vat:
-                raise UserError(_(
-                    "Invalid Operation\n"
-                    "GST Number is required.\n\n"
-                    "Please update the customer's GST No before confirming the quotation."
-                ))
+            # partner = order.partner_id
+            # if not partner.vat:
+            #     raise UserError(_(
+            #         "Invalid Operation\n"
+            #         "GST Number is required.\n\n"
+            #         "Please update the customer's GST No before confirming the quotation."
+            #     ))
 
             if not order.client_order_ref:
                  raise UserError(_(
