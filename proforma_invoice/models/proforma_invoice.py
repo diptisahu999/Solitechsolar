@@ -68,6 +68,22 @@ class ProformaInvoice(models.Model):
     )
     custom_so_id = fields.Many2one('custom.sale.order', string="Related Custom SO", readonly=True)
 
+    salesperson_phone = fields.Char(
+        string="Salesperson Contact",
+        compute='_compute_salesperson_phone',
+        store=True,
+        readonly=False # Keep editable if needed, but the computed value is stored
+    )
+    @api.depends('user_id')
+    def _compute_salesperson_phone(self):
+        for rec in self:
+            phone = False
+            # Check if user_id and its linked partner_id exist
+            if rec.user_id and rec.user_id.partner_id:
+                # Use phone first, then mobile
+                phone = rec.user_id.partner_id.phone or rec.user_id.partner_id.mobile
+            rec.salesperson_phone = phone
+
     def get_company_header_image(self):
         """
         1. Switches to Superuser (sudo) to bypass the 'account.move' Access Error.
