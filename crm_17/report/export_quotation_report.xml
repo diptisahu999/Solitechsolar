@@ -634,9 +634,9 @@
                                             <td style="padding:1px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     This quotation is valid for
-                                                    <t t-if="o.offer_validity and o.start_date">
-                                                        <t t-set="days_diff" t-value="(o.offer_validity.date() - o.start_date).days"/>
-                                                        <strong>**<t t-esc="days_diff"/> days**</strong>
+                                                    <t t-if="o.offer_validity and o.date_order">
+                                                        <t t-set="days_diff" t-value="(o.offer_validity.date() - o.date_order.date()).days"/>
+                                                        <strong><t t-esc="days_diff"/> days </strong>
                                                     </t>
                                                     from the date of issuance unless extended in writing.
                                                 </p>

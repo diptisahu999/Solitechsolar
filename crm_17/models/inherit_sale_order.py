@@ -11,6 +11,7 @@ import base64
 import io
 import zipfile
 from odoo.exceptions import ValidationError
+from datetime import datetime, timedelta
 
 
 class ResConfigSettings(models.TransientModel):
@@ -82,13 +83,39 @@ class InheritSaleOrder(models.Model):
 
 
 
-    offer_validity = fields.Datetime(string='Offer Validity') 
+    offer_validity = fields.Datetime(
+        string="Offer Validity",
+        compute="_compute_offer_validity",
+        store=True,
+        readonly=True,
+    )
+
     jurisdiction_state = fields.Char(
         string="Jurisdiction (State/City)",
         default="Surat, Gujarat",
         help="Select the applicable state or region."
     )
-    start_date = fields.Date(string='Start Date')
+    start_date = fields.Date(string='Delivery Start Date')
+
+    @api.onchange('date_order')
+    def _onchange_date_order_set_start_date(self):
+        if self.date_order:
+            self.start_date = self.date_order.date()
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('start_date') and vals.get('date_order'):
+            vals['start_date'] = vals['date_order']
+        return super().create(vals)
+    
+
+    @api.depends("date_order")
+    def _compute_offer_validity(self):
+        for order in self:
+            if order.date_order:
+                order.offer_validity = order.date_order + timedelta(days=7)
+            else:
+                order.offer_validity = False
 
     def action_print_quotation_report(self):
             """Triggers the report using the Quotation action ID, setting print_type='quotation'."""
