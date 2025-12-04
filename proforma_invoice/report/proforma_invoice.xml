@@ -232,7 +232,7 @@
                                 <td class="label-cell" style="width: 15%;"></td>
                                 <td class="value-cell" style="width: 20%;"></td>
                                 <td class="label-cell" style="width: 15%;">Contact No</td>
-                                <td class="value-cell"><t t-esc="(o.partner_shipping_id or o.partner_id).phone"/></td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.phone or ''"/></td>
                                 <td class="label-cell" style="width: 15%;">Customer Reference</td>
                                 <td class="value-cell" style="width: 15%;"><t t-esc="o.po_number or ''"/></td>
                             </tr>
