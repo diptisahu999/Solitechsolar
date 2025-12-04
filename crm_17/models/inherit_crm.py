@@ -64,6 +64,14 @@ class InheritCRM(models.Model):
                 self.lost_reason_id = False
 
 
+    @api.constrains('kw', 'type')
+    def _check_kw_value(self):
+        """ Constraint to ensure KW has a value greater than 0 for both Lead and Opportunity types. """
+        for record in self:
+            if record.type in ['lead', 'opportunity']:
+                if not record.kw or record.kw <= 0.0: 
+                    raise ValidationError("KW (Kilowatts) is a compulsory field and must have a value.")
+
     def action_open_help(self):
         HELP_ATTACHMENT_ID = 1537
 
