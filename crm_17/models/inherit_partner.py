@@ -163,13 +163,53 @@ class InheritPartner(models.Model):
         if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).create(vals)
+
+        # Auto-assign shipping when a delivery contact is created or when the main contact is created without delivery child.
+        for partner in res:
+            if partner.type == 'delivery' and partner.parent_id:
+                partner.parent_id._auto_assign_delivery_address(partner)
+            elif not partner.parent_id and partner.type in (False, 'contact', 'invoice'):
+                delivery_child = partner.child_ids.filtered(lambda c: c.type == 'delivery')
+                if not delivery_child:
+                    partner._auto_assign_delivery_address(partner)
+
         return res
 
     def write(self, vals):
         if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).write(vals)
+
+        # If a delivery address is created/updated, push it to related quotations/SOs that had no dedicated delivery address.
+        if any(key in vals for key in ['type', 'street', 'street2', 'city', 'state_id', 'zip', 'country_id', 'parent_id']):
+            for partner in self:
+                # Case 1: this record is a delivery contact under a parent
+                if partner.type == 'delivery' and partner.parent_id:
+                    partner.parent_id._auto_assign_delivery_address(partner)
+                # Case 2: the main contact gets its own address updated and has no delivery child yet
+                elif not partner.parent_id and partner.type in (False, 'contact', 'invoice'):
+                    delivery_child = partner.child_ids.filtered(lambda c: c.type == 'delivery')
+                    # If no delivery child exists, use the main contact as shipping fallback
+                    if not delivery_child:
+                        partner._auto_assign_delivery_address(partner)
+
         return res
+
+    def _auto_assign_delivery_address(self, delivery_partner):
+        """Assign the given delivery partner to related quotations/SO that didn't have a dedicated shipping.
+        We only replace when partner_shipping_id was unset or equal to the billing partner to avoid overriding
+        manually chosen addresses."""
+        if not delivery_partner:
+            return
+        parent = self
+        SaleOrder = self.env['sale.order']
+        orders = SaleOrder.search([
+            ('partner_id', '=', parent.id),
+            ('partner_shipping_id', 'in', [False, parent.id]),
+            ('state', 'not in', ['cancel'])
+        ])
+        for order in orders:
+            order.partner_shipping_id = delivery_partner.id
 
 class InheritresPartnerCategory(models.Model):
     _inherit = "res.partner.category"
