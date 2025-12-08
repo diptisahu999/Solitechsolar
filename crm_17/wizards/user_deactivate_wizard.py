@@ -28,16 +28,13 @@ class UserDeactivateWizard(models.TransientModel):
         return res
 
     def action_yes(self):
-        """Action when user clicks Yes - Archive the user"""
+        """Action when user clicks Yes - Archive the user and log out"""
         self.ensure_one()
         user = self.user_id
 
         if not user:
             raise UserError(_("No user selected."))
 
-        # Archive the user (set active = False)
-        # Direct SQL is used to bypass Odoo's self-deactivation restriction.
-        # This keeps other constraints untouched and avoids the "cannot deactivate current user" error.
         self.env.cr.execute(
             "UPDATE res_users SET active = FALSE WHERE id = %s",
             [user.id],
@@ -46,8 +43,13 @@ class UserDeactivateWizard(models.TransientModel):
         
         self.deactivate = True
         
+        logout_url = '/web/session/logout'
+        
+        # Return an action that forces a redirect to the logout URL
         return {
-            'type': 'ir.actions.act_window_close',
+            'type': 'ir.actions.act_url',
+            'url': logout_url,
+            'target': 'self', # 'self' ensures the current window is redirected
         }
 
     def action_no(self):
