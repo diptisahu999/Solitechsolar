@@ -29,6 +29,7 @@
             'wizards/sale_order_repair.xml',
             'wizards/crm_details_wizard.xml',
             'wizards/inherit_mail_compose_message.xml',
+            'wizards/user_deactivate_wizard.xml',
 
             'report/paper_formate.xml',
             'report/proforma_invoice_report.xml',

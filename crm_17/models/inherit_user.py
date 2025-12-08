@@ -50,3 +50,15 @@ class InheritResUsers(models.Model):
     def action_button_active(self):
         self.is_left = False
         self.state = 'active'
+
+    def write(self, vals):
+        """Override write to allow self-deactivation"""
+        # If trying to deactivate (set active=False)
+        if 'active' in vals and vals.get('active') is False:
+            # Allow self-deactivation by using sudo() to bypass Odoo's restriction
+            # This changes the environment user to superuser, bypassing the check
+            for record in self:
+                # Use sudo() to execute with superuser privileges, bypassing self-deactivation check
+                super(InheritResUsers, record.sudo()).write(vals)
+            return True
+        return super(InheritResUsers, self).write(vals)

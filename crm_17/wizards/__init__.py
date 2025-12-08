@@ -10,3 +10,4 @@ from . import sale_order_repair
 from . import crm_details_wizard
 from . import inherit_mail_compose_message
 from . import inherit_stock_picking_return
+from . import user_deactivate_wizard

@@ -30,6 +30,7 @@ access_upcoming_stock_admin,upcoming_stock,model_upcoming_stock,crm_17.security_
 access_upcoming_stock_user,upcoming_stock,model_upcoming_stock,,1,0,0,0
 access_reserved_stock,reserved_stock,model_reserved_stock,,1,1,1,0
 access_account_move_validation,account_move_validation,model_account_move_validation,,1,1,1,0
+access_user_deactivate_wizard,user_deactivate_wizard,model_user_deactivate_wizard,,1,1,1,1
 
 mrp.access_product_template_mrp_manager,product.template mrp_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
 mrp.access_product_template_user,product.template user,product.model_product_template,,1,0,0,0

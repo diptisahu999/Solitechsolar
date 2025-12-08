@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="user_deactivate_wizard_view_form" model="ir.ui.view">
+        <field name="name">user.deactivate.wizard.form</field>
+        <field name="model">user.deactivate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Delete/Deactivate User">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id" invisible="1"/>
+                            <label for="user_name" string="User"/>
+                            <field name="user_name" readonly="1" nolabel="1"/>
+                        </group>
+                        <group>
+                            <label for="email" string="Email"/>
+                            <field name="email" readonly="1" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <label for="deactivate" string="Deactivate"/>
+                        <div style="margin-top: 10px; display: flex; align-items: center;">
+                            <button name="action_yes" 
+                                    string="Yes" 
+                                    type="object" 
+                                    class="oe_highlight btn-primary"
+                                    style="margin-right: 10px;"/>
+                            <span style="margin: 0 10px;">or</span>
+                            <button name="action_no" 
+                                    string="No" 
+                                    type="object"
+                                    class="btn-secondary"/>
+                        </div>
+                        <field name="deactivate" invisible="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_user_deactivate_wizard" model="ir.actions.act_window">
+        <field name="name">Delete</field>
+        <field name="res_model">user.deactivate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_res_users"/>
+    </record>
+
+    <!-- Menu item in Home dropdown -->
+    <menuitem id="menu_user_deactivate_home"
+        name="Delete"
+        action="action_user_deactivate_wizard"
+        parent="main_home_menu"
+        sequence="100"/>
+
+    <!-- Menu item in upper toolbar (top-level menu) -->
+    <menuitem id="menu_user_deactivate_toolbar"
+        name="Delete"
+        action="action_user_deactivate_wizard"
+        sequence="100"/>
+
+</odoo>
+
