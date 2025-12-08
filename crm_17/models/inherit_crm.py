@@ -285,8 +285,8 @@ class InheritCRM(models.Model):
         if vals.get('pi_no') == None or vals.get('pi_no') == 0:
             vals['pi_no'] = self.bill_chr_vld()
         # The following line is the cause of the error; it has been commented out.
-        # if vals.get('expected_revenue',False) == 0 and vals.get('type',False) == 'opportunity':
-        #     raise UserError("Expected Revenue it Compulsory !!!")
+        if vals.get('expected_revenue',False) == 0 and vals.get('type',False) == 'opportunity':
+            raise UserError("Expected Revenue it Compulsory !!!")
 
         # record = self.env['crm.lead'].search([
         #     ('company_id', '=', vals.get('company_id')),
