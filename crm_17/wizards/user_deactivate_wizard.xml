@@ -18,7 +18,7 @@
                         </group>
                     </group>
                     <group>
-                        <label for="deactivate" string="Deactivate"/>
+                        <label for="deactivate" string="Are you sure delete the account"/>
                         <div style="margin-top: 10px; display: flex; align-items: center;">
                             <button name="action_yes" 
                                     string="Yes" 
@@ -42,7 +42,7 @@
     </record>
 
     <record id="action_user_deactivate_wizard" model="ir.actions.act_window">
-        <field name="name">Delete</field>
+        <field name="name">Delete Account</field>
         <field name="res_model">user.deactivate.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -51,16 +51,16 @@
 
     <!-- Menu item in Home dropdown -->
     <menuitem id="menu_user_deactivate_home"
-        name="Delete"
+        name="Delete Account"
         action="action_user_deactivate_wizard"
         parent="main_home_menu"
         sequence="100"/>
 
     <!-- Menu item in upper toolbar (top-level menu) -->
-    <menuitem id="menu_user_deactivate_toolbar"
+    <!-- <menuitem id="menu_user_deactivate_toolbar"
         name="Delete"
         action="action_user_deactivate_wizard"
-        sequence="100"/>
+        sequence="100"/> -->
 
 </odoo>
 
