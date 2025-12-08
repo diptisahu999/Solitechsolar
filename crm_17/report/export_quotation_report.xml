@@ -287,18 +287,8 @@
 
                                                 <!-- ✅ Model No Column -->
                                                 <td class="value-cell" colspan="2">
-                                                    <t t-set="model_no_value" t-value="''"/>
-                                                    <t t-if="line.product_id.product_template_attribute_value_ids">
-                                                        <t t-foreach="line.product_id.product_template_attribute_value_ids" t-as="attribute_value">
-                                                            <t t-if="attribute_value.attribute_id.name == 'Model No'">
-                                                                <t t-set="model_no_value" t-value="attribute_value.name"/>
-                                                            </t>
-                                                        </t>
-                                                    </t>
-                                                    <!-- fallback to product name if model no not found -->
-                                                    <t t-esc="model_no_value or line.product_id.name"/>
+                                                    <t t-esc="line.name"/>
                                                 </td>
-
                                                 <td class="value-cell text-center"><t t-esc="line.product_id.l10n_in_hsn_code or ''"/></td>
                                                 <td class="value-cell text-center"><t t-esc="line.wattage"/></td>
                                                 <td class="value-cell text-right" style="white-space: nowrap;">₹ <t t-esc="'%.2f' % line.price_unit"/></td>
@@ -442,7 +432,7 @@
                                         <td class="label-cell" style="width:25%; border-right:1px solid #000; padding:4px;">Details</td>
                                         
                                         <td class="value-cell" style="width:45%; border-left:1px solid #000; padding:4px; font-weight:bold;">
-                                            <span t-esc="o.order_line[0].name if o.order_line else ''"/>
+                                            <!-- <span t-esc="o.order_line[0].name if o.order_line else ''"/> -->
                                         </td>
                                     </tr>
                                 </thead>
