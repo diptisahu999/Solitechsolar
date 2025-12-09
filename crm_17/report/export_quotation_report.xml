@@ -194,7 +194,12 @@
                                     </td>
                                     <td class="label-cell">Ship To</td>
                                     <td colspan="2" class="value-cell">
-                                        <t t-esc="o.partner_shipping_id.name if o.partner_shipping_id else o.partner_id.name"/>
+                                        <t t-if="o.partner_shipping_id">
+                                            <t t-esc="o.partner_shipping_id.company_name_delivery"/> 
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="o.partner_id.name"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr style="height:60px;">
