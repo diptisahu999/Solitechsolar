@@ -107,17 +107,18 @@
                                     <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
                                     <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px;">
                                         <t t-if="print_type == 'quotation'">
-                                            <span t-esc="o.name"/>          
+                                            <span t-esc="o.name"/> - <span t-esc="'{:04d}'.format(o.revision_number)"/>         
                                         </t>
                                         <t t-else="">
-                                            <span t-esc="o.custom_so_id.name or o.name"/>  
+                                            <span t-esc="o.custom_so_id.name or o.name"/> - <span t-esc="'{:04d}'.format(o.revision_number)"/>  
                                         </t>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
                                     <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/>
+                                        <span t-esc="'01-06-2025'"/>
+                                        <!-- <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/> -->
                                     </td>
                                 </tr>
 
@@ -603,13 +604,14 @@
                                     </td>
                                     <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
                                     <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.name"/>
+                                        <span t-esc="o.name"/>-<span t-esc="'{:04d}'.format(o.revision_number)"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
                                     <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/>
+                                        <span t-esc="'01-06-2025'"/>
+                                        <!-- <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/> -->
                                     </td>
                                 </tr>
                                 <tr>
