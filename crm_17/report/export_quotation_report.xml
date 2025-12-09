@@ -575,7 +575,9 @@
                                         </tr>
                                         <tr>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
-                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="'{:03d}'.format(o.revision_number)"/>
+                                            </td>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
                                             <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
@@ -773,7 +775,9 @@
                                         
                                         <tr>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
-                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="'{:03d}'.format(o.revision_number)"/>
+                                            </td>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
                                             <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
