@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- 1️⃣ Define the Action for Contacts (Scan Mode = contact) -->
+        <record id="action_open_scanner_wizard_contact" model="ir.actions.act_window">
+            <field name="name">Scan Business Card</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">business.card.scanner.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_scan_mode': 'contact'}</field>
+            <!-- Add to Action Menu in List and Form views -->
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">list,form</field>
+        </record>
+
+        <!-- 2️⃣ Add "Scan Business Card" Button to Partner Form View -->
+        <record id="view_partner_form_inherit_scanner" model="ir.ui.view">
+            <field name="name">res.partner.view.form.inherit.scanner</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Insert header before sheet. Use invisible="not id" to hide on New records to avoid validation blocking. -->
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <button
+                            name="%(action_open_scanner_wizard_contact)d"
+                            string="Scan Business Card"
+                            type="action"
+                            class="oe_highlight"
+                            icon="fa-id-card"
+                            invisible="not id"/>
+                    </header>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- 3️⃣ Add Menu Item explicitly for easier access without creating a new record first -->
+        <menuitem id="menu_scan_business_card_contact"
+                  name="Scan Business Card"
+                  parent="contacts.menu_contacts"
+                  action="action_open_scanner_wizard_contact"
+                  sequence="1"/>
+
+    </data>
+</odoo>

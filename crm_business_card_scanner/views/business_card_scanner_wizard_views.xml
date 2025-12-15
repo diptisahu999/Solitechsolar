@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <form string="Business Card Scanner">
                 <group>
+                    <field name="scan_mode" invisible="1"/>
                     <field name="business_card_image"/>
                     <field name="extracted_text" readonly="1"/>
                 </group>
@@ -17,7 +18,13 @@
                     <button string="Create Lead"
                             name="action_create_lead"
                             type="object"
-                            class="btn-success"/>
+                            class="btn-success"
+                            invisible="scan_mode == 'contact'"/>
+                    <button string="Create Contact"
+                            name="action_create_contact"
+                            type="object"
+                            class="btn-success"
+                            invisible="scan_mode == 'lead'"/>
                     <button string="Cancel"
                             special="cancel"
                             class="btn-secondary"/>
