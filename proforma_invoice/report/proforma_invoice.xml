@@ -517,13 +517,13 @@
                                 <tr>
                                     <td style="width: 15%; text-align: left; vertical-align: top; height: 60px;" rowspan="3">
                                         <t t-if="print_type == 'quotation'">
-                                            <img t-if="o.company_id.quotation_invoice_image" 
-                                                t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
+                                            <img t-if="o.company_id.quotation_image" 
+                                                t-att-src="image_data_uri(o.company_id.quotation_image)" 
                                                 style="max-height: 85px; display: block;"/>
                                         </t>
                                         <t t-else="">
-                                            <img t-if="o.company_id.sale_image" 
-                                                t-att-src="image_data_uri(o.company_id.sale_image)" 
+                                            <img t-if="o.company_id.quotation_image" 
+                                                t-att-src="image_data_uri(o.company_id.quotation_image)" 
                                                 style="max-height: 85px; display: block;"/>
                                         </t>   
                                     </td>
