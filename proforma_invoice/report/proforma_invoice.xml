@@ -254,17 +254,32 @@
                                 <td class="label-cell">Bill To</td>
                                 <td colspan="2" class="value-cell"><t t-esc="o.partner_id.name"/></td>
                                 <td class="label-cell">Ship To</td>
-                                <td colspan="2" class="value-cell"><t t-esc="o.partner_shipping_id.name if o.partner_shipping_id else o.partner_id.name"/></td>
+                                <td colspan="2" class="value-cell">
+                                    <t t-if="o.partner_shipping_id and o.partner_shipping_id != o.partner_id and o.partner_shipping_id.company_name_delivery">
+                                        <t t-esc="o.partner_shipping_id.company_name_delivery"/>
+                                    </t>
+                                    <t t-elif="o.partner_shipping_id">
+                                        <t t-esc="o.partner_shipping_id.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="o.partner_id.name"/>
+                                    </t>
+                                </td>
                             </tr>
                             <tr style="height:60px;">
                                 <td colspan="3" class="value-cell" style="height:60px; vertical-align:top;"><div t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/></td>
-                                <td colspan="3" class="value-cell" style="height:60px; vertical-align:top;"><div t-field="o.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/></td>
+                                <td colspan="3" class="value-cell" style="height:60px; vertical-align:top;">
+                                    <div t-field="o.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                    <t t-if="o.partner_shipping_id.vat and o.partner_shipping_id.vat != o.partner_id.vat">
+                                        <div><strong>GSTIN No:</strong> <span t-field="o.partner_shipping_id.vat"/></div>
+                                    </t>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
                                 <td class="label-cell">Contact Person</td>
-                                <td class="value-cell"><t t-esc="o.partner_id.name"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_id.person_contacts or o.partner_id.name"/></td>
                                 <td colspan="2" class="label-cell">Supply Timeline Requirement</td>
                             </tr>
                             <tr>
@@ -353,14 +368,24 @@
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total Value</td>
                                     <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_untaxed)"/></td>
                                 </tr>
-                                <tr>
-                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST</td>
-                                    <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_tax / 2)"/></td>
-                                </tr>
+                                <t t-if="o.igst_amount &gt; 0">
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">IGST</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.igst_amount)"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="o.cgst_amount &gt; 0">
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">CGST</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.cgst_amount)"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="o.sgst_amount &gt; 0">
+                                    <tr>
+                                        <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">SGST</td>
+                                        <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.sgst_amount)"/></td>
+                                    </tr>
+                                </t>
                                 <tr style="font-weight:bold;">
                                     <td colspan="12" class="label-cell text-right" style="border:1px solid #000;">Total</td>
                                     <td class="value-cell text-right" style="white-space: nowrap; border:1px solid #000;"><t t-esc="'{:,.2f}'.format(o.amount_total)"/></td>
