@@ -80,7 +80,7 @@
                         .report-footer {
                             position: absolute;
                             bottom: -10px;
-                            width: calc(100% - 16px); /* Adjust width based on page left/right margins (8px default on each side) */
+                            width: 100%; /* Spanning full width */
                             box-sizing: border-box;
                         }
                     </style>
@@ -90,45 +90,19 @@
 
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                                 <tr>
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120%;" rowspan="3">
+                                    <td style="width: 100%; text-align: left; vertical-align: top;">
                                         
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_invoice_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>
 
                                         <t t-else="">
                                             <img t-if="o.company_id.sale_image" 
                                                 t-att-src="image_data_uri(o.company_id.sale_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>   
-                                    </td>
-                                    <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
-                                    <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <t t-if="print_type == 'quotation'">
-                                           <span t-esc="o.name"/> - <span t-esc="'{:03d}'.format(o.revision_number)"/> 
-                                            <!-- <span>SGE-FM-Sales-</span> <span t-esc="'{:03d}'.format(o.revision_number)"/>          -->
-                                        </t>
-                                        <t t-else="">
-                                            <span t-esc="o.name"/> - <span t-esc="'{:03d}'.format(o.revision_number)"/>
-                                            <!-- <span t-esc="o.custom_so_id.name or o.name"/> - <span t-esc="'{:03d}'.format(o.revision_number)"/>  -->
-                                            <!-- <span>SGE-FM-Sales-</span> <span t-esc="'{:03d}'.format(o.revision_number)"/>   -->
-                                        </t>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="'01-06-2025'"/>
-                                        <!-- <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/> -->
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.validity_date.strftime('%d-%m-%Y') if o.validity_date else ''"/>
                                     </td>
                                 </tr>
                             </table>
@@ -489,61 +463,64 @@
                                 </tbody>
                             </table>
                         
-                            <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
-                                <thead>
-                                    <tr>
-                                        <td colspan="6" class="section-header">Commercial Terms</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="label-cell">
-                                            <strong>Payment Terms</strong>
-                                        </td>
-                                        <td colspan="2" class="value-cell">
-                                            <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
-                                        </td>
-                                        <td class="label-cell"><strong>Packing Type</strong></td>
-                                        <td colspan="2" class="value-cell">
-                                            <span>Standard Export Packing</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="label-cell"><strong>Delivery Type</strong></td>
-                                        <td colspan="2" class="value-cell">
-                                            <span t-if="o.delivery_type == 'for'">FOR</span>
-                                            <span t-if="o.delivery_type == 'ex_works'">Ex. Works</span>
-                                            <span t-if="not o.delivery_type">-</span>
-                                        </td>
-                                        <td class="label-cell"><strong>Delivery Location</strong></td>
-                                        <td colspan="2" class="value-cell">
-                                            <t t-if="o.partner_shipping_id">
-                                                <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
-                                                <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
-                                                <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
-                                                <t t-if="not (o.partner_shipping_id.city or o.partner_shipping_id.state_id)">
-                                                    <span t-esc="o.partner_shipping_id.name"/>
+
+
+                            <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 2px;">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="6" class="section-header">Commercial Terms</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="label-cell">
+                                                <strong>Payment Terms</strong>
+                                            </td>
+                                            <td colspan="2" class="value-cell">
+                                                <span t-esc="o.payment_term_id.name if o.payment_term_id else ''"/>
+                                            </td>
+                                            <td class="label-cell"><strong>Packing Type</strong></td>
+                                            <td colspan="2" class="value-cell">
+                                                <span>Standard Export Packing</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell"><strong>Delivery Type</strong></td>
+                                            <td colspan="2" class="value-cell">
+                                                <span t-if="o.delivery_type == 'for'">FOR</span>
+                                                <span t-if="o.delivery_type == 'ex_works'">Ex. Works</span>
+                                                <span t-if="not o.delivery_type">-</span>
+                                            </td>
+                                            <td class="label-cell"><strong>Delivery Location</strong></td>
+                                            <td colspan="2" class="value-cell">
+                                                <t t-if="o.partner_shipping_id">
+                                                    <span t-if="o.partner_shipping_id.city" t-esc="o.partner_shipping_id.city"/>
+                                                    <span t-if="o.partner_shipping_id.city and o.partner_shipping_id.state_id">, </span>
+                                                    <span t-if="o.partner_shipping_id.state_id" t-esc="o.partner_shipping_id.state_id.name"/>
+                                                    <t t-if="not (o.partner_shipping_id.city or o.partner_shipping_id.state_id)">
+                                                        <span t-esc="o.partner_shipping_id.name"/>
+                                                    </t>
                                                 </t>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="label-cell"><strong>Offer Validity</strong></td>
-                                        <td colspan="2" class="value-cell">
-                                            <t t-if="o.offer_validity">
-                                                <span t-field="o.offer_validity"
-                                                    t-options='{"widget": "datetime", "format": "dd-MM-yyyy"}'/>
-                                            </t>
-                                        </td>
-                                        <td class="label-cell"><strong>Delivery Schedule</strong></td>
-                                        <td colspan="2" class="value-cell">
-                                            <span>As per mutual agreement</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell"><strong>Offer Validity</strong></td>
+                                            <td colspan="2" class="value-cell">
+                                                <t t-if="o.offer_validity">
+                                                    <span t-field="o.offer_validity"
+                                                        t-options='{"widget": "datetime", "format": "dd-MM-yyyy"}'/>
+                                                </t>
+                                            </td>
+                                            <td class="label-cell"><strong>Delivery Schedule</strong></td>
+                                            <td colspan="2" class="value-cell">
+                                                <span>As per mutual agreement</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
                             <div class="report-footer">
+
                                 <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center;">
                                     <tbody>
                                         <tr style="border-bottom: 1px solid #000;">
@@ -583,6 +560,20 @@
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
                                             <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
                                         </tr>
+                                        <tr>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Document No</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="o.name"/> - <span t-esc="'{:03d}'.format(o.revision_number)"/> 
+                                            </td>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Issue Date</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="'01-06-2025'"/>
+                                            </td>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Effective Date</td>
+                                            <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">
+                                                <span t-esc="o.validity_date.strftime('%d-%m-%Y') if o.validity_date else ''"/>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -595,35 +586,17 @@
                         
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                                 <tr>
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 120%;" rowspan="3">
+                                    <td style="width: 100%; text-align: left; vertical-align: top;">
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_invoice_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_invoice_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>
                                         <t t-else="">
                                             <img t-if="o.company_id.sale_image" 
                                                 t-att-src="image_data_uri(o.company_id.sale_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>   
-                                    </td>
-                                    <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
-                                    <td style="width: 16%; font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.name"/>-<span t-esc="'{:03d}'.format(o.revision_number)"/>
-                                        <!-- <span>SGE-FM-Sales-</span><span t-esc="'{:03d}'.format(o.revision_number)"/> -->
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="'01-06-2025'"/>
-                                        <!-- <span t-esc="o.date_order.strftime('%d-%m-%Y') if o.date_order else ''"/> -->
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                        <span t-esc="o.validity_date.strftime('%d-%m-%Y') if o.validity_date else ''"/>
                                     </td>
                                 </tr>
                             </table>
@@ -782,6 +755,20 @@
                                             <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
                                             <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
                                             <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Document No</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="o.name"/> - <span t-esc="'{:03d}'.format(o.revision_number)"/> 
+                                            </td>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Issue Date</td>
+                                            <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">
+                                                <span t-esc="'01-06-2025'"/>
+                                            </td>
+                                            <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Effective Date</td>
+                                            <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">
+                                                <span t-esc="o.validity_date.strftime('%d-%m-%Y') if o.validity_date else ''"/>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
