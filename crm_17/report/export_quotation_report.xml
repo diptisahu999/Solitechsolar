@@ -75,7 +75,7 @@
                         .page {
                             position: relative; /* Essential: makes 'position: absolute' in report-footer relative to the page */
                             min-height: 297mm; /* Assuming standard A4 height to help with positioning */
-                            padding-bottom: 70px; /* Add padding at the bottom to reserve space for the footer */
+                            padding-bottom: 120px; /* Add padding at the bottom to reserve space for the footer */
                         }
                         .report-footer {
                             position: absolute;
@@ -521,7 +521,7 @@
 
                             <div class="report-footer">
 
-                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center;">
+                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
                                     <tbody>
                                         <tr style="border-bottom: 1px solid #000;">
                                             <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
@@ -714,7 +714,7 @@
                             </table>
                     
                             <div class="report-footer">
-                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; margin-top: 10px;">
+                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
                                     <tbody>
                                         <tr style="border-bottom: 1px solid #000;">
                                             <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
