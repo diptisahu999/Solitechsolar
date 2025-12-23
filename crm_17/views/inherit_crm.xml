@@ -15,11 +15,15 @@
                 <attribute name="options">{'no_create': False}</attribute>
                 <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
                 <attribute name="required">type == 'opportunity'</attribute>
+                <attribute name="groups"></attribute>
+                <attribute name="invisible">0</attribute>
                 <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
             </xpath>
             <xpath expr="//group[@name='opportunity_partner']/field[@name='partner_id']" position="attributes" >
                 <attribute name="options">{'no_create': False}</attribute>
                 <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
+                <attribute name="groups"></attribute>
+                <attribute name="invisible">0</attribute>
                 <!-- <attribute name="domain">[('is_company', '=', True)]</attribute> -->
             </xpath>
             <!-- <xpath expr="//sheet/div[@class='oe_title']" position="after" >
