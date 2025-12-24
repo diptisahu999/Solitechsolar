@@ -69,6 +69,7 @@
                                 <field name="po_number"/>
                                 <!-- <field name="po_date"/> -->
                                 <field name="pi_chr"/>
+                                <field name="sr_number" string="Revision No." readonly="1"/>
                                 <field name="pi_date"/>
                                 <field name="invoice_date"/>
                                 <field name="invoice_date_due"/>
