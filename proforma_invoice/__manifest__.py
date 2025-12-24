@@ -1,8 +1,8 @@
 {
-    'name': 'Proforma Invoicing with Sales Dashboard',
+    'name': 'Proforma Invoicing',
     'version': '17.0.2.0',
-    'summary': 'Comprehensive Sales Dashboard with Proforma Invoicing',
-    'author': 'Pratham',
+    'summary': 'Proforma Invoicing',
+    'author': 'Diptiranjan',
     'category': 'Sales',
     'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account'],
     'data': [
