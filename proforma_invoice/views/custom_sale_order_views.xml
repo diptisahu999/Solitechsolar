@@ -124,7 +124,7 @@
         <field name="name">custom.sale.order.tree</field>
         <field name="model">custom.sale.order</field>
         <field name="arch" type="xml">
-            <tree string="Confirmed Sales Orders" create="0" delete="0">
+            <tree string="Confirmed Sales Orders" create="0">
                 <field name="name"/>
                 <field name="date_order"/>
                 <field name="partner_id"/>

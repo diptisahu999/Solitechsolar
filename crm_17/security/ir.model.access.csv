@@ -42,8 +42,8 @@ stock.access_product_template_stock_manager,product.template stock_manager,produ
 stock.access_product_template_stock_user,product.template stock user,product.model_product_template,,1,0,0,0
 account.access_product_template_account_manager,product.template.account.manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
 
-crm.access_crm_lead_manager,crm.lead.manager,model_crm_lead,sales_team.group_sale_manager,1,1,1,0
-sale.access_sale_order_manager,sale.order.manager,model_sale_order,sales_team.group_sale_manager,1,1,1,0
+crm.access_crm_lead_manager,crm.lead.manager,model_crm_lead,sales_team.group_sale_manager,1,1,1,1
+sale.access_sale_order_manager,sale.order.manager,model_sale_order,sales_team.group_sale_manager,1,1,1,1
 access_sale_order_erp_manager,sale.order.erp_manager,model_sale_order,base.group_erp_manager,1,1,1,1
 purchase.access_account_move,account.move,account.model_account_move,purchase.group_purchase_user,1,1,1,0
 account.access_account_move_uinvoice,account.move,model_account_move,account.group_account_invoice,1,1,1,0
