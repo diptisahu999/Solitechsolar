@@ -95,7 +95,7 @@ class SalesDashboard(models.Model):
         }
 
     def _get_quotation_analysis_data(self, uid):
-        domain = [('opportunity_id', '!=', False)]
+        domain = []
         if uid:
             domain.append(('user_id', '=', uid))
             
@@ -115,7 +115,7 @@ class SalesDashboard(models.Model):
         }
 
     def _get_proforma_analysis_data(self, uid):
-        domain = [('opportunity_id', '!=', False)]
+        domain = []
         if uid:
             domain.append(('user_id', '=', uid))
             
@@ -137,7 +137,6 @@ class SalesDashboard(models.Model):
         
         domain = [
             ('state', 'in', ['sale', 'done']),
-            ('opportunity_id', '!=', False),
             ('date_order', '>=', date_from),
         ]
         if uid:
@@ -166,7 +165,6 @@ class SalesDashboard(models.Model):
         """Helper to get revenue breakdown by product category."""
         domain = [
             ('order_id.state', 'in', ['sale', 'done']),
-            ('order_id.opportunity_id', '!=', False),
         ]
         if uid:
             domain.append(('order_id.user_id', '=', uid))
@@ -204,7 +202,6 @@ class SalesDashboard(models.Model):
         """Helper to get top 5 selling products by revenue."""
         domain = [
             ('order_id.state', 'in', ['sale', 'done']),
-            ('order_id.opportunity_id', '!=', False),
         ]
         if uid:
             domain.append(('order_id.user_id', '=', uid))
@@ -236,7 +233,7 @@ class SalesDashboard(models.Model):
         win_rate = (won_count / total_closed * 100) if total_closed > 0 else 0
 
         # Team Revenue
-        revenue_data = self.env['sale.order'].read_group([('user_id', 'in', member_ids), ('state', 'in', ['sale', 'done']), ('opportunity_id', '!=', False)], ['amount_total:sum'], [], lazy=False)
+        revenue_data = self.env['sale.order'].read_group([('user_id', 'in', member_ids), ('state', 'in', ['sale', 'done'])], ['amount_total:sum'], [], lazy=False)
         
         return {
             'leads_count': leads_count,
@@ -258,7 +255,6 @@ class SalesDashboard(models.Model):
             domain=[
                 ('user_id', 'in', member_ids),
                 ('state', 'in', ['sale', 'done']),
-                ('opportunity_id', '!=', False),
                 ('date_order', '>=', date_from),
             ],
             fields=['amount_total'],
@@ -285,7 +281,6 @@ class SalesDashboard(models.Model):
             domain=[
                 ('user_id', 'in', member_ids),
                 ('state', 'in', ['sale', 'done']),
-                ('opportunity_id', '!=', False),
             ],
             fields=['amount_total'],
             groupby=['user_id'],
@@ -360,9 +355,9 @@ class SalesDashboard(models.Model):
 
     @api.model
     def action_open_my_quotations(self, state=None):
-        domain = [('opportunity_id', '!=', False)]
+        domain = []
         
-        action_name = 'My Quotations (from Opps)'
+        action_name = 'My Quotations'
         if state == 'draft':
             domain.append(('state', '=', 'draft'))
             action_name = 'My Draft Quotations (from Opps)'
@@ -371,22 +366,22 @@ class SalesDashboard(models.Model):
             action_name = 'My Sent Quotations (from Opps)'
         elif state == 'confirmed':
             domain.append(('state', 'in', ['sale', 'done']))
-            action_name = 'My Confirmed Orders (from Opps)'
+            action_name = 'My Confirmed Orders'
         return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'sale.order',
             'views': [[False, 'tree'], [False, 'form'], [False, 'kanban']],
             'domain': domain }
 
     @api.model
     def action_open_my_proformas(self, state=None):
-        domain = [('opportunity_id', '!=', False)]
+        domain = []
 
-        action_name = 'My Proformas (from Opps)'
+        action_name = 'My Proformas'
         if state == 'draft':
             domain.append(('state', '=', 'draft'))
             action_name = 'My Draft Proformas (from Opps)'
         elif state == 'posted':
             domain.append(('state', '=', 'posted'))
-            action_name = 'My Confirmed Proformas (from Opps)'
+            action_name = 'My Confirmed Proformas'
         return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'proforma.invoice',
             'views': [[False, 'tree'], [False, 'form']],
             'domain': domain }
