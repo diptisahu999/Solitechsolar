@@ -16,6 +16,7 @@
         'views/custom_sale_order_views.xml', 
         'views/sale_order_views.xml',
         'views/proforma_wizard_views.xml',
+        'views/quotation_action_fix.xml',
         'security/ir.model.access.csv',
         'security/proforma_invoice_security.xml',
     ],

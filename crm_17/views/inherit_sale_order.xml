@@ -256,8 +256,21 @@
             <xpath expr="//filter[@name='sales']" position="after">
                 <filter string="Final Quotation" name="final_quotation" domain="[('final_quotation', '=', True)]"/>
                 <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
+                <filter string="Draft" name="only_draft" domain="[('state', '=', 'draft')]"/>
             </xpath>
         </field>
+    </record>
+
+    <!-- Override Sale Quotations Action to show ONLY Drafts by default, 
+         but allow searching for Sent and Confirmed orders. -->
+    <record id="sale.action_quotations" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
+        <field name="context">{'search_default_only_draft': 1}</field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
+        <field name="context">{'search_default_only_draft': 1}</field>
     </record>
 
     <record id="inherit_view_sale_order_filter_order" model="ir.ui.view">

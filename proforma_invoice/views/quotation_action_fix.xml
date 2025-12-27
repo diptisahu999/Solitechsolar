@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Override Sale Quotations Action to:
+        1. Show Drafts by default (via search_default_draft)
+        2. Ensure 'sale' (Quotation Confirm) is included in the possible domain
+           so users can actually see confirmed orders when they clear/change filters.
+    -->
+    <record id="sale.action_quotations" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
+        <field name="context">{'search_default_draft': 1}</field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
+        <field name="context">{'search_default_draft': 1}</field>
+    </record>
+</odoo>
