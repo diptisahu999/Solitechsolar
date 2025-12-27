@@ -9,6 +9,8 @@ class ProformaInvoice(models.Model):
     _name = "proforma.invoice"
     _description = "Proforma Invoice (Non-Accounting)"
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'id desc'
+
 
     # --- Replicating the structure of account.move ---
     name = fields.Char(string='Number', readonly=True, copy=False, default='/', tracking=True)

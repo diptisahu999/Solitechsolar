@@ -5,6 +5,7 @@ class CustomSaleOrder(models.Model):
     _description = "Confirmed Sales Order (Separate Doc)"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
+    _order = 'id desc'
 
     # --- Header Fields ---
     name = fields.Char(string='SO Number', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
