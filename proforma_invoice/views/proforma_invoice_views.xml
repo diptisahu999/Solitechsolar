@@ -62,7 +62,7 @@
                                 <field name="partner_id" string="Customer" domain="[('parent_id','=',partner_id)]"/>
                                 <!-- <button name="action_open_partner_view" type="object"/> -->
                                 <field name="partner_shipping_id" string="Place of supply" domain="[('parent_id','=',partner_id)]" options="{'no_create': True, 'no_quick_create': True}"  create="false"/>
-                                <field name="l10n_in_gst_treatment" string="GST Treatment"/>
+                                <!-- <field name="l10n_in_gst_treatment" string="GST Treatment"/> -->
                             </group>
 
                             <group>
@@ -74,9 +74,6 @@
                                 <field name="invoice_date"/>
                                 <field name="invoice_date_due"/>
                                 <field name="invoice_payment_term_id"/>
-                                <field name="sample_type"/>
-                                <field name="source_id"/>
-                                <field name="project_id"/>
                                 <field name="currency_id" invisible="1"/>
                             </group>
                         </group>
