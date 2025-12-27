@@ -59,7 +59,7 @@
                     </div>
                         <group>
                             <group>
-                                <field name="partner_id" string="Customer" domain="[('parent_id','=',partner_id)]"/>
+                                <field name="partner_id" string="Contact" domain="[('parent_id','=',partner_id)]"/>
                                 <!-- <button name="action_open_partner_view" type="object"/> -->
                                 <field name="partner_shipping_id" string="Place of supply" domain="[('parent_id','=',partner_id)]" options="{'no_create': True, 'no_quick_create': True}"  create="false"/>
                                 <!-- <field name="l10n_in_gst_treatment" string="GST Treatment"/> -->
@@ -148,7 +148,7 @@
     <record id="proforma_invoice_view_tree" model="ir.ui.view">
         <field name="name">proforma.invoice.tree</field>
         <field name="model">proforma.invoice</field>
-        <field name="arch" type="xml"><tree create="0"><field name="name" string="Number" decoration-bf="1"/><field name="partner_id"/><field name="invoice_date"/><field name="user_id"/><field name="amount_total" sum="Total"/><field name="state"/></tree></field>
+        <field name="arch" type="xml"><tree create="0"><field name="name" string="Number" decoration-bf="1"/><field name="partner_id" string="Contact"/><field name="invoice_date"/><field name="user_id"/><field name="amount_total" sum="Total"/><field name="state"/></tree></field>
     </record>
     
     <record id="proforma_invoice_view_search" model="ir.ui.view">
