@@ -126,6 +126,8 @@ class InheritCRM(models.Model):
         return user_ids
     
     def action_new_quotation(self):
+        if self.type == 'opportunity' and (not self.expected_revenue or self.expected_revenue <= 0.0):
+             raise UserError(_("Expected Revenue is a compulsory field and must have a value greater than 0.00 before creating a quotation."))
         action = super(InheritCRM, self).action_new_quotation()
         action['context']['default_project_id'] = self.project_id.id
         return action
@@ -284,9 +286,6 @@ class InheritCRM(models.Model):
     def create(self, vals):
         if vals.get('pi_no') == None or vals.get('pi_no') == 0:
             vals['pi_no'] = self.bill_chr_vld()
-        # The following line is the cause of the error; it has been commented out.
-        if vals.get('expected_revenue',False) == 0 and vals.get('type',False) == 'opportunity':
-            raise UserError("Expected Revenue it Compulsory !!!")
 
         # record = self.env['crm.lead'].search([
         #     ('company_id', '=', vals.get('company_id')),
