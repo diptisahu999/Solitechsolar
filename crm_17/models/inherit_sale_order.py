@@ -313,10 +313,10 @@ class InheritSaleOrder(models.Model):
                 order.with_context(skip_revision_increment=True).write(write_vals)
 
                 # Post a message with the revision and change log
-                body_lines = [f'<b>Revision:</b> {rev:03d}', '<b>Changes:</b>']
+                body_lines = [f'Revision: {rev:03d}', 'Changes:']
                 for lbl, o, n in per_changes:
                     body_lines.append(f'{lbl}: {o} → {n}')
-                body = '<br/>'.join(body_lines)
+                body = '\n'.join(body_lines)
                 try:
                     order.message_post(body=body, subject=f'Quotation updated (Revision {rev:03d})')
                 except Exception:
