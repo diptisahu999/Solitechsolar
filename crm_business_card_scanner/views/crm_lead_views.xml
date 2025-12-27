@@ -23,7 +23,8 @@
                         string="Scan Business Card"
                         type="action"
                         class="oe_highlight"
-                        icon="fa-id-card"/>
+                        icon="fa-id-card"
+                        invisible="1"/>
                 </header>
             </field>
         </record>
