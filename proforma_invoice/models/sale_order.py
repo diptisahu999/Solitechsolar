@@ -11,6 +11,14 @@ class SaleOrder(models.Model):
         for order in self:
             partner = order.partner_id
             
+            # Check if customer is a Company (not Individual)
+            if partner.company_type != 'company':
+                raise UserError(_(
+                    "Invalid Customer Type\n"
+                    "Only Company customers can confirm Sale Orders.\n\n"
+                    "Please change the customer type from 'Individual' to 'Company' before confirming."
+                ))
+            
             if partner.is_company:
                 if not partner.vat:
                     raise UserError(_(
