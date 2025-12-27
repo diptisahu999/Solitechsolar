@@ -85,6 +85,7 @@
                 <field name = "diff_amount" column_invisible="1" force_save="1"/>
                 <field name = "diff_per" readonly="1" force_save="1" optional="hide"/>
             </xpath>
+            
             <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after" >
                 <field name = "inch_feet_type" />
                 <field name = "height_length" readonly="inch_feet_type == 'basic'" force_save="1" optional="hide"/>
