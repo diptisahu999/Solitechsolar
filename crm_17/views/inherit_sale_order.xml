@@ -111,8 +111,7 @@
                 <attribute name="confirm">Congratulations on receiving the order! If not confirmed, please do not proceed.</attribute>
             </xpath>	
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="Approve discount" name="action_discount_user" type="object" groups="sales_team.group_sale_salesman" invisible="state != 'draft' or is_manager == True"/>
-                <button string="Approved discount" name="action_discount_manager" type="object" groups="sales_team.group_sale_manager,sales_team.group_sale_salesman_all_leads" invisible="is_manager == True or state in ['sent','sale','cancel'] or state != 'discount_approval'"/>
+
 <button name="action_print_quotation_report" 
             string="Quotation Print" 
             type="object"  
