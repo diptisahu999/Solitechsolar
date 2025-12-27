@@ -28,8 +28,9 @@ class InheritSaleOrder(models.Model):
     _inherit = "sale.order"
 
      
-    state = fields.Selection(selection_add=[('sale','Quotation Confirm'),
-                                            ('draft','Quotation Draft'),
+    state = fields.Selection(selection_add=[('draft','Quotation Draft'),
+                                            ('sent','Quotation Sent'),
+                                            ('sale','Quotation Confirm'),
                                             ('discount_approval','Discount Approval'),
                                             ('pi','Create PI')])
     is_manager = fields.Boolean(string='Manager',default=False)

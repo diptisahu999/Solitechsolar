@@ -108,6 +108,7 @@ class SaleOrder(models.Model):
             
             self.env['custom.sale.order.line'].create(line_vals_list)
             order.custom_so_id = custom_so.id
+            order.state = 'sale'
 
         return {
             'type': 'ir.actions.act_window',
