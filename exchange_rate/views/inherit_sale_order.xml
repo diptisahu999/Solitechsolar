@@ -6,9 +6,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='payment_term_id']" position="before">
-                <field name="exchange_rate" readonly="state in ['cancel', 'sale']"/>
-            </xpath>
+
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="after" >
                 <field name="is_exchange_rate" column_invisible="1"/>
             </xpath>

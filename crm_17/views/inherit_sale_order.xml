@@ -5,8 +5,9 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='partner_invoice_id']" position="before" >
-                <field name = "price_list_id" options="{'no_create': True}" readonly="state == 'sale'"/>
+
+            <xpath expr="//field[@name='sale_order_template_id']" position="attributes" >
+                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='sale_order_template_id']" position="after" >
                  <field name="place_of_supply" options="{'no_create': True}"/>
@@ -18,10 +19,10 @@
                 <field name = "remarks" />
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="replace" >
-                <label for="partner_id" string="Customer" style="font-weight:bold;" />
+                <label for="partner_id" string="Contact" style="font-weight:bold;" />
                 <div class="o_col" >
                     <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True,'no_open': True}" nolabel="1" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" placeholder="Type to find a customer..." readonly="state in ['cancel', 'sale']"/>
-                    <button name="action_open_partner_view" type="object" string="View Customer" icon="fa-user" />
+                    <button name="action_open_partner_view" type="object" string="View Contact" icon="fa-user" />
                 </div>
             </xpath>
             <!-- <xpath expr="//field[@name='partner_id']" position="attributes" >
@@ -150,7 +151,7 @@
                 <field name="is_group_admin" invisible="1"/>
                 <!-- <field name="sale_amount_total" invisible="1"/> -->
                 <field name="create_uid" />
-                <field name="sample_type" />
+
             </xpath>
             <xpath expr="//field[@name='user_id']" position="attributes">
                 <attribute name="readonly">is_group_admin == True</attribute>
