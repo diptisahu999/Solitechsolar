@@ -83,6 +83,10 @@ class SaleOrder(models.Model):
                 'cgst_amount': cgst,
                 'sgst_amount': sgst,
                 'igst_amount': igst,
+
+                # --- NEW: GST & Supply ---
+                'l10n_in_gst_treatment': order.l10n_in_gst_treatment,
+                'place_of_supply': order.place_of_supply.id if order.place_of_supply else False,
             }
 
             custom_so = self.env['custom.sale.order'].create(so_vals)

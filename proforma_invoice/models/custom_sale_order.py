@@ -27,6 +27,19 @@ class CustomSaleOrder(models.Model):
     incoterm_name = fields.Char(string='Incoterm')
     incoterm_location = fields.Char(string='Incoterm Location')
     
+    # --- GST & Supply ---
+    l10n_in_gst_treatment = fields.Selection([
+        ('regular', 'Registered Business - Regular'),
+        ('composition', 'Registered Business - Composition'),
+        ('unregistered', 'Unregistered Business'),
+        ('consumer', 'Consumer'),
+        ('overseas', 'Overseas'),
+        ('special_economic_zone', 'Special Economic Zone'),
+        ('deemed_export', 'Deemed Export'),
+    ], string='GST Treatment')
+    place_of_supply = fields.Many2one('res.partner', string='Place of Supply')
+
+    
     # --- Lines & Totals ---
     line_ids = fields.One2many('custom.sale.order.line', 'order_id', string='Order Lines')
     note = fields.Html(string='Terms and Conditions')
