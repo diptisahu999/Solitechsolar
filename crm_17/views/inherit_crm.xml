@@ -21,6 +21,7 @@
             </xpath>
             <xpath expr="//group[@name='opportunity_partner']/field[@name='partner_id']" position="attributes" >
                 <attribute name="options">{'no_create': False}</attribute>
+                <attribute name="string">Contact</attribute>
                 <!-- <attribute name="options">{'no_create': True,'no_open': True}</attribute> -->
                 <attribute name="groups"></attribute>
                 <attribute name="invisible">0</attribute>
@@ -123,7 +124,7 @@
                 <field name="is_group_uid" invisible="1" force_save="1"/>
                 <field name="is_group_manager" invisible="1" force_save="1"/>
                 <field name="interest_id"  options="{'no_create': True,'no_open': True}" required="type == 'opportunity'"/>
-                <field name="project_id"  options="{'no_create': True,'no_open': True}" invisible="type != 'opportunity'"/>
+                <field name="project_id"  options="{'no_create': True,'no_open': True}" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='user_id']" position="attributes">
                 <attribute name="required">type == 'opportunity'</attribute>
@@ -369,6 +370,14 @@
         <field name="view_mode">tree</field>
         <field name="view_id" ref="crm.crm_case_tree_view_oppor"/>
         <field name="act_window_id" ref="crm.crm_lead_action_pipeline"/>
+    </record>
+
+    <record id="crm.menu_crm_opportunities" model="ir.ui.menu">
+        <field name="name">Opportunity</field>
+    </record>
+
+    <record id="crm.crm_lead_action_pipeline" model="ir.actions.act_window">
+        <field name="name">Opportunity</field>
     </record>
 
     <menuitem id="utm.menu_utm_source"
