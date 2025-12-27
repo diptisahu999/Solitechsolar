@@ -39,4 +39,4 @@ class inheritLead2OpportunityPartner(models.TransientModel):
             #         convert.action = 'create'
             #     else:
             #         convert.action = 'nothing'
-            convert.action = 'create'
+            convert.action = 'exist'
