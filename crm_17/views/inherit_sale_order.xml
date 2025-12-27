@@ -126,7 +126,7 @@
             class="oe_highlight"
             invisible="state not in ['sale', 'done']"/>
                 <button string="Send Whatsapp" name="send_whatsapp_message" type="object" class="oe_highlight"/>
-                <button string="Update Product Price" name="update_product_price" type="object" class="oe_highlight" groups="base.group_no_one"/>
+
                 <button string="Download Document" name="action_download_product_doc" type="object" class="oe_highlight" invisible="1"/>
                 <button string="Final Quotation" name="action_final_quotation" type="object" class="oe_highlight" invisible="1"/>
                 <!-- invisible="state != 'sale' or final_quotation == True" -->
