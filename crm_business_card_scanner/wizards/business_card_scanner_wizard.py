@@ -222,11 +222,11 @@ class BusinessCardScannerWizard(models.TransientModel):
             mobile = lead.phone or lead.mobile
 
         # ✅ Send WhatsApp webhook
-        webhook_result = self._send_whatsapp_webhook(mobile, parsed)
+        # webhook_result = self._send_whatsapp_webhook(mobile, parsed)
 
         # ✅ Show webhook result inside wizard
         final_json = parsed
-        final_json["_whatsapp_webhook"] = webhook_result
+        # final_json["_whatsapp_webhook"] = webhook_result
 
         self.extracted_text = json.dumps(final_json, indent=4, ensure_ascii=False)
 
@@ -239,6 +239,9 @@ class BusinessCardScannerWizard(models.TransientModel):
             'name': _('Lead Created'),
         }
 
+    # ---------------------------------------------------------
+    # ✅ Create Contact + Send WhatsApp message
+    # ---------------------------------------------------------
     # ---------------------------------------------------------
     # ✅ Create Contact + Send WhatsApp message
     # ---------------------------------------------------------
@@ -255,68 +258,76 @@ class BusinessCardScannerWizard(models.TransientModel):
             self.extracted_text = "Invalid JSON data."
             return self._open_self_form()
 
-        # Handle Company (Parent)
+        # Prepare Context for Defaults
+        ctx = dict(self.env.context)
+        
+        # Parse Fields safely
         company_name = parsed.get('company')
-        parent_id = False
+        person_name = parsed.get('name')
+        emails = parsed.get('emails') or []
+        phones = parsed.get('phone_numbers') or []
+        website = parsed.get('website')
+        address = parsed.get('address')
+        designation = parsed.get('designation')
+
+        email = emails[0] if emails else False
+        phone = phones[0] if phones else False
+        mobile = phones[1] if len(phones) > 1 else False
+        
+        # If mobile is empty but phone is set, use phone as mobile (optional preference)
+        # But Odoo usually treats 'phone' as Landline/Business and 'mobile' as Mobile.
+        # User requested Mobile 1 and Mobile 2 concepts previously, mapped to phone/mobile.
+        
+        # Logic: If Company Name exists -> Company Contact
+        # If Company Name is empty -> Individual Contact
+        
         if company_name:
-            # Search for existing company or create it
-            partner_company = self.env['res.partner'].search([('name', '=', company_name), ('is_company', '=', True)], limit=1)
-            if partner_company:
-                parent_id = partner_company.id
-            else:
-                # Optional: create the company if it doesn't exist? 
-                # For now let's just set it if found, or maybe create it. 
-                # Let's create it to be helpful.
-                partner_company = self.env['res.partner'].create({
-                    'name': company_name,
-                    'is_company': True,
-                    'street': parsed.get('address'),
-                    'website': parsed.get('website'),
-                })
-                parent_id = partner_company.id
+            ctx.update({
+                'default_is_company': True,
+                'default_company_type': 'company',
+                'default_name': company_name,
+                'default_person_contacts': person_name, # Required for company as per customizations
+                'default_company_name_delivery': company_name,
+                'default_l10n_in_gst_treatment': 'regular', # Registered Business - Regular
+            })
+        else:
+            ctx.update({
+                'default_is_company': False,
+                'default_company_type': 'person',
+                'default_name': person_name,
+                'default_person_contacts': person_name,
+                'default_l10n_in_gst_treatment': 'consumer', # Consumer
+            })
 
-        partner_vals = {
-            'name': parsed.get('name') or 'Unknown Contact',
-            'person_contacts': parsed.get('name') or 'Unknown Contact',
-            'parent_id': parent_id,
-            'function': parsed.get('designation'),
-            'email': (parsed.get('emails') or [None])[0],
-            'phone': (parsed.get('phone_numbers') or [None])[0],
-            'mobile': (parsed.get('phone_numbers') or [None])[1] if len(parsed.get('phone_numbers', [])) > 1 else None,
-            'website': parsed.get('website'),
-            'street': parsed.get('address'),
-            'comment': json.dumps(parsed, indent=4),
-            'type': 'contact',
-        }
+        ctx.update({
+            'default_function': designation,
+            'default_email': email,
+            'default_phone': phone, # Mobile 1
+            'default_mobile': mobile, # Mobile 2
+            'default_website': website,
+            'default_street': address,
+            'default_type': 'contact',
+        })
 
-        # Use the first phone as mobile if mobile is empty but phone is set (common in parsing)
-        if not partner_vals['mobile'] and partner_vals['phone']:
-             partner_vals['mobile'] = partner_vals['phone']
+        # ✅ Send WhatsApp webhook (Using parsed data since record isn't created yet)
+        # We try to use the first phone number available
+        webhook_mobile = phone or mobile
+        # webhook_result = self._send_whatsapp_webhook(webhook_mobile, parsed)
 
-        partner = self.env['res.partner'].create(partner_vals)
-
-        # ✅ Choose best mobile number
-        mobile = None
-        if parsed.get('phone_numbers'):
-            mobile = parsed['phone_numbers'][0]
-        if not mobile:
-            mobile = partner.mobile or partner.phone
-
-        # ✅ Send WhatsApp webhook
-        webhook_result = self._send_whatsapp_webhook(mobile, parsed)
-
-        # ✅ Show webhook result inside wizard (if we were staying, but we are closing)
+        # Update Wizard with webhook status
         final_json = parsed
-        final_json["_whatsapp_webhook"] = webhook_result
+        # final_json["_whatsapp_webhook"] = webhook_result
         self.extracted_text = json.dumps(final_json, indent=4, ensure_ascii=False)
 
+        # ✅ Open the Form View (Unsaved)
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'res.partner',
-            'res_id': partner.id,
             'view_mode': 'form',
+            'view_id': False, # Force default form view
             'target': 'current',
-            'name': _('Contact Created'),
+            'context': ctx,
+            'name': _('Create Contact'),
         }
 
     # ---------------------------------------------------------
