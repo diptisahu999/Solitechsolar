@@ -127,14 +127,40 @@ class InheritPartner(models.Model):
     @api.constrains('phone', 'mobile')
     def _check_numeric_value(self):
         for rec in self:
+            if rec.company_type == 'person' and not rec.phone:
+                 raise ValidationError("Mobile 1 is required for individual contacts.")
+
             if rec.phone:
                 cleaned_phone = re.sub(r'\D', '', rec.phone)
                 if not cleaned_phone:
                     raise ValidationError("Please enter a numeric value (digits only) in Mobile 1.")
+                # Allow 10 (raw) or 12 (with 91 prefix) digits
+                if len(cleaned_phone) not in [10, 12]:
+                    raise ValidationError("Mobile 1 must be exactly 10 digits.")
+                    
             if rec.mobile:
                 cleaned_mobile = re.sub(r'\D', '', rec.mobile)
                 if not cleaned_mobile:
                     raise ValidationError("Please enter a numeric value (digits only) in Mobile 2.")
+
+    @api.onchange('phone')
+    def _onchange_phone_validation(self):
+        for rec in self:
+            if rec.phone:
+                clean_no = re.sub(r'\D', '', rec.phone)
+                # If user enters 10 digits, add +91
+                if len(clean_no) == 10:
+                    rec.phone = f"+91 {clean_no}"
+                elif len(clean_no) > 10:
+                    # If starts with 91, keep 12 digits total (91 + 10)
+                    if clean_no.startswith('91'):
+                        clean_no = clean_no[:12]
+                        rec.phone = f"+91 {clean_no[2:]}"
+                    else:
+                        # Truncate to 10
+                         clean_no = clean_no[:10]
+                         rec.phone = f"+91 {clean_no}"
+
     
     @api.onchange('zip', 'parent_id', 'l10n_in_gst_treatment')
     def _onchange_zip(self):
@@ -158,8 +184,19 @@ class InheritPartner(models.Model):
             self.state_id = False
             self.city = False
     
+    def _capitalize_input(self, vals):
+        for key, value in vals.items():
+            if key in self._fields and isinstance(value, str) and value:
+                field_type = self._fields[key].type
+                if field_type in ['char', 'text']:
+                    if key not in ['email', 'website', 'vat', 'phone', 'mobile', 'ref']:
+                        vals[key] = value.upper()
+        return vals
+
     @api.model
     def create(self, vals):
+        vals = self._capitalize_input(vals)
+
         if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).create(vals)
@@ -176,6 +213,8 @@ class InheritPartner(models.Model):
         return res
 
     def write(self, vals):
+        vals = self._capitalize_input(vals)
+
         if 'street' in vals and vals['street'] and len(vals['street']) >= 225:
             raise ValidationError("Street field must be less than 100 characters.")
         res = super(InheritPartner, self).write(vals)

@@ -15,7 +15,7 @@
                 <field name="customer_rank" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='phone']" position="attributes">
-                <attribute name="required">is_company</attribute>
+                <attribute name="required">1</attribute>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="attributes">
                 <attribute name="required">supplier_rank == 0</attribute>
@@ -25,6 +25,7 @@
                 <attribute name="context">{'default_parent_id': id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}</attribute>
             </xpath>
             <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group/field[@name='name']" position="after">
+                <field name="type" invisible="1"/>
                 <field name="company_name_delivery" required="type == 'delivery'" invisible="type != 'delivery'"/>
             </xpath>
             <xpath expr="//field[@name='street2']" position="after">
@@ -39,7 +40,13 @@
             <xpath expr="//field[@name='title']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//span[@name='address_name']" position="replace">
+                <span class="o_form_label o_td_label" name="address_name">
+                    <b>Address</b>
+                </span>
+            </xpath>
             <xpath expr="//field[@name='function']" position="after">
+                <field name="type" invisible="1"/>
                 <field name="company_name_delivery" invisible="type != 'delivery'"/>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
@@ -80,6 +87,7 @@
             <xpath expr="//field[@name='vat']" position="attributes">
                 <attribute name="string">GST No</attribute>
                 <attribute name="placeholder">e.g. 24ABCDE1234F1Z5</attribute>
+                <attribute name="required">is_company</attribute>
             </xpath>
         </field>
     </record>
