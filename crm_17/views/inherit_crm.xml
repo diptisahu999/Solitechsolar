@@ -510,8 +510,30 @@
 
         </field>
     </record>
-
-
-
+    <!-- Hide "New" button from Opportunities -->
+    <record id="crm.crm_lead_action_pipeline" model="ir.actions.act_window">
+        <field name="context">{'create': False, 'disable_generate_lead': True}</field>
+    </record>
+    
+    <!-- Hide "Generate Lead Button" from Lead & Opportunities -->
+    <!-- Hide in Tree View -->
+    <record id="view_opportunity_tree_no_generate" model="ir.ui.view">
+        <field name="name">crm.lead.opportunity.tree.no.generate</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_generate_leads']" position="replace"/>
+        </field>
+    </record>
+    <!-- Hide in Kanaban View -->
+    <record id="view_opportunity_kanban_no_generate" model="ir.ui.view">
+        <field name="name">crm.lead.opportunity.kanban.no.generate</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_generate_leads']" position="replace">
+            </xpath>
+        </field>
+    </record>
 
 </odoo>
