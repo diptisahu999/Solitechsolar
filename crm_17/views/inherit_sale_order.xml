@@ -5,6 +5,9 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
 
             <xpath expr="//field[@name='sale_order_template_id']" position="attributes" >
                  <attribute name="invisible">1</attribute>
@@ -199,6 +202,9 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
             <!-- <xpath expr="//field[@name='amount_total']" position="attributes">
                 <attribute name="column_invisible">1</attribute>
             </xpath>
@@ -219,6 +225,9 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
             <xpath expr="//field[@name='state']" position="after">
                 <field name="action_link" widget="html"/>
                 <field name="final_quotation" column_invisible="1"/>
