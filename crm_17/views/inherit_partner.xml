@@ -74,9 +74,9 @@
             <xpath expr="//page[@name='contact_addresses']//group/div" position="attributes" >
                 <attribute name="invisible">False</attribute>
             </xpath>
-            <xpath expr="//field[@name='company_type']" position="attributes" >
+            <!-- <xpath expr="//field[@name='company_type']" position="attributes" >
                 <attribute name="groups">base.group_system</attribute>
-            </xpath>
+            </xpath> -->
             <xpath expr="//page[@name='contact_addresses']//group/field[@name='mobile']" position="after" >
                 <field name="l10n_in_gst_treatment" invisible="0"/>
                 <field name="vat" invisible="0"/>
