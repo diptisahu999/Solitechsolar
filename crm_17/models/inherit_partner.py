@@ -142,8 +142,10 @@ class InheritPartner(models.Model):
                 cleaned_mobile = re.sub(r'\D', '', rec.mobile)
                 if not cleaned_mobile:
                     raise ValidationError("Please enter a numeric value (digits only) in Mobile 2.")
+                if len(cleaned_mobile) not in [10, 12]:
+                    raise ValidationError("Mobile 2 must be exactly 10 digits.")
 
-    @api.onchange('phone')
+    @api.onchange('phone', 'mobile')
     def _onchange_phone_validation(self):
         for rec in self:
             if rec.phone:
@@ -160,6 +162,21 @@ class InheritPartner(models.Model):
                         # Truncate to 10
                          clean_no = clean_no[:10]
                          rec.phone = f"+91 {clean_no}"
+            
+            if rec.mobile:
+                clean_no = re.sub(r'\D', '', rec.mobile)
+                # If user enters 10 digits, add +91
+                if len(clean_no) == 10:
+                    rec.mobile = f"+91 {clean_no}"
+                elif len(clean_no) > 10:
+                    # If starts with 91, keep 12 digits total (91 + 10)
+                    if clean_no.startswith('91'):
+                        clean_no = clean_no[:12]
+                        rec.mobile = f"+91 {clean_no[2:]}"
+                    else:
+                        # Truncate to 10
+                         clean_no = clean_no[:10]
+                         rec.mobile = f"+91 {clean_no}"
 
     
     @api.onchange('zip', 'parent_id', 'l10n_in_gst_treatment')

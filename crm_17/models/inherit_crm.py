@@ -4,6 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.exceptions import AccessError
 from odoo.tools import date_utils, email_split, is_html_empty, groupby, parse_contact_from_email
+import re
 
 class InheritCRM(models.Model):
     _inherit = "crm.lead"
@@ -85,6 +86,34 @@ class InheritCRM(models.Model):
         if self.stage_id:
             if not self.stage_id.is_lost:
                 self.lost_reason_id = False
+
+    @api.constrains('mobile')
+    def _check_mobile_value(self):
+        for rec in self:
+            if rec.mobile:
+                cleaned_mobile = re.sub(r'\D', '', rec.mobile)
+                if not cleaned_mobile:
+                    raise ValidationError("Please enter a numeric value (digits only) in Mobile 2.")
+                if len(cleaned_mobile) not in [10, 12]:
+                    raise ValidationError("Mobile 2 must be exactly 10 digits.")
+
+    @api.onchange('mobile')
+    def _onchange_mobile_validation(self):
+        for rec in self:
+             if rec.mobile:
+                clean_no = re.sub(r'\D', '', rec.mobile)
+                # If user enters 10 digits, add +91
+                if len(clean_no) == 10:
+                    rec.mobile = f"+91 {clean_no}"
+                elif len(clean_no) > 10:
+                    # If starts with 91, keep 12 digits total (91 + 10)
+                    if clean_no.startswith('91'):
+                        clean_no = clean_no[:12]
+                        rec.mobile = f"+91 {clean_no[2:]}"
+                    else:
+                        # Truncate to 10
+                         clean_no = clean_no[:10]
+                         rec.mobile = f"+91 {clean_no}"
 
 
 
