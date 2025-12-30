@@ -138,7 +138,7 @@
     <record id="action_crm_leads_home" model="ir.actions.act_window">
         <field name="name">Leads</field>
         <field name="res_model">crm.lead</field>
-        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="view_mode">tree,form,calendar,activity</field>
         <!-- Removed search_view_id to avoid missing external ID error -->
         <field name="context">{}</field>
         <field name="domain">[]</field>
