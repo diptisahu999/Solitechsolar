@@ -37,5 +37,11 @@
                   action="action_open_scanner_wizard_contact"
                   sequence="1"/>
 
+
+        <!-- Rename the standard Contacts menu -->
+        <record id="contacts.menu_contacts" model="ir.ui.menu">
+            <field name="name">Scan Business Card</field>
+        </record>
+
     </data>
 </odoo>
