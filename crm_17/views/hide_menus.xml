@@ -32,4 +32,13 @@
         </record>
 
     </data>
+    <data>
+        <!-- Hide menus for all users -->
+        <record id="project_todo.menu_todo_todos" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="mail.menu_root_discuss" model="ir.ui.menu">
+             <field name="active" eval="False"/>
+        </record>
+    </data>
 </odoo>
