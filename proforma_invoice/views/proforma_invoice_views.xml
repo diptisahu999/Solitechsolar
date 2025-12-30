@@ -148,7 +148,7 @@
     <record id="proforma_invoice_view_tree" model="ir.ui.view">
         <field name="name">proforma.invoice.tree</field>
         <field name="model">proforma.invoice</field>
-        <field name="arch" type="xml"><tree create="0"><field name="name" string="Number" decoration-bf="1"/><field name="partner_id" string="Contact"/><field name="invoice_date"/><field name="user_id"/><field name="amount_total" sum="Total"/><field name="state"/></tree></field>
+        <field name="arch" type="xml"><tree create="0"><field name="name" string="Number" decoration-bf="1"/><field name="partner_id" string="Contact"/><field name="invoice_date"/><field name="user_id" widget="many2one_avatar_user"/><field name="amount_total" sum="Total"/><field name="state"/></tree></field>
     </record>
     
     <record id="proforma_invoice_view_search" model="ir.ui.view">
