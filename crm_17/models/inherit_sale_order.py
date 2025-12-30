@@ -99,7 +99,7 @@ class InheritSaleOrder(models.Model):
     start_date = fields.Date(string='Delivery Start Date')
 
     revision_number = fields.Integer(string='Revision No.', copy=False, default=1)
-    place_of_supply = fields.Many2one('res.partner', string='Place of Supply', domain="[('type', '=', 'delivery')]")
+    place_of_supply = fields.Many2one('res.partner', string='Place of Supply', domain="[('parent_id', '=', partner_id), ('type', '=', 'delivery')]")
     
 
     def write(self, vals):
