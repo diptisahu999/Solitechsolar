@@ -16,7 +16,7 @@ class SaleOrder(models.Model):
                 raise UserError(_(
                     "Invalid Customer Type\n"
                     "Only Company customers can confirm Sale Orders.\n\n"
-                    "Please change the customer type from 'Individual' to 'Company' before confirming."
+                    "Please go to Contact page and change the customer type from 'Individual' to 'Company' before confirming."
                 ))
             
             if partner.is_company:
