@@ -10,7 +10,7 @@
         'base','crm','l10n_in','sale_pdf_quote_builder','sale',
         'sales_team','state_wise_gst','stock','purchase','repair',
         'web_notify','dolphy_project', 'stock_landed_costs', 'mrp',
-        'project', 'hr', 'l10n_in',
+        'project', 'hr', 'l10n_in', 'crm_sms',
     ],
     'data': [
             'security/rule_security.xml',

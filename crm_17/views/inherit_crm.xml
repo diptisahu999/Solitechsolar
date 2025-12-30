@@ -232,7 +232,7 @@
             </xpath>
             <xpath expr="//field[@name='stage_id']" position="after">
                 <field name="due_days" optional="hide"/>
-                <field name="action_link" widget="html"/>
+                <field name="action_link" widget="html" column_invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="attributes">
                 <attribute name="column_invisible">1</attribute>
@@ -245,7 +245,10 @@
                 <field name="interest_id" optional="hide"/>
             </xpath>
             <xpath expr="//button[@name='%(crm.action_lead_mail_compose)d']" position="attributes">
-                <attribute name="string"> </attribute>
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(crm_sms.crm_lead_act_window_sms_composer_multi)d']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
             </xpath>
         </field>
     </record>
@@ -257,7 +260,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='team_id']" position="after">
                 <field name="status" string="Status" optional="show"/>
-                <field name="action_link" widget="html"/>
+                <field name="action_link" widget="html" column_invisible="1"/>
             </xpath>
         </field>
     </record>
