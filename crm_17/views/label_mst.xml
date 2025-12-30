@@ -65,13 +65,13 @@
         name="Contacts"
         action="contacts.action_contacts"
         parent="main_home_menu"
-        sequence="3"/>
+        sequence="1"/>
 
     <menuitem id="menu_crm_opportunities_home"
         name="Opportunity"
         action="crm.action_your_pipeline"
         parent="main_home_menu"
-        sequence="2"/>
+        sequence="3"/>
 
     <menuitem id="menu_action_quotations_home"
         name="Quotations"
@@ -150,7 +150,7 @@
         name="Leads"
         action="action_crm_leads_home"
         parent="main_home_menu"
-        sequence="1"/>
+        sequence="2"/>
 
     <!-- SO Home Menu - Point to Custom SO Model -->
     <record id="action_custom_sale_order_home" model="ir.actions.act_window">
