@@ -11,9 +11,11 @@
             <field name="target">new</field>
             <field name="context">{'default_scan_mode': 'contact'}</field>
             <!-- Add to Action Menu in List and Form views -->
-            <field name="binding_model_id" ref="base.model_res_partner"/>
-            <field name="binding_view_types">list,form</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_view_types" eval="False"/>
         </record>
+
+
 
         <!-- 2️⃣ Add "Scan Business Card" Button to Partner Form View -->
         <record id="view_partner_form_inherit_scanner" model="ir.ui.view">
@@ -21,17 +23,9 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <!-- Insert header before sheet. Use invisible="not id" to hide on New records to avoid validation blocking. -->
-                <xpath expr="//sheet" position="before">
-                    <header>
-                        <button
-                            name="%(action_open_scanner_wizard_contact)d"
-                            string="Scan Business Card"
-                            type="action"
-                            class="oe_highlight"
-                            icon="fa-id-card"
-                            invisible="not id"/>
-                    </header>
+                <!-- Overwrite the previous view content with 'empty' logic so the button is removed -->
+                <xpath expr="//form" position="attributes">
+                    <attribute name="string">Contact</attribute>
                 </xpath>
             </field>
         </record>
