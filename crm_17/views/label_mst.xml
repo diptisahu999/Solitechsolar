@@ -140,8 +140,8 @@
         <field name="res_model">crm.lead</field>
         <field name="view_mode">tree,form,calendar,activity</field>
         <!-- Removed search_view_id to avoid missing external ID error -->
-        <field name="context">{}</field>
-        <field name="domain">[]</field>
+        <field name="context">{'default_type': 'lead'}</field>
+        <field name="domain">[('type', '=', 'lead')]</field>
     </record>
 
 
