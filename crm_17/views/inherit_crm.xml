@@ -76,7 +76,7 @@
                 <!-- ✅ ADD KW FIELD HERE BELOW MOBILE -->
                 <label for="kw" class="oe_inline">KW</label>
                 <div class="o_row o_row_readonly">
-                    <field name="kw" id="kw"/>
+                    <field name="kw_str" id="kw" required="1"/>
                 </div>
                 <label for="street" string="Address"/>
                     <div class="o_address_format">
@@ -449,7 +449,7 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='email_cc']" position="after">
-                <field name="kw" invisible="type == 'opportunity'"/>
+                <field name="kw_str" invisible="type == 'opportunity'" required="1"/>
             </xpath>
         </field>
     </record>

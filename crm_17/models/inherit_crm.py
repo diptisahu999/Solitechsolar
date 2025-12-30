@@ -22,6 +22,29 @@ class InheritCRM(models.Model):
 
     sale_line_ids = fields.One2many('crm.lead.sale.line','sale_id',string="Lead Assigned")
     kw = fields.Float(string="KW")
+    kw_str = fields.Char(
+        string="KW",
+        compute="_compute_kw_str",
+        inverse="_inverse_kw_str",
+        store=False,
+    )
+
+    @api.depends('kw')
+    def _compute_kw_str(self):
+        for rec in self:
+            rec.kw_str = str(rec.kw) if rec.kw and rec.kw > 0.0 else ""
+
+    def _inverse_kw_str(self):
+        for rec in self:
+            if rec.kw_str:
+                try:
+                    # Replace comma with dot if user uses comma as decimal separator
+                    val = float(rec.kw_str.replace(',', '.'))
+                    rec.kw = val
+                except ValueError:
+                    rec.kw = 0.0
+            else:
+                rec.kw = 0.0
     create_date_formatted = fields.Char(
         string='Create Date (Formatted)',
         compute='_compute_create_date_formatted',
@@ -64,13 +87,7 @@ class InheritCRM(models.Model):
                 self.lost_reason_id = False
 
 
-    @api.constrains('kw', 'type')
-    def _check_kw_value(self):
-        """ Constraint to ensure KW has a value greater than 0 for both Lead and Opportunity types. """
-        for record in self:
-            if record.type in ['lead', 'opportunity']:
-                if not record.kw or record.kw <= 0.0: 
-                    raise ValidationError("KW (Kilowatts) is a compulsory field and must have a value.")
+
 
     def action_open_help(self):
         HELP_ATTACHMENT_ID = 1537
