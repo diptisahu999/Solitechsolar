@@ -103,7 +103,11 @@
         <field name="name">Product Template (tree)</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="limit">60</attribute>
+            </xpath>
             <button name="action_open_label_layout" position="after">
                 <button string="Print Products Details" type="object" name="action_print_products_details" />
             </button>
@@ -174,6 +178,14 @@
                 <field name="wattage"/>
             </xpath>
         </field>
+    </record>
+    
+    <record id="product.product_template_action" model="ir.actions.act_window">
+        <field name="limit">60</field>
+    </record>
+
+    <record id="product.product_normal_action" model="ir.actions.act_window">
+        <field name="limit">60</field>
     </record>
     
 </odoo>

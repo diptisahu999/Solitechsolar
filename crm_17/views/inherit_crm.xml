@@ -208,6 +208,9 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_tree_view_oppor" />
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="limit">60</attribute>
+            </xpath>
             <xpath expr="//field[@name='name']" position="before">
                 <field name="create_date_formatted" string="Create Date" optional="show"/>
                 <field name="create_uid" string="Created by" optional="hide"/>
@@ -258,6 +261,9 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_tree_view_leads" />
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="limit">60</attribute>
+            </xpath>
             <xpath expr="//field[@name='team_id']" position="after">
                 <field name="status" string="Status" optional="show"/>
                 <field name="action_link" widget="html" column_invisible="1"/>
@@ -383,6 +389,11 @@
         <field name="name">Opportunity</field>
         <field name="domain">[('type','=','opportunity')]</field>
         <field name="context">{'default_type': 'lead', 'search_default_assigned_to_me': 1}</field>
+        <field name="limit">60</field>
+    </record>
+
+    <record id="crm.crm_lead_all_leads" model="ir.actions.act_window">
+        <field name="limit">60</field>
     </record>
 
     <menuitem id="utm.menu_utm_source"

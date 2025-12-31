@@ -239,4 +239,12 @@
 
 
     
+    <record id="contacts.action_contacts" model="ir.actions.act_window">
+        <field name="limit">60</field>
+    </record>
+
+    <record id="base.action_partner_form" model="ir.actions.act_window">
+        <field name="limit">60</field>
+    </record>
+
 </odoo>
