@@ -19,6 +19,7 @@ class InheritPartner(models.Model):
     city_id = fields.Many2one('city.mst', string="City", tracking=True)
     email_color = fields.Selection([('green', 'Green'), ('no', 'No Decoration')], compute='_compute_email_color', store=False)
     contact_type = fields.Selection([('key_accountant', 'Most Important Key Accountant'), ('important', 'Important'), ('useful', 'Useful')], string='Contact Type', tracking=True)
+    user_id = fields.Many2one('res.users', default=lambda self: self.env.user)
 
     @api.onchange('vat')
     def onchange_vat(self):
