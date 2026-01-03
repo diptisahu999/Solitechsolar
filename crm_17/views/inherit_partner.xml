@@ -158,7 +158,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>  <!-- Inherit the base partner form -->
         <field name="arch" type="xml">
             <xpath expr="//field[@name='website']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
         </field>
     </record>
