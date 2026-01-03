@@ -114,10 +114,10 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="l10n_in.l10n_in_view_partner_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='l10n_in_pan']" position="after">
+            <!-- <xpath expr="//field[@name='l10n_in_pan']" position="after">
                 <field name="msme_type" />
                 <field name="msme_no" invisible="msme_type != 'Yes'"/>
-            </xpath>
+            </xpath> -->
             <xpath expr="//field[@name='vat']" position="attributes" >
                 <attribute name="readonly">False</attribute>
             </xpath>
@@ -151,6 +151,18 @@
             </xpath>
         </field>
     </record>
+
+    <record id="res_partner_view_form_hide_website" model="ir.ui.view">
+        <field name="name">res.partner.form.hide.website</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>  <!-- Inherit the base partner form -->
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
 
     <record id="inherit_view_res_partner_filter" model="ir.ui.view">
         <field name="name">inherit.res.partner.search</field>
