@@ -124,6 +124,38 @@ class InheritPartner(models.Model):
             return []
         else:
             return ['vat', 'company_registry', 'industry_id']
+    
+    @api.constrains('phone')
+    def _check_unique_phone(self):
+        for rec in self:
+            if not rec.phone:
+                continue
+
+            # Remove spaces and hyphens
+            cleaned_phone = re.sub(r'[\s\-]', '', rec.phone)
+
+            # Remove +91 prefix if exists
+            if cleaned_phone.startswith('+91'):
+                cleaned_phone = cleaned_phone[3:]
+
+            # Now prepend +91 to match DB format
+            normalized_phone = f"+91{cleaned_phone}"
+
+            # Search for duplicates in other partners
+            duplicates = self.env['res.partner'].search([
+                ('id', '!=', rec.id),
+                ('phone', '!=', False)
+            ])
+
+            for partner in duplicates:
+                # Normalize partner phone: remove spaces and hyphens
+                partner_phone = re.sub(r'[\s\-]', '', partner.phone or '')
+                if normalized_phone == partner_phone:
+                    raise ValidationError(
+                        _("Mobile number %s is already used by contact: %s")
+                        % (rec.phone, partner.display_name)
+                    )
+
             
     @api.constrains('phone', 'mobile')
     def _check_numeric_value(self):

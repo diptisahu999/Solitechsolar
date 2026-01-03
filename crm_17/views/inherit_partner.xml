@@ -63,7 +63,7 @@
                 <attribute name="readonly">False</attribute>
             </xpath>
             <xpath expr="//field[@name='state_id']" position="attributes">
-                <attribute name="required">1</attribute>
+                <attribute name="required">is_company</attribute>
             </xpath>
             <xpath expr="//field[@name='vat']" position="attributes" >
                 <attribute name="readonly">False</attribute>
