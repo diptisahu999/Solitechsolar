@@ -163,8 +163,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="menu_proforma_root" name="Proforma Invoices" sequence="25"/>
-    <menuitem id="menu_proforma_list" name="Proforma Invoices" parent="menu_proforma_root" action="action_proforma_invoice"/>
 
     <record id="view_proforma_invoice_form_buttons_new" model="ir.ui.view">
         <field name="name">proforma.invoice.form.add.buttons</field>

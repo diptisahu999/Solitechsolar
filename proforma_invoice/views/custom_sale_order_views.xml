@@ -147,11 +147,6 @@
               parent="sale.sale_order_menu" 
               action="action_custom_sale_order" 
               sequence="15"/>
-    <!-- Add SO to Top Menu Bar -->
-    <menuitem id="menu_custom_sale_order_top" 
-            name="SO" 
-            action="action_custom_sale_order" 
-            sequence="5"/> 
 
     <record id="view_custom_sale_order_form_buttons" model="ir.ui.view">
         <field name="name">custom.sale.order.form.help.upload.buttons</field>
