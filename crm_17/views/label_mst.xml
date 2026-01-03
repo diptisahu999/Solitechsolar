@@ -71,7 +71,7 @@
         name="Opportunity"
         action="crm.action_your_pipeline"
         parent="main_home_menu"
-        sequence="3"/>
+        sequence="2"/>
 
     <menuitem id="menu_action_quotations_home"
         name="Quotations"
@@ -150,7 +150,8 @@
         name="Leads"
         action="action_crm_leads_home"
         parent="main_home_menu"
-        sequence="2"/>
+        sequence="2"
+        groups="base.group_no_one"/>
 
     <!-- SO Home Menu - Point to Custom SO Model -->
     <record id="action_custom_sale_order_home" model="ir.actions.act_window">
