@@ -51,7 +51,7 @@
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="id" invisible="1"/>
-                <field name="contact_type" groups="base.group_erp_manager"/>
+                <!-- <field name="contact_type" groups="base.group_erp_manager"/> -->
             </xpath>
             <xpath expr="//field[@name='street']" position="attributes" >
                 <attribute name="readonly">False</attribute>
