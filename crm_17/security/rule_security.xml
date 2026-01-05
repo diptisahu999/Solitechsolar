@@ -182,14 +182,12 @@
     <!-- CONTACT RULES                               -->
     <!-- ============================================ -->
 
-    <!-- <record id="res_partner_rule_hierarchy" model="ir.rule">
+    <record id="res_partner_rule_hierarchy" model="ir.rule">
         <field name="name">Contact - Hierarchy</field>
         <field ref="base.model_res_partner" name="model_id"/>
-        <field name="domain_force">['|', '|', '|',
+        <field name="domain_force">['|',
             ('user_id', '=', user.id),
-            ('user_id', 'child_of', user.id),
-            ('id', '=', user.partner_id.id),
-            ('user_ids', '!=', False)
+            ('user_id', 'child_of', user.id)
         ]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
     </record>
@@ -197,11 +195,9 @@
     <record id="res_partner_rule_personal_hierarchy" model="ir.rule">
         <field name="name">Contact - Personal Hierarchy</field>
         <field ref="base.model_res_partner" name="model_id"/>
-        <field name="domain_force">['|', '|', '|',
+        <field name="domain_force">['|',
             ('user_id', '=', user.id),
-            ('user_id', 'child_of', user.id),
-            ('id', '=', user.partner_id.id),
-            ('user_ids', '!=', False)
+            ('user_id', 'child_of', user.id)
         ]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
     </record>
@@ -211,6 +207,6 @@
         <field ref="base.model_res_partner" name="model_id"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
-    </record> -->
+    </record>
 
 </odoo>
