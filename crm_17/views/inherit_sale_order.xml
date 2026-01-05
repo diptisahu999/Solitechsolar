@@ -170,13 +170,13 @@
             </xpath>
           <xpath expr="//field[@name='payment_term_id']" position="replace">
                 <field name="payment_term_id" string="Payment Terms" options="{'no_create': False}"/>
-                <field name="special_instruction_dcr"/>
-                <field name="special_instruction_mess"/>
+                <field name="special_instruction_dcr" invisible="1"/>
+                <field name="special_instruction_mess" invisible="1"/>
                 <!-- <field name="advance_percentage"/>
                 <field name="before_dp_percentage"/> -->
-                <field name="advance_display" readonly="0"/>
-                <field name="before_dp_display" readonly="0"/>
-                <field name="lc_days"/>
+                <field name="advance_display" readonly="0" invisible="1"/>
+                <field name="before_dp_display" readonly="0" invisible="1"/>
+                <field name="lc_days" invisible="1"/>
                 <field name="delivery_type"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="attributes">
