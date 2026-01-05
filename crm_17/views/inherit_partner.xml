@@ -259,7 +259,7 @@
         <field name="limit">60</field>
     </record>
 
-    <record id="hide_company_and_address_in_contact" model="ir.ui.view">
+        <record id="hide_company_and_address_in_contact" model="ir.ui.view">
         <field name="name">res.partner.form.hide.company.address</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>

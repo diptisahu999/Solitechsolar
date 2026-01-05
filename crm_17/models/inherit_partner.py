@@ -67,24 +67,78 @@ class InheritPartner(models.Model):
     #                 )
 
 
-    @api.constrains('vat')
+    # @api.constrains('vat')
+    # def _check_unique_gst(self):
+    #     for rec in self:
+    #         gst = (rec.vat or "").strip().upper()
+    #         if rec.parent_id:
+    #             continue
+
+    #         if gst:
+    #             duplicate = self.env['res.partner'].search([
+    #                 ('vat', '=', gst),
+    #                 ('id', '!=', rec.id),
+    #                 ('parent_id', '=', False) 
+    #             ], limit=1)
+
+    #             if duplicate:
+    #                 raise ValidationError(
+    #                     _("GST Number '%s' already exists for another contact (%s). "
+    #                       "Duplicate GST is not allowed.") % (gst, duplicate.name)
+    #                 )
+    @api.constrains('vat', 'phone')
     def _check_unique_gst(self):
         for rec in self:
-            gst = (rec.vat or "").strip().upper()
+
+            # Ignore child addresses
             if rec.parent_id:
                 continue
 
-            if gst:
-                duplicate = self.env['res.partner'].search([
-                    ('vat', '=', gst),
-                    ('id', '!=', rec.id),
-                    ('parent_id', '=', False) 
-                ], limit=1)
+            # Only for COMPANIES
+            if rec.company_type == 'person':
+                continue
 
-                if duplicate:
+            gst = (rec.vat or "").strip().upper()
+            if not gst:
+                continue
+
+            # First check GST duplicate
+            gst_duplicate = self.env['res.partner'].search([
+                ('vat', '=', gst),
+                ('id', '!=', rec.id),
+                ('parent_id', '=', False)
+            ], limit=1)
+
+            if not gst_duplicate:
+                continue   # GST unique → allow
+
+            # GST duplicate found → now check phone
+            
+            # Remove spaces and hyphens
+            cleaned_phone = re.sub(r'[\s\-]', '', rec.phone)
+
+            # Remove +91 prefix if exists
+            if cleaned_phone.startswith('+91'):
+                cleaned_phone = cleaned_phone[3:]
+
+            # Now prepend +91 to match DB format
+            normalized_phone = f"+91{cleaned_phone}"
+
+            # Search for duplicates in other partners
+            duplicates = self.env['res.partner'].search([
+                ('vat', '=', gst),                 # Only same GST group
+                ('id', '!=', rec.id),
+                ('parent_id', '=', False),
+                ('phone', '!=', False)  
+            ])
+
+            for partner in duplicates:
+                # Normalize partner phone: remove spaces and hyphens
+                partner_phone = re.sub(r'[\s\-]', '', partner.phone or '')
+                if normalized_phone == partner_phone:
                     raise ValidationError(
-                        _("GST Number '%s' already exists for another contact (%s). "
-                          "Duplicate GST is not allowed.") % (gst, duplicate.name)
+                        _("GST '%s' and Mobile '%s' already exist (Contact: %s). Duplicate company not allowed.")
+                        % (gst, rec.phone, partner.display_name)
                     )
 
     @api.depends('email')
@@ -131,31 +185,31 @@ class InheritPartner(models.Model):
             if not rec.phone:
                 continue
 
-            # Remove spaces and hyphens
-            cleaned_phone = re.sub(r'[\s\-]', '', rec.phone)
+            if rec.company_type == "person":
+                # Remove spaces and hyphens
+                cleaned_phone = re.sub(r'[\s\-]', '', rec.phone)
 
-            # Remove +91 prefix if exists
-            if cleaned_phone.startswith('+91'):
-                cleaned_phone = cleaned_phone[3:]
+                # Remove +91 prefix if exists
+                if cleaned_phone.startswith('+91'):
+                    cleaned_phone = cleaned_phone[3:]
 
-            # Now prepend +91 to match DB format
-            normalized_phone = f"+91{cleaned_phone}"
+                # Now prepend +91 to match DB format
+                normalized_phone = f"+91{cleaned_phone}"
 
-            # Search for duplicates in other partners
-            duplicates = self.env['res.partner'].search([
-                ('id', '!=', rec.id),
-                ('phone', '!=', False)
-            ])
+                # Search for duplicates in other partners
+                duplicates = self.env['res.partner'].search([
+                    ('id', '!=', rec.id),
+                    ('phone', '!=', False)
+                ])
 
-            for partner in duplicates:
-                # Normalize partner phone: remove spaces and hyphens
-                partner_phone = re.sub(r'[\s\-]', '', partner.phone or '')
-                if normalized_phone == partner_phone:
-                    raise ValidationError(
-                        _("Mobile number %s is already used by contact: %s")
-                        % (rec.phone, partner.display_name)
-                    )
-
+                for partner in duplicates:
+                    # Normalize partner phone: remove spaces and hyphens
+                    partner_phone = re.sub(r'[\s\-]', '', partner.phone or '')
+                    if normalized_phone == partner_phone:
+                        raise ValidationError(
+                            _("Mobile number %s is already used by contact: %s")
+                            % (rec.phone, partner.display_name)
+                        )
             
     @api.constrains('phone', 'mobile')
     def _check_numeric_value(self):
