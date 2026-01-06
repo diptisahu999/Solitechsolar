@@ -148,6 +148,7 @@
     <!-- Leads menu under Home -->
     <menuitem id="menu_crm_leads_home"
         name="Leads"
+        groups="base.group_user"
         action="action_crm_leads_home"
         parent="main_home_menu"
         sequence="2"/>

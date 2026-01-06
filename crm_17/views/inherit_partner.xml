@@ -213,7 +213,7 @@
                         name="%(base.action_attachment)d"
                         class="oe_stat_button"
                         icon="fa-upload"
-                        groups="base.group_system"
+                        groups="base.group_user"
                         context="{
                             'default_res_model': 'res.partner',
                             'default_res_id': active_id,
