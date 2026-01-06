@@ -21,6 +21,9 @@
                 <attribute name="required">supplier_rank == 0</attribute>
                 <attribute name="options">{'no_create': True}</attribute>
             </xpath>
+            <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                <attribute name="invisible">not is_company</attribute>
+            </xpath>
             <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']" position="attributes">
                 <attribute name="context">{'default_parent_id': id, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'other'}</attribute>
             </xpath>
@@ -273,6 +276,11 @@
             <!--  Hide Company Name dropdown  -->
             <xpath expr="//field[@name='parent_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@class='oe_chatter']" position="replace">
+                <div class="oe_chatter">
+                    <field name="message_ids"/>
+                </div>
             </xpath>
         </field>
     </record>
