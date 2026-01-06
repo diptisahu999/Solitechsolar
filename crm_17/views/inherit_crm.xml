@@ -126,10 +126,10 @@
                 <attribute name="readonly">1</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
-            <xpath expr="//page[@name='extra']" position="attributes">
+            <xpath expr="//page[.//group[@name='categorization']]" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//page[@name='extra']//field[@name='source_id']" position="attributes">
+            <xpath expr="//page[@name='lead']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//page[@name='lead']//field[@name='source_id']" position="attributes">
@@ -560,5 +560,7 @@
             </xpath>
         </field>
     </record>
+
+
 
 </odoo>
