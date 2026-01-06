@@ -60,7 +60,6 @@
                 <field name="person_contacts" />
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="before">
-                <field name="bulk_requirement" />
                 <field name="team_leader_id" invisible="1"/>
                 <field name="last_update" invisible="1"/>
                 <field name="partner_vat" invisible="1"/>
@@ -120,7 +119,6 @@
                 <field name="last_date_formatted" />
                 <field name="is_group_uid" invisible="1" force_save="1"/>
                 <field name="is_group_manager" invisible="1" force_save="1"/>
-                <field name="interest_id"  options="{'no_create': True,'no_open': True}" required="type == 'opportunity'"/>
                 <field name="project_id"  options="{'no_create': True,'no_open': True}" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='user_id']" position="attributes">
@@ -261,7 +259,6 @@
             </xpath>
             <xpath expr="//field[@name='user_id']" position="before">
                 <field name="label_ids" widget="many2many_tags" optional="hide"/>
-                <field name="interest_id" optional="hide"/>
             </xpath>
             <xpath expr="//button[@name='%(crm.action_lead_mail_compose)d']" position="attributes">
                 <attribute name="column_invisible">1</attribute>
@@ -316,7 +313,6 @@
                 <field name="email_from" string="Email" filter_domain="[('email_from', 'ilike', self)]"/>            
             </xpath>
             <xpath expr="//filter[@name='open_opportunities']" position="after">
-                <filter string="Bulk Requirement" name="bulk_requirement" domain="[('bulk_requirement', '=', True)]" help="Bulk Requirement"/>
                 <filter string="Remarks not added" name="create_lead" domain="[('last_update', '=', False)]" help="No Edit Lead"/>
                 <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
             </xpath>
