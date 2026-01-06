@@ -78,12 +78,14 @@
                 <attribute name="groups">base.group_system</attribute>
             </xpath> -->
             <xpath expr="//page[@name='contact_addresses']//group/field[@name='mobile']" position="after" >
-                <field name="l10n_in_gst_treatment" invisible="0"/>
-                <field name="vat" invisible="0"/>
-                <field name="l10n_in_pan" invisible="0"/>
+                <field name="is_company" invisible="1"/>
+                <field name="l10n_in_gst_treatment" invisible="not is_company"/>
+                <field name="vat" invisible="not is_company"/>
+                <field name="l10n_in_pan" invisible="not is_company"/>
             </xpath>
             <xpath expr="//label[@for='vat']" position="attributes">
                 <attribute name="string">GST No</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
 
             <!-- Change Field Placeholder / Tooltip -->
@@ -91,6 +93,7 @@
                 <attribute name="string">GST No</attribute>
                 <attribute name="placeholder">e.g. 24ABCDE1234F1Z5</attribute>
                 <attribute name="required">is_company</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
         </field>
     </record>
@@ -120,12 +123,15 @@
             </xpath> -->
             <xpath expr="//field[@name='vat']" position="attributes" >
                 <attribute name="readonly">False</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
             <xpath expr="//field[@name='l10n_in_gst_treatment']" position="attributes" >
                 <attribute name="readonly">False</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
             <xpath expr="//field[@name='l10n_in_pan']" position="attributes" >
                 <attribute name="readonly">False</attribute>
+                <attribute name="invisible">not is_company</attribute>
             </xpath>
         </field>
     </record>
