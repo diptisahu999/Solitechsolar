@@ -21,11 +21,26 @@ class SalesDashboard(models.Model):
         return self.env['crm.stage'].search(domain, order='sequence asc').mapped('name')
 
     def _get_pipeline_overview_data(self, uid):
-        domain = [('user_id', '=', uid)] if uid else []
-        my_leads_opps = self.env['crm.lead'].search(domain)
-        my_opportunities = my_leads_opps.filtered(lambda l: l.type == 'opportunity')
+        # domain = [('user_id', '=', uid)] if uid else []
+        # my_leads_opps = self.env['crm.lead'].search(domain)
+        # my_opportunities = my_leads_opps.filtered(lambda l: l.type == 'opportunity')
+        # leads_count = len(my_leads_opps)
         
-        leads_count = len(my_leads_opps)
+        # For Leads
+        leads_domain = [('type', '!=', 'opportunity')]
+        if uid:
+            leads_domain.append(('user_id', '=', uid))
+            
+        my_leads = self.env['crm.lead'].search(leads_domain)
+        
+        # For Opportunities
+        opp_domain = [('type', '=', 'opportunity')]
+        if uid:
+            opp_domain.append(('user_id', '=', uid))
+        
+        my_opportunities = self.env['crm.lead'].search(opp_domain)
+        
+        leads_count = len(my_leads)
         opportunities_count = len(my_opportunities)
         total_pipeline_records = leads_count + opportunities_count
         conversion_rate = (opportunities_count / total_pipeline_records * 100) if total_pipeline_records > 0 else 0
@@ -345,12 +360,12 @@ class SalesDashboard(models.Model):
         # Return all records allowed by record rules
         return { 'name': 'My Leads', 'type': 'ir.actions.act_window', 'res_model': 'crm.lead',
             'views': [[False, 'tree'], [False, 'kanban'], [False, 'form']],
-            'domain': [] }
+            'domain': [('type', '!=', 'opportunity')] }
 
     @api.model
     def action_open_my_opportunities(self):
         return { 'name': 'My Opportunities', 'type': 'ir.actions.act_window', 'res_model': 'crm.lead',
-            'views': [[False, 'kanban'], [False, 'tree'], [False, 'form']],
+            'views': [[False, 'tree'], [False, 'kanban'], [False, 'form']],
             'domain': [('type', '=', 'opportunity')] }
 
     @api.model
@@ -383,5 +398,15 @@ class SalesDashboard(models.Model):
             domain.append(('state', '=', 'posted'))
             action_name = 'My Confirmed Proformas'
         return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'proforma.invoice',
+            'views': [[False, 'tree'], [False, 'form']],
+            'domain': domain }
+        
+    @api.model
+    def action_open_my_sales_order(self):
+        domain = []
+
+        action_name = 'My Sales Orders'
+        
+        return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'custom.sale.order',
             'views': [[False, 'tree'], [False, 'form']],
             'domain': domain }

@@ -340,6 +340,17 @@ class SalesDashboard extends Component {
         }
     }
 
+    async openMySalesOrder() {
+        try {
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_sales_order', [])
+            action = this._normalizeAction(action);
+            if (action) this.action.doAction(action);
+            else console.error("openMySalesOrder: invalid action", action);
+        } catch (err) {
+            console.error("openMySalesOrder error:", err);
+        }
+    }
+
     openTopCustomers() {
         try {
             let action = {
