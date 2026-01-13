@@ -197,7 +197,7 @@
             </xpath>
           <xpath expr="//field[@name='payment_term_id']" position="replace">
                 <field name="payment_term_id" string="Payment Terms" options="{'no_create': False}"/>
-                <field name="special_instruction_dcr"/> 
+                <field name="special_instruction_dcr" required="1" placeholder="Select DCR Type"/> 
                 <field name="special_instruction_mess" invisible="1"/>
                 <!-- <field name="advance_percentage"/>
                 <field name="before_dp_percentage"/> -->
