@@ -59,6 +59,27 @@ class InheritProductTemplate(models.Model):
     is_color_coating = fields.Boolean('Color Coating Possible')
     is_discontinue = fields.Boolean('Discontinue')
     wattage = fields.Float(string="Wattage (Wp)")
+    product_subsidy_type = fields.Selection([
+        ('dcr', 'DCR'),
+        ('non_dcr', 'Non DCR')
+    ], string='Product Category', default='non_dcr', index=True)
+
+    min_unit_price_watt = fields.Float(
+        string='Unit Price (₹/Wp)',
+        default=0.0,
+        help='Minimum allowed unit price (₹/Wp). If Sales Price is below this, Price Approval is required.'
+    )
+
+    def action_update_dcr_logic(self):
+        # Update selected products
+        # If called from a button or server action, 'self' contains the recordset.
+        # Fallback to search([]) only if self is empty (e.g. called from a scheduled action without context)
+        products = self or self.search([])
+        for product in products:
+            if product.name and 'DCR' in product.name.upper():
+                product.product_subsidy_type = 'dcr'
+            else:
+                product.product_subsidy_type = 'non_dcr'
 
     def action_print_products_details(self):       
         return self.env.ref('crm_17.action_techv_product_template_pricelist').report_action(self)

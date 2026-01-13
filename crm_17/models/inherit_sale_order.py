@@ -32,6 +32,8 @@ class InheritSaleOrder(models.Model):
                                             ('sent','Quotation Sent'),
                                             ('sale','Quotation Confirm'),
                                             ('discount_approval','Discount Approval'),
+                                            ('price_approval', 'Price Approval'),
+                                            ('price_rejected', 'Price Rejected'),
                                             ('pi','Create PI')])
     is_manager = fields.Boolean(string='Manager',default=False)
     price_list_id = fields.Many2one('techv.product.pricelist',string="Combo Product")
@@ -42,11 +44,12 @@ class InheritSaleOrder(models.Model):
     # sale_amount_total = fields.Monetary(string='Total ', store=True, readonly=True)
     action_link = fields.Html(string='View', compute='_compute_action_link', sanitize=False)
     final_quotation = fields.Boolean(string='Final Quotation',default=False)
+    is_price_approved = fields.Boolean(string='Is Price Approved', default=False, copy=False)
     is_group_admin = fields.Boolean(string='Is Group Access Right')
     special_instruction_dcr = fields.Selection([
         ('dcr', 'DCR'),
         ('non_dcr', 'NON DCR')
-    ], string='DCR Instruction', index=True)
+    ], string='DCR Instruction', index=True, required=True)
 
     special_instruction_mess = fields.Selection([
         ('with_mess', 'WITH MESH'),
@@ -101,6 +104,31 @@ class InheritSaleOrder(models.Model):
     revision_number = fields.Integer(string='Revision No.', copy=False, default=1)
     place_of_supply = fields.Many2one('res.partner', string='Place of Supply', domain="[('parent_id', '=', partner_id), ('type', '=', 'delivery')]")
     
+    approval_status = fields.Selection([
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ], string='Approval Status', compute='_compute_approval_status', store=True)
+
+    has_price_access = fields.Boolean(compute='_compute_has_price_access', string='Has Price Access')
+
+    @api.depends('user_id')
+    def _compute_has_price_access(self):
+        for rec in self:
+            rec.has_price_access = self.env.user.has_group('crm_17.group_unit_price_access') or self.env.user.has_group('base.group_system')
+
+    @api.depends('state', 'is_price_approved')
+    def _compute_approval_status(self):
+        for rec in self:
+            if rec.state == 'price_approval':
+                rec.approval_status = 'pending'
+            elif rec.state == 'price_rejected':
+                rec.approval_status = 'rejected'
+            elif rec.is_price_approved:
+                rec.approval_status = 'approved'
+            else:
+                rec.approval_status = False
+
 
     def write(self, vals):
         """Override write method to increment revision_number when any field actually changes.
@@ -705,6 +733,149 @@ class InheritSaleOrder(models.Model):
         self.is_manager = True
         self.state = 'draft'
 
+    def action_request_price_approval(self):
+        """Request approval if unit prices are below minimum."""
+        self.ensure_one()
+        min_price_global_param = self.env['ir.config_parameter'].sudo().get_param('crm_17.min_unit_price_watt', '13.0')
+        min_price_global = float(min_price_global_param)
+        
+        needs_approval = False
+        approval_reasons = []
+
+        for line in self.order_line:
+            if line.display_type or not line.product_id:
+                continue
+            
+            # Determine threshold: Use Product's specific min price if set (>0), else fallback to Global
+            min_price_threshold = line.product_id.min_unit_price_watt if line.product_id.min_unit_price_watt > 0 else min_price_global
+
+            if (line.price_unit or 0.0) < (min_price_threshold - 0.01):
+                needs_approval = True
+                approval_reasons.append(f"{line.product_id.name}: Price {line.price_unit} < Min {min_price_threshold}")
+                # We can break early if we just want to know if *any* line triggers it
+                # or keep collecting for a detailed message. Let's break for efficiency as per original code.
+                break
+        
+        if needs_approval:
+            self.write({'state': 'price_approval'})
+            
+            # --- Notification Logic (Subscribe & Notify Both Admin & Salesperson) ---
+            
+            # 1. Identify Target Users
+            
+            # A. Admins (Approvers)
+            approval_group = self.env.ref('crm_17.group_price_approval_right', raise_if_not_found=False)
+            admin_users = self.env['res.users']
+            if approval_group:
+                admin_users = approval_group.sudo().users
+            
+            # B. Salesperson (Requestor)
+            salesperson_user = self.user_id
+
+            # C. Combine unique users
+            all_target_users = admin_users | salesperson_user
+            
+            # 2. (Removed) Do not auto-subscribe admins as followers
+            # We want them to get notifications but not be spammed by every chatter update.
+            # if all_target_users:
+            #     partners_to_subscribe = all_target_users.mapped('partner_id')
+            #     self.message_subscribe(partner_ids=partners_to_subscribe.ids)
+            
+            # 3. Send Push Notification
+            title = _("Price Approval Request")
+            reason_msg = approval_reasons[0] if approval_reasons else "Unit prices below minimum"
+            message = _("Request for %s: %s (waiting approval).") % (self.name, reason_msg)
+            
+            # We send to the list of IDs. The notification manager handles looping.
+            users_to_notify = all_target_users.ids
+            
+            if users_to_notify:
+                 try:
+                     self.env['notification.manager'].send_push_notification(
+                        user_ids=users_to_notify,
+                        title=title,
+                        message=message,
+                        notification_type='warning'
+                     )
+                 except Exception as e:
+                     self.message_post(body=f"Push Notification Error: {e}")
+
+            # Log standard chatter message
+            self.message_post(body=message)
+
+        else:
+            raise UserError(_("Approval not required. All unit prices are within limits."))
+
+    def _notify_price_approval_participants(self, title, message, notification_type='info'):
+        """Helper to notify both admin and salesperson."""
+        # A. Admins (Approvers)
+        approval_group = self.env.ref('crm_17.group_price_approval_right', raise_if_not_found=False)
+        admin_users = self.env['res.users']
+        if approval_group:
+            admin_users = approval_group.sudo().users
+        
+        # B. Salesperson (Requestor)
+        salesperson_user = self.user_id
+
+        # C. Combine unique users
+        all_target_users = admin_users | salesperson_user
+        
+        users_to_notify = all_target_users.ids
+        if users_to_notify:
+            try:
+                self.env['notification.manager'].send_push_notification(
+                user_ids=users_to_notify,
+                title=title,
+                message=message,
+                notification_type=notification_type
+                )
+            except Exception as e:
+                self.message_post(body=f"Push Notification Error: {e}")
+
+    def action_approve_price(self):
+        """Approve the low unit prices."""
+        self.ensure_one()
+        # Only allow users with the specific Price Approval Right group (or System Admin)
+        if not self.env.user.has_group('crm_17.group_price_approval_right') and not self.env.user.has_group('base.group_system'):
+             raise UserError(_("You do not have permission to approve price requests."))
+             
+        self.write({
+            'state': 'draft',
+            'is_price_approved': True
+        })
+        
+        msg = _("Unit prices approved by %s for %s") % (self.env.user.name, self.name)
+        self.message_post(body=msg)
+        
+        # Notify both parties
+        self._notify_price_approval_participants(
+            title=_("Price Approved"), 
+            message=msg, 
+            notification_type='success'
+        )
+
+    def action_reject_price(self):
+        """Reject the price request."""
+        self.ensure_one()
+        if not self.env.user.has_group('crm_17.group_price_approval_right') and not self.env.user.has_group('base.group_system'):
+             raise UserError(_("You do not have permission to reject price requests."))
+        
+        self.write({'state': 'price_rejected'})
+        
+        msg = _("Price approval rejected by %s for %s") % (self.env.user.name, self.name)
+        self.message_post(body=msg)
+        
+        # Notify both parties
+        self._notify_price_approval_participants(
+            title=_("Price Rejected"), 
+            message=msg, 
+            notification_type='danger'
+        )
+
+    def action_reset_to_draft_from_rejected(self):
+        """Allow user to reset rejected order to draft to fix prices."""
+        self.state = 'draft'
+
     def send_whatsapp_message(self):
         return {
             'type': 'ir.actions.act_url',
@@ -1188,33 +1359,7 @@ class InheritSaleOrderLine(models.Model):
                 line.order_id.message_post(body=message_body, subject="Order Line Updated")
         return super(InheritSaleOrderLine, self).write(vals)
 
-    @api.constrains('price_unit', 'product_id', 'display_type')
-    def _check_price_unit_minimum(self):
-        min_price = self._get_min_unit_price()
-        if self._is_admin_user():
-            return
-        
-        for line in self:
-            # 1. SKIP Notes and Sections explicitly
-            if line.display_type in ['line_note', 'line_section']:
-                continue
-            
-            # 2. SKIP if there is NO product (e.g. text only)
-            if not line.product_id:
-                continue
 
-            # 3. SKIP if price is 0 AND product is missing (Safety Catch)
-            if line.price_unit == 0.0 and not line.product_id:
-                continue
-
-            # 4. Perform Check
-            try:
-                price = float(line.price_unit or 0.0)
-            except Exception:
-                price = 0.0
-                
-            if price < (min_price - 0.01):
-                raise ValidationError(f"You cannot use a Unit Price below ₹{min_price:.2f}.")
     def write(self, vals):
         """Override write to track quantity and unit price changes in log note."""
         for line in self:

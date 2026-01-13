@@ -61,4 +61,24 @@
         <field name="category_id" ref="module_category_upcoming_button" />
     </record>
     
+    <record id="module_category_price_approval_right" model="ir.module.category">
+        <field name="name">Price Approval Right</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_price_approval_right" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_price_approval_right"/>
+    </record>
+
+    <record id="module_category_unit_price_access" model="ir.module.category">
+        <field name="name">Unit Price Access</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_unit_price_access" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_unit_price_access"/>
+    </record>
+    
 </odoo>

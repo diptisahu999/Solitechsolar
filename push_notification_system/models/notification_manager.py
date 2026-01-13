@@ -203,23 +203,26 @@ class NotificationManager(models.AbstractModel):
             _logger.warning("--- DEBUG: No users found for the given IDs. Aborting. ---")
             return
 
+        # Prepare Standard Odoo 'simple_notification' Payload (Sticky Toast)
         payload = {
+            'type': notification_type,
             'title': title,
             'message': message,
-            'type': notification_type,
+            'sticky': False,  # Changed to False so it disappears automatically
         }
 
-        channels = [(user.partner_id, 'odoos_notification', payload) for user in users]
-        _logger.info(f"--- DEBUG: Preparing to send to channels: {channels} ---")
+        # Use _sendone loop for maximum reliability across different user sessions
+        for user in users:
+            try:
+                # Send to this specific partner's simple_notification channel
+                self.env['bus.bus']._sendone(user.partner_id, 'simple_notification', payload)
+            except Exception as e:
+                _logger.error(f"--- DEBUG: Failed to send to user {user.name}: {e}")
+
+        _logger.info(f"--- DEBUG: _sendone loop executed for {len(users)} users. ---")
 
         # Call FCM for mobile push (asynchronously, no user blocking)
         self.send_fcm_notification(user_ids, title, message)
-
-        try:
-            self.env['bus.bus']._sendmany(channels)
-            _logger.info("--- DEBUG: _sendmany command executed successfully. ---")
-        except Exception as e:
-            _logger.error(f"--- DEBUG: Error executing _sendmany: {e} ---")
 
         return self.send_chat_notification(user_ids, title, message)
 

@@ -68,7 +68,7 @@
                 <attribute name="column_invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
-                <attribute name="domain">[('sale_ok', '=', True),('ecommerce_ok', '!=', True)]</attribute>
+                <attribute name="domain">[('sale_ok', '=', True),('ecommerce_ok', '!=', True), ('product_subsidy_type', '=', parent.special_instruction_dcr)]</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="attributes" >
                 <attribute name="readonly">no_discount_ok == True</attribute>
@@ -116,6 +116,31 @@
                 <attribute name="confirm">Congratulations on receiving the order! If not confirmed, please do not proceed.</attribute>
             </xpath>	
             <xpath expr="//button[@name='action_cancel']" position="after">
+                <button name="action_request_price_approval" 
+                        string="Request Price Approval" 
+                        type="object"
+                        class="btn-warning"
+                        invisible="state not in ['draft', 'sent'] or is_price_approved == True or has_price_access == True"/>
+                
+                <button name="action_approve_price" 
+                        string="Approve Price" 
+                        type="object"
+                        class="btn-success"
+                        groups="crm_17.group_price_approval_right,base.group_system"
+                        invisible="state != 'price_approval'"/>
+
+                <button name="action_reject_price" 
+                        string="Reject Price" 
+                        type="object"
+                        class="btn-danger"
+                        groups="crm_17.group_price_approval_right,base.group_system"
+                        invisible="state != 'price_approval'"/>
+
+                <button name="action_reset_to_draft_from_rejected" 
+                        string="Reset to Draft" 
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'price_rejected'"/>
 
             <button name="action_print_quotation_report" 
                         string="Quotation Print" 
@@ -148,6 +173,8 @@
                 <field name="partner_vat" invisible="1"/>
                 <field name="is_partner_vat" invisible="1"/>
                 <field name="is_group_admin" invisible="1"/>
+                <field name="is_price_approved" invisible="1"/>
+                <field name="has_price_access" invisible="1"/>
                 <!-- <field name="sale_amount_total" invisible="1"/> -->
                 <field name="create_uid" />
 
@@ -170,7 +197,7 @@
             </xpath>
           <xpath expr="//field[@name='payment_term_id']" position="replace">
                 <field name="payment_term_id" string="Payment Terms" options="{'no_create': False}"/>
-                <field name="special_instruction_dcr" invisible="1"/>
+                <field name="special_instruction_dcr"/> 
                 <field name="special_instruction_mess" invisible="1"/>
                 <!-- <field name="advance_percentage"/>
                 <field name="before_dp_percentage"/> -->
@@ -407,6 +434,64 @@
         action="action_email_template_tree_all_sale"
         groups="base.group_erp_manager"
         sequence="71"/>
+
+    <!-- Price Approval Action & Menu -->
+    <record id="action_sale_price_approval" model="ir.actions.act_window">
+        <field name="name">Price Approvals</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('approval_status', 'in', ['pending', 'approved', 'rejected'])]</field>
+        <field name="context">{}</field>
+        <!-- Use the same improved tree view for Admin too, or default -->
+        <field name="view_id" ref="view_sale_order_my_approval_tree"/>
+    </record>
+
+    <menuitem id="menu_sale_price_approval"
+        parent="crm_17.main_home_menu"
+        action="action_sale_price_approval"
+        name="Price Approvals"
+        groups="crm_17.group_price_approval_right"
+        sequence="8"/>
+
+    <!-- User View: My Price Requests (Pending/Approved/Rejected) -->
+    <record id="view_sale_order_my_approval_tree" model="ir.ui.view">
+        <field name="name">sale.order.my.approval.tree</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <tree string="My Price Requests" sample="1" create="0">
+                <field name="name"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="amount_untaxed" sum="Total Tax Excluded"/>
+                <field name="amount_total" sum="Total Tax Included"/>
+                <field name="approval_status" 
+                       decoration-warning="approval_status == 'pending'" 
+                       decoration-success="approval_status == 'approved'"
+                       decoration-danger="approval_status == 'rejected'"
+                       widget="badge"
+                       string="Status"/>
+                <field name="state" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_sale_my_price_requests" model="ir.actions.act_window">
+        <field name="name">My Price Requests</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_sale_order_my_approval_tree"/>
+        <!-- Filter: My Orders AND (Any Approval Status) -->
+        <field name="domain">[('user_id', '=', uid), ('approval_status', 'in', ['pending', 'approved', 'rejected'])]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_sale_my_price_requests"
+        parent="crm_17.main_home_menu"
+        action="action_sale_my_price_requests"
+        name="My Approvals"
+        sequence="9"/>
 
 
     <record id="view_sale_order_form_help_upload" model="ir.ui.view">

@@ -176,6 +176,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='taxes_id']" position="after">
                 <field name="wattage"/>
+                <field name="min_unit_price_watt"/>
+                <field name="product_subsidy_type" widget="radio" options="{'horizontal': true}"/>
+                <button name="action_update_dcr_logic" string="Auto Update All Products" type="object" class="btn-link" confirm="Are you sure you want to update ALL products' DCR Product Type based on their names?" invisible="1"/>
             </xpath>
         </field>
     </record>
@@ -188,4 +191,15 @@
         <field name="limit">60</field>
     </record>
     
+    <record id="action_server_update_dcr_logic" model="ir.actions.server">
+        <field name="name">Auto Update Product Type (DCR/Non-DCR)</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            records.action_update_dcr_logic()
+        </field>
+    </record>
+
 </odoo>

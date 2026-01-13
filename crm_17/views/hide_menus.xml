@@ -40,5 +40,16 @@
         <record id="mail.menu_root_discuss" model="ir.ui.menu">
              <field name="active" eval="False"/>
         </record>
+
+        <!-- Hide 'My Approvals' menu specifically for Admin user -->
+        <record id="rule_hide_my_approvals_admin" model="ir.rule">
+            <field name="name">Hide My Approvals Menu from Admin</field>
+            <field name="model_id" ref="base.model_ir_ui_menu"/>
+            <field name="domain_force" eval="&quot;[(1, '=', 1)] if not (user.id == %d or user.has_group('crm_17.group_unit_price_access')) else [('id', '!=', %d)]&quot; % (ref('base.user_admin'), ref('menu_sale_my_price_requests'))"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
     </data>
 </odoo>

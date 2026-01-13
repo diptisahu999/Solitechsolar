@@ -34,6 +34,25 @@ class SaleOrder(models.Model):
                     "before confirming the Sale Order."
                 ))
 
+            # Check Unit Price Minimum
+            # Check Unit Price Minimum
+            min_price_global_param = self.env['ir.config_parameter'].sudo().get_param('crm_17.min_unit_price_watt', '13.0')
+            min_price_global = float(min_price_global_param)
+            
+            # Skip validation if already approved or user is Admin or has Unit Price Access
+            if not self.env.user.has_group('base.group_system') and not self.env.user.has_group('crm_17.group_unit_price_access') and not order.is_price_approved:
+                for line in order.order_line:
+                    if line.display_type or not line.product_id:
+                        continue
+                    
+                    price = line.price_unit or 0.0
+                    
+                    # Determine threshold: Use Product's specific min price if set (>0), else fallback to Global
+                    min_price_threshold = line.product_id.min_unit_price_watt if line.product_id.min_unit_price_watt > 0 else min_price_global
+
+                    if price < (min_price_threshold - 0.01):
+                        raise UserError(_("Oh snap!\nProduct '%s' Price (₹%.2f) is below minimum (₹%.2f).\nPlease request price approval." % (line.product_id.name, price, min_price_threshold)))
+
             # --- NEW: Calculate Tax Breakdown for Snapshot ---
             cgst = 0.0
             sgst = 0.0
