@@ -171,6 +171,20 @@ class InheritPartner(models.Model):
             url = f'/web#id={record.id}&model=res.partner&view_type=form&cids={cids}&menu_id={menu_id}'
             record.action_link = f'<a href="{url}" target="_blank">View</a>'
 
+    def action_view_opportunity(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window']._for_xml_id('crm.crm_lead_action_pipeline')
+        action['context'] = {'default_partner_id': self.id, 'default_type': 'opportunity'}
+        action['domain'] = [('partner_id', 'child_of', self.commercial_partner_id.id), ('type', '=', 'opportunity')]
+        action['view_mode'] = 'tree,kanban,form,graph,calendar,pivot'
+        # Reorder views to put tree first
+        if 'views' in action:
+            tree_view = [v for v in action['views'] if v[1] == 'tree']
+            kanban_view = [v for v in action['views'] if v[1] == 'kanban']
+            other_views = [v for v in action['views'] if v[1] not in ['tree', 'kanban']]
+            action['views'] = tree_view + kanban_view + other_views
+        return action
+
     @api.model
     def _commercial_fields(self):
         res = super()._commercial_fields()
