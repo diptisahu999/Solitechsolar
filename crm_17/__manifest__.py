@@ -11,6 +11,7 @@
         'sales_team','state_wise_gst','stock','purchase','repair',
         'web_notify','dolphy_project', 'stock_landed_costs', 'mrp',
         'project', 'hr', 'l10n_in', 'crm_sms', 'project_todo',
+
     ],
     'data': [
             'security/rule_security.xml',
@@ -54,6 +55,7 @@
             'views/inherit_partner.xml',
             'views/inherit_crm.xml',
             'views/inherit_company.xml',
+            'views/label_mst.xml',
             'views/inherit_sale_order.xml',
             'views/inherit_purchase.xml',
             'views/inherit_account.xml',
@@ -65,7 +67,6 @@
             'views/inherit_payment.xml',
             'views/courier_mst.xml',
             'views/inherit_user.xml',
-            'views/label_mst.xml',
             'views/inherit_mrp_production.xml',
             'views/repair_order.xml',
             'views/spare_parts_production.xml',

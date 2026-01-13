@@ -379,12 +379,7 @@
         </field>
     </record>
 
-    <record id="crm.crm_lead_action_pipeline_view_kanban" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_mode">kanban</field>
-        <field name="view_id" ref="crm.crm_case_kanban_view_leads"/>
-        <field name="act_window_id" ref="crm.crm_lead_action_pipeline"/>
-    </record>
+
 
     <record id="crm.crm_lead_action_pipeline_view_tree" model="ir.actions.act_window.view">
         <field name="sequence" eval="0"/>
@@ -399,15 +394,18 @@
 
     <record id="crm.crm_lead_action_pipeline" model="ir.actions.act_window">
         <field name="name">Opportunity</field>
-        <field name="view_mode">tree,kanban,form,graph,calendar,pivot</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,graph,pivot,calendar,activity</field>
         <field name="view_id" ref="crm.crm_case_tree_view_oppor"/>
         <field name="domain">[('type','=','opportunity')]</field>
         <field name="context">{'default_type': 'opportunity', 'search_default_assigned_to_me': 1, 'create': False, 'disable_generate_lead': True}</field>
         <field name="limit">60</field>
     </record>
 
+
+
     <record id="crm.crm_lead_all_leads" model="ir.actions.act_window">
-        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="view_mode">tree,graph,pivot,calendar,activity</field>
         <field name="limit">60</field>
     </record>
 
@@ -558,9 +556,15 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="quick_create">0</attribute>
+            </xpath>
             <xpath expr="//button[@name='action_generate_leads']" position="replace">
             </xpath>
         </field>
     </record>
+
+
 
 </odoo>

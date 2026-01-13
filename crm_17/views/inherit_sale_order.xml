@@ -316,6 +316,30 @@
         </field>
     </record>
 
+    <!-- User View: My Price Requests (Pending/Approved/Rejected) -->
+    <record id="view_sale_order_my_approval_tree" model="ir.ui.view">
+        <field name="name">sale.order.my.approval.tree</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <tree string="My Price Requests" sample="1" create="0">
+                <field name="name"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="amount_untaxed" sum="Total Tax Excluded"/>
+                <field name="amount_total" sum="Total Tax Included"/>
+                <field name="approval_status" 
+                       decoration-warning="approval_status == 'pending'" 
+                       decoration-success="approval_status == 'approved'"
+                       decoration-danger="approval_status == 'rejected'"
+                       widget="badge"
+                       string="Status"/>
+                <field name="state" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- Override Sale Quotations Action to show ONLY Drafts by default, 
          but allow searching for Sent and Confirmed orders. -->
     <record id="sale.action_quotations" model="ir.actions.act_window">
@@ -356,8 +380,7 @@
     <record id="sale.model_sale_order_action_share" model="ir.actions.server">
         <field name="name">Share</field>
         <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_model_id" ref=""/>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_view_types">form</field>
         <field name="state">code</field>
         <field name="code">action = records.action_share()</field>
@@ -435,6 +458,8 @@
         groups="base.group_erp_manager"
         sequence="71"/>
 
+
+
     <!-- Price Approval Action & Menu -->
     <record id="action_sale_price_approval" model="ir.actions.act_window">
         <field name="name">Price Approvals</field>
@@ -447,35 +472,13 @@
     </record>
 
     <menuitem id="menu_sale_price_approval"
-        parent="crm_17.main_home_menu"
+        parent="main_home_menu"
         action="action_sale_price_approval"
         name="Price Approvals"
         groups="crm_17.group_price_approval_right"
         sequence="8"/>
 
-    <!-- User View: My Price Requests (Pending/Approved/Rejected) -->
-    <record id="view_sale_order_my_approval_tree" model="ir.ui.view">
-        <field name="name">sale.order.my.approval.tree</field>
-        <field name="model">sale.order</field>
-        <field name="arch" type="xml">
-            <tree string="My Price Requests" sample="1" create="0">
-                <field name="name"/>
-                <field name="date_order"/>
-                <field name="partner_id"/>
-                <field name="user_id"/>
-                <field name="activity_ids" widget="list_activity"/>
-                <field name="amount_untaxed" sum="Total Tax Excluded"/>
-                <field name="amount_total" sum="Total Tax Included"/>
-                <field name="approval_status" 
-                       decoration-warning="approval_status == 'pending'" 
-                       decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"
-                       widget="badge"
-                       string="Status"/>
-                <field name="state" column_invisible="1"/>
-            </tree>
-        </field>
-    </record>
+
 
     <record id="action_sale_my_price_requests" model="ir.actions.act_window">
         <field name="name">My Price Requests</field>
@@ -488,7 +491,7 @@
     </record>
 
     <menuitem id="menu_sale_my_price_requests"
-        parent="crm_17.main_home_menu"
+        parent="main_home_menu"
         action="action_sale_my_price_requests"
         name="My Approvals"
         sequence="9"/>
