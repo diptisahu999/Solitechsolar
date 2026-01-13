@@ -32,15 +32,18 @@ access_reserved_stock,reserved_stock,model_reserved_stock,,1,1,1,0
 access_account_move_validation,account_move_validation,model_account_move_validation,,1,1,1,0
 access_user_deactivate_wizard,user_deactivate_wizard,model_user_deactivate_wizard,,1,1,1,1
 
-mrp.access_product_template_mrp_manager,product.template mrp_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+mrp.access_product_template_mrp_manager,product.template mrp_manager,product.model_product_template,crm_17.group_product_price,1,1,0,0
 mrp.access_product_template_user,product.template user,product.model_product_template,,1,0,0,0
-purchase.access_product_template_purchase_manager,product.template purchase_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+purchase.access_product_template_purchase_manager,product.template purchase_manager,product.model_product_template,crm_17.group_product_price,1,1,0,0
 purchase.access_product_template_purchase_user,product.template purchase_user,product.model_product_template,,1,0,0,0
-sale.access_product_template_sale_manager,product.template salemanager,model_product_template,crm_17.group_product_price,1,1,1,1
+sale.access_product_template_sale_manager,product.template salemanager,model_product_template,crm_17.group_product_price,1,1,0,0
 sale.access_product_template_sale_user,product.template sale use,product.model_product_template,,1,0,0,0
-stock.access_product_template_stock_manager,product.template stock_manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+stock.access_product_template_stock_manager,product.template stock_manager,product.model_product_template,crm_17.group_product_price,1,1,0,0
 stock.access_product_template_stock_user,product.template stock user,product.model_product_template,,1,0,0,0
-account.access_product_template_account_manager,product.template.account.manager,product.model_product_template,crm_17.group_product_price,1,1,1,1
+account.access_product_template_account_manager,product.template.account.manager,product.model_product_template,crm_17.group_product_price,1,1,0,0
+access_product_template_page_access,product.template.page.access,product.model_product_template,crm_17.group_product_page_access,1,1,1,1
+
+
 
 crm.access_crm_lead_manager,crm.lead.manager,model_crm_lead,sales_team.group_sale_manager,1,1,1,1
 sale.access_sale_order_manager,sale.order.manager,model_sale_order,sales_team.group_sale_manager,1,1,1,1

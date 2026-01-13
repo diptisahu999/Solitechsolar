@@ -51,7 +51,7 @@ class SaleOrder(models.Model):
                     min_price_threshold = line.product_id.min_unit_price_watt if line.product_id.min_unit_price_watt > 0 else min_price_global
 
                     if price < (min_price_threshold - 0.01):
-                        raise UserError(_("Oh snap!\nProduct '%s' Price (₹%.2f) is below minimum (₹%.2f).\nPlease request price approval." % (line.product_id.name, price, min_price_threshold)))
+                        raise UserError(_("Oh snap!\nProduct '%s' Price (INR %.2f) is below minimum (INR %.2f).\nPlease request price approval." % (line.product_id.name, price, min_price_threshold)))
 
             # --- NEW: Calculate Tax Breakdown for Snapshot ---
             cgst = 0.0

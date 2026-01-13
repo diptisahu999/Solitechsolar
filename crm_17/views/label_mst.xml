@@ -100,12 +100,12 @@
         </field>
     </record>
 
-<menuitem id="menu_product_template_action_product_home"
+    <menuitem id="menu_product_template_action_product_home"
         name="Products"
         action="product_template_action_product_home"
         parent="main_home_menu"
         sequence="7"
-        groups="base.group_system"/>
+        groups="base.group_system,crm_17.group_product_page_access"/>
 
     <record id="open_view_project_all_group_stage_home" model="ir.actions.act_window">
         <field name="name">Projects</field>

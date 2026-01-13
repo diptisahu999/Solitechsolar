@@ -80,5 +80,15 @@
         <field name="name">Yes</field>
         <field name="category_id" ref="module_category_unit_price_access"/>
     </record>
+
+    <record id="module_category_product_page_access" model="ir.module.category">
+        <field name="name">Product Page Access</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_product_page_access" model="res.groups">
+        <field name="name">Yes</field>
+        <field name="category_id" ref="module_category_product_page_access"/>
+    </record>
     
 </odoo>

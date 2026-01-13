@@ -126,40 +126,20 @@ class InheritProductTemplate(models.Model):
         #self.env['ir.model.fields'].clear_caches()
         fields_info = super().fields_get(allfields, attributes)
 
-        if not self.env.user.has_group('crm_17.group_product_price'):
+        has_page_access = self.env.user.has_group('crm_17.group_product_page_access')
+        has_price_access = self.env.user.has_group('crm_17.group_product_price')
+
+        if not has_page_access:
+            for field in fields_info:
+                if field == 'list_price' and has_price_access:
+                    continue
+                fields_info[field]['readonly'] = True
+                fields_info[field]['force_save'] = True
+        
+        if has_page_access and not has_price_access:
             if 'list_price' in fields_info:
-                fields_info['list_price']['readonly'] = False
+                fields_info['list_price']['readonly'] = True
                 fields_info['list_price']['force_save'] = True
-            # if 'name' in fields_info:
-            #     fields_info['name']['readonly'] = True
-            #     fields_info['name']['force_save'] = True
-            # if 'barcode' in fields_info:
-            #     fields_info['barcode']['readonly'] = True
-            #     fields_info['barcode']['force_save'] = True
-            # if 'l10n_in_hsn_code' in fields_info:
-            #     fields_info['l10n_in_hsn_code']['readonly'] = True
-            #     fields_info['l10n_in_hsn_code']['force_save'] = True
-            # if 'default_code' in fields_info:
-            #     fields_info['default_code']['readonly'] = True
-            #     fields_info['default_code']['force_save'] = True
-            # if 'standard_price' in fields_info:
-            #     fields_info['standard_price']['readonly'] = True
-            #     fields_info['standard_price']['force_save'] = True
-            # if 'categ_id' in fields_info:
-            #     fields_info['categ_id']['readonly'] = True
-            #     fields_info['categ_id']['force_save'] = True
-            # if 'detailed_type' in fields_info:
-            #     fields_info['detailed_type']['readonly'] = True
-            #     fields_info['detailed_type']['force_save'] = True
-            # if 'type' in fields_info:
-            #     fields_info['type']['readonly'] = True
-            #     fields_info['type']['force_save'] = True
-            # if 'taxes_id' in fields_info:
-            #     fields_info['taxes_id']['readonly'] = True
-            #     fields_info['taxes_id']['force_save'] = True
-            # if 'supplier_taxes_id' in fields_info:
-            #     fields_info['supplier_taxes_id']['readonly'] = True
-            #     fields_info['supplier_taxes_id']['force_save'] = True
 
         return fields_info
     
