@@ -256,6 +256,17 @@
         </field>
     </record>
 
+    <record id="view_sale_order_kanban_inherit" model="ir.ui.view">
+        <field name="name">sale.order.kanban.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="inherit_view_sale_order_filter" model="ir.ui.view">
         <field name="name">inherit.sale.order.search</field>
         <field name="model">sale.order</field>
@@ -282,13 +293,13 @@
          but allow searching for Sent and Confirmed orders. -->
     <record id="sale.action_quotations" model="ir.actions.act_window">
         <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
-        <field name="context">{'search_default_only_draft': 1}</field>
+        <field name="context">{'search_default_only_draft': 1, 'create': False}</field>
         <field name="limit">60</field>
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
         <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
-        <field name="context">{'search_default_only_draft': 1}</field>
+        <field name="context">{'search_default_only_draft': 1, 'create': False}</field>
         <field name="limit">60</field>
     </record>
 
