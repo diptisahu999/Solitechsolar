@@ -49,7 +49,7 @@
     <record id="action_contacts_home" model="ir.actions.act_window">
         <field name="name">Contacts</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">tree,kanban,form,activity</field>
+        <field name="view_mode">tree,form,activity</field>
         <field name="search_view_id" ref="base.view_res_partner_filter"/>
         <field name="context">{'default_is_company': True}</field>
         <field name="help" type="html">
@@ -88,7 +88,7 @@
     <record id="product_template_action_product_home" model="ir.actions.act_window">
         <field name="name">Products</field>
         <field name="res_model">product.template</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="stock.product_template_search_form_view_stock"/>
         <field name="context">{"search_default_consumable": 1, 'default_detailed_type': 'product'}</field>
         <field name="help" type="html">
@@ -112,7 +112,7 @@
         <field name="res_model">project.project</field>
         <field name="context">{}</field>
         <field name="domain">[]</field>
-        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="view_mode">tree,form,calendar,activity</field>
         <field name="view_id" ref="project.view_project"/>
         <field name="search_view_id" ref="project.view_project_project_filter"/>
         <field name="target">main</field>
