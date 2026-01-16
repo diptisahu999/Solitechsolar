@@ -50,7 +50,7 @@
                             padding: 8px;
                             margin: 0;
                             position: relative;
-                            min-height: 390mm;
+                            min-height: 370mm;
                             padding-top: 130px;
                             padding-bottom: 240px;
                             page-break-after: always;
