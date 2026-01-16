@@ -611,8 +611,8 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td style="width:3%; text-align:center; padding:1px; border-right:1px solid #000;">1</td>
-                                            <td style="padding:1px;">
+                                            <td style="width:3%; text-align:center; padding:8px; border-right:1px solid #000;">1</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     This quotation is valid for
                                                     <t t-if="o.offer_validity and o.date_order">
@@ -624,64 +624,64 @@
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">2</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">2</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Any change in government duties, taxes, or levies will be charged at actuals.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">3</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">3</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Delivery shall be made as per the mutually agreed delivery schedule.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">4</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">4</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                    Transit insurance shall be borne by the buyer unless otherwise agreed. Modules will be packed in standard export-quality packaging suitable for safe transportation and handling.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">5</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">5</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                    Modules will be packed in standard export-quality packaging suitable for safe transportation and handling.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">6</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">6</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Material is subject to pre-dispatch inspection (if required) at our facility. Any external damage during transit should be reported immediately to the transporter and Solitech within **48 hours** of delivery.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">7</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">7</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Any external damage during transit should be reported immediately to the transporter and Solitech within **48 hours** of delivery.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">8</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">8</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Solitech shall not be held responsible for delays or non-performance due to acts of God, war, strike, pandemics, natural disasters, or any other force majeure conditions beyond its control.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">9</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">9</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     Any legal dispute arising out of this transaction will fall under the jurisdiction of the
                                                     <strong>
@@ -691,16 +691,16 @@
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">10</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">10</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     All designs, specifications, and product data shared are confidential and remain the property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced without written consent.
                                                 </p>
                                             </td>
                                         </tr>
                                         <tr style="border-top:1px solid #000;">
-                                            <td style="text-align:center; padding:1px; border-right:1px solid #000;">11</td>
-                                            <td style="padding:1px;">
+                                            <td style="text-align:center; padding:8px; border-right:1px solid #000;">11</td>
+                                            <td style="padding:8px;">
                                                 <p style="margin: 0; padding-bottom: 3px;">
                                                     All designs, specifications, and product data shared are confidential and remain the property of Solitech Green Energy Pvt. Ltd. They must not be disclosed or reproduced without written consent.
                                                 </p>
