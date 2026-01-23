@@ -6,6 +6,7 @@ import requests
 import urllib.parse
 from odoo import models, fields, _
 from openai import OpenAI
+from groq import Groq
 import os
 
 # =========================================================
@@ -24,7 +25,7 @@ class BusinessCardScannerWizard(models.TransientModel):
     ], string="Scan Mode", default='lead')
 
     # ---------------------------------------------------------
-    # Action: Scan Card with GPT Vision
+    # Action: Get API Keys
     # ---------------------------------------------------------
     def _get_openai_api_key(self):
         """Retrieve OpenAI API key safely."""
@@ -33,8 +34,15 @@ class BusinessCardScannerWizard(models.TransientModel):
             key = self.env['ir.config_parameter'].sudo().get_param('openai.api_key')
         return key
 
+    def _get_groq_api_key(self):
+        """Retrieve Groq API key safely."""
+        key = os.getenv('GROQ_API_KEY')
+        if not key:
+            key = self.env['ir.config_parameter'].sudo().get_param('groq.api_key')
+        return key
+
     # ---------------------------------------------------------
-    # Action: Scan Card with GPT Vision
+    # Action: Scan Card with Groq or OpenAI
     # ---------------------------------------------------------
     def action_scan_card(self):
         self.ensure_one()
@@ -43,35 +51,80 @@ class BusinessCardScannerWizard(models.TransientModel):
             self.extracted_text = "No image uploaded."
             return self._open_self_form()
 
+        image_data = base64.b64decode(self.business_card_image)
+        image_b64 = base64.b64encode(image_data).decode('utf-8')
+
+        # ✅ Try Groq First
         try:
-            # ✅ 1. Convert Odoo base64 to image data
-            image_data = base64.b64decode(self.business_card_image)
-            image_b64 = base64.b64encode(image_data).decode('utf-8')
+            groq_key = self._get_groq_api_key()
+            if groq_key:
+                print("--- Trying Groq Extraction ---")
+                return self._scan_with_groq(image_b64)
+        except Exception as e:
+            print(f"⚠️ Groq extraction failed: {e}. Falling back to OpenAI...")
 
-            # ✅ 2. Get API Key safely
-            api_key = self._get_openai_api_key()
+        # ✅ Fallback to OpenAI
+        return self._scan_with_openai(image_b64)
 
-            # ✅ 3. Initialize OpenAI client securely
-            client = OpenAI(api_key=api_key)
+    def _scan_with_groq(self, image_b64):
+        api_key = self._get_groq_api_key()
+        client = Groq(api_key=api_key)
 
-            prompt = """
-            You are a professional OCR and data extraction expert.
-            Extract key details from this business card image in pure JSON format.
-            Use this structure exactly:
+        prompt = """
+        Extract details from this business card image in JSON format.
+        Structure:
+        {
+          "name": "",
+          "designation": "",
+          "company": "",
+          "phone_numbers": [],
+          "emails": [],
+          "website": "",
+          "address": ""
+        }
+        Return ONLY valid JSON.
+        """
 
-            {
-              "name": "",
-              "designation": "",
-              "company": "",
-              "phone_numbers": [],
-              "emails": [],
-              "website": "",
-              "address": ""
-            }
+        completion = client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=[{
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_b64}"}}
+                ]
+            }]
+        )
 
-            Return only valid JSON (no markdown or text outside the JSON).
-            """
+        groq_output = completion.choices[0].message.content
+        groq_output = re.sub(r"```(?:json)?|```", "", groq_output).strip()
+        
+        parsed_data = json.loads(groq_output)
+        print('used groq api key')
+        self.extracted_text = json.dumps(parsed_data, indent=4, ensure_ascii=False)
+        return self._open_self_form()
 
+    def _scan_with_openai(self, image_b64):
+        print("--- Running OpenAI Extraction ---")
+        api_key = self._get_openai_api_key()
+        client = OpenAI(api_key=api_key)
+
+        prompt = """
+        Extract details from this business card image in JSON format.
+        Structure:
+        {
+          "name": "",
+          "designation": "",
+          "company": "",
+          "phone_numbers": [],
+          "emails": [],
+          "website": "",
+          "address": ""
+        }
+        Return ONLY valid JSON.
+        """
+
+        try:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
@@ -88,17 +141,13 @@ class BusinessCardScannerWizard(models.TransientModel):
             )
 
             gpt_output = response.choices[0].message.content
-            gpt_output = re.sub(r"(?:json)?|", "", gpt_output).strip()
-
-            try:
-                parsed_data = json.loads(gpt_output)
-            except json.JSONDecodeError:
-                parsed_data = {"error": "Invalid JSON", "raw_response": gpt_output}
-
+            gpt_output = re.sub(r"```(?:json)?|```", "", gpt_output).strip()
+            parsed_data = json.loads(gpt_output)
+            print('used open api key',parsed_data)
             self.extracted_text = json.dumps(parsed_data, indent=4, ensure_ascii=False)
 
         except Exception as e:
-            self.extracted_text = f"GPT API Error: {str(e)}"
+            self.extracted_text = f"API Error: {str(e)}"
 
         return self._open_self_form()
 
