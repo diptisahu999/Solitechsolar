@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_app_access" model="res.groups">
+        <field name="name">App Access</field>
+        <field name="category_id" ref="base.module_category_administration"/>
+    </record>
+</odoo>
