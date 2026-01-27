@@ -31,12 +31,12 @@
                 <field name="type" invisible="1"/>
                 <field name="company_name_delivery" required="type == 'delivery'" invisible="type != 'delivery'"/>
             </xpath>
-            <xpath expr="//field[@name='street2']" position="after">
+            <!-- <xpath expr="//field[@name='street2']" position="after">
                 <field name="city_id" placeholder="City" class="o_address_street" options="{'no_open': True, 'no_create': True}"/>
             </xpath>
             <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group//div/field[@name='street2']" position="after">
                 <field name="city_id" placeholder="City" class="o_address_street" options="{'no_open': True, 'no_create': True}"/>
-            </xpath>
+            </xpath> -->
             <xpath expr="//page[@name='contact_addresses']/field[@name='child_ids']//group/field[@name='title']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
