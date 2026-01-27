@@ -16,6 +16,23 @@
                    <label for="min_unit_price_watt"/>
                    <field name="min_unit_price_watt"/>
                </setting>
+               <setting id="global_prices_setting" groups="base.group_system" invisible="0">
+                   <div class="o_setting_left_pane"/>
+                   <div class="o_setting_right_pane">
+                       <label for="global_dcr_rate" string="Global DCR Price (₹)"/>
+                       <field name="global_dcr_rate"/>
+                       <br/>
+                       <label for="global_non_dcr_rate" string="Global NON-DCR Price (₹)"/>
+                       <field name="global_non_dcr_rate"/>
+                       <div class="mt8">
+                           <button name="action_apply_global_prices" 
+                                   string="Apply to All Products" 
+                                   type="object" 
+                                   class="btn-primary"
+                                   confirm="This will update DCR and NON-DCR prices for ALL products. Are you sure?"/>
+                       </div>
+                   </div>
+               </setting>
             </xpath>
         </field>
     </record>

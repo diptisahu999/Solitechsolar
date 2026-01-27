@@ -70,8 +70,14 @@ class InheritProductTemplate(models.Model):
         help='Minimum allowed unit price (₹/Wp). If Sales Price is below this, Price Approval is required.'
     )
 
-    dcr_rate = fields.Float(string="DCR Price")
-    non_dcr_rate = fields.Float(string="NON-DCR Price")
+    dcr_rate = fields.Float(
+        string="DCR Price",
+        default=lambda self: float(self.env['ir.config_parameter'].sudo().get_param('crm_17.global_dcr_rate', 0.0))
+    )
+    non_dcr_rate = fields.Float(
+        string="NON-DCR Price",
+        default=lambda self: float(self.env['ir.config_parameter'].sudo().get_param('crm_17.global_non_dcr_rate', 0.0))
+    )
 
     def action_update_dcr_logic(self):
         # Update selected products
