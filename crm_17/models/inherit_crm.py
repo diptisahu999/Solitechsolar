@@ -142,7 +142,7 @@ class InheritCRM(models.Model):
         """ Capitalize string fields in vals, excluding specific fields. """
         excluded_fields = [
             'email_from', 'email_cc', 'website', 'action_link', 'activity_dec',
-            'phone', 'mobile', 'kw_str'
+            'phone', 'mobile', 'kw_str', 'status', 'type', 'priority'
         ]
         for field, value in vals.items():
             if field not in excluded_fields and isinstance(value, str):
