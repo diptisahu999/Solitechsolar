@@ -255,7 +255,7 @@
 
             </xpath>
             <xpath expr="//button[@name='action_view_opportunity']" position="attributes">
-                <attribute name="context">{'default_partner_id': id, 'default_type': 'opportunity', 'tree_view_ref': 'crm.crm_case_tree_view_oppor'}</attribute>
+                <attribute name="context">{'default_partner_id': id, 'default_type': 'opportunity', 'default_name': False, 'tree_view_ref': 'crm.crm_case_tree_view_oppor'}</attribute>
             </xpath>
         </field>
     </record>

@@ -174,7 +174,7 @@ class InheritPartner(models.Model):
     def action_view_opportunity(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id('crm.crm_lead_action_pipeline')
-        action['context'] = {'default_partner_id': self.id, 'default_type': 'opportunity'}
+        action['context'] = {'default_partner_id': self.id, 'default_type': 'opportunity', 'default_name': False}
         action['domain'] = [('partner_id', 'child_of', self.commercial_partner_id.id), ('type', '=', 'opportunity')]
         action['view_mode'] = 'tree,kanban,form,graph,calendar,pivot'
         # Reorder views to put tree first
