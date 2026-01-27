@@ -189,7 +189,7 @@
             <xpath expr="//field[@name='taxes_id']" position="after">
                 <field name="wattage"/>
                 <field name="min_unit_price_watt"/>
-                <field name="product_subsidy_type" widget="radio" options="{'horizontal': true}"/>
+                <field name="product_subsidy_type" widget="radio" options="{'horizontal': true}" invisible="1"/>
                 <field name="dcr_rate"/>
                 <field name="non_dcr_rate"/>
                 <button name="action_update_dcr_logic" string="Auto Update All Products" type="object" class="btn-link" confirm="Are you sure you want to update ALL products' DCR Product Type based on their names?" invisible="1"/>
