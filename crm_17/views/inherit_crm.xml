@@ -11,6 +11,9 @@
                     <bold><a class="alert-link" role="button">Lead already generated. Lead no  <field name="same_lead" force_save="1" readonly="True"/></a></bold>
                 </div>
             </xpath>
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//group[@name='lead_partner']/field[@name='partner_id']" position="attributes" >
                 <attribute name="options">{'no_quick_create': True}</attribute>
                 <attribute name="string">Contact</attribute>

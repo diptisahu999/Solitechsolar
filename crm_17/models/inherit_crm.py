@@ -137,6 +137,18 @@ class InheritCRM(models.Model):
         }
 
 
+    @api.model
+    def _capitalize_vals(self, vals):
+        """ Capitalize string fields in vals, excluding specific fields. """
+        excluded_fields = [
+            'email_from', 'email_cc', 'website', 'action_link', 'activity_dec',
+            'phone', 'mobile', 'kw_str'
+        ]
+        for field, value in vals.items():
+            if field not in excluded_fields and isinstance(value, str):
+                vals[field] = value.upper()
+        return vals
+
     @api.depends('name')
     def _compute_action_link(self):
         menu_id = self.env.ref('crm.menu_crm_opportunities').id
@@ -330,6 +342,7 @@ class InheritCRM(models.Model):
     
     @api.model
     def create(self, vals):
+        vals = self._capitalize_vals(vals)
         if vals.get('pi_no') == None or vals.get('pi_no') == 0:
             vals['pi_no'] = self.bill_chr_vld()
 
@@ -369,6 +382,7 @@ class InheritCRM(models.Model):
         return res
 
     def write(self, vals):
+        vals = self._capitalize_vals(vals)
         for record in self:
             line_list = []
             if vals.get('user_id', False):
