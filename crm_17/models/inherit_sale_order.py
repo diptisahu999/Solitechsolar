@@ -62,8 +62,8 @@ class InheritSaleOrder(models.Model):
 
     delivery_type = fields.Selection([
         ('for', 'FOR'),
-        ('ex_works', 'Ex. Works')
-    ], string='Delivery Type', index=True)
+        ('ex_works', 'Ex. Works')
+    ], string='Delivery Type', index=True, required=True)
 
     advance_display = fields.Char(
         string="Advance %",
