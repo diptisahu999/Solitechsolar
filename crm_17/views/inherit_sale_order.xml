@@ -212,6 +212,14 @@
             <xpath expr="//field[@name='pricelist_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='order_line']" position="before">
+                <div class="alert alert-info text-center" role="alert" style="margin: 10px 0;" invisible="special_instruction_dcr and delivery_type">
+                    <h3>Please select both <b>DCR Instruction</b> and <b>Delivery Type</b> to see Order Lines.</h3>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="invisible">not special_instruction_dcr or not delivery_type</attribute>
+            </xpath>
             <xpath expr="//page[@name='optional_products']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
