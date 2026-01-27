@@ -566,6 +566,20 @@
         </field>
     </record>
 
+    <record id="crm_case_form_view_oppor_inr_icon" model="ir.ui.view">
+        <field name="name">crm.lead.form.opportunity.inr.icon</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Replace Dollar icon with Rupee icon in Orders smart button -->
+            <xpath expr="//button[@name='action_view_sale_order']" position="attributes">
+                <attribute name="icon">fa-inr</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
 
 
 </odoo>
