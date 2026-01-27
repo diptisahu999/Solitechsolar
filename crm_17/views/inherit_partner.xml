@@ -288,4 +288,16 @@
         </field>
     </record>
 
+    <!-- Replace Sales smart button fa-usd -> ₹ symbol on Sales smart button -->
+    <record id="res_partner_form_inherit_sales_rupee" model="ir.ui.view">
+        <field name="name">res.partner.form.sales.rupee</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_sale_order']" position="attributes">
+                <attribute name="icon">fa-inr</attribute>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
