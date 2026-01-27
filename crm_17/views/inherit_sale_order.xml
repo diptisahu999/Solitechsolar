@@ -68,7 +68,7 @@
                 <attribute name="column_invisible">True</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="attributes" >
-                <attribute name="domain">[('sale_ok', '=', True),('ecommerce_ok', '!=', True), ('product_subsidy_type', '=', parent.special_instruction_dcr)]</attribute>
+                <attribute name="domain">[('sale_ok', '=', True),('ecommerce_ok', '!=', True)]</attribute>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="attributes" >
                 <attribute name="readonly">no_discount_ok == True</attribute>

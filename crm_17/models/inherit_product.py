@@ -70,6 +70,9 @@ class InheritProductTemplate(models.Model):
         help='Minimum allowed unit price (₹/Wp). If Sales Price is below this, Price Approval is required.'
     )
 
+    dcr_rate = fields.Float(string="DCR Price")
+    non_dcr_rate = fields.Float(string="NON-DCR Price")
+
     def action_update_dcr_logic(self):
         # Update selected products
         # If called from a button or server action, 'self' contains the recordset.

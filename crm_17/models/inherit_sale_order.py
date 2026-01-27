@@ -403,6 +403,17 @@ class InheritSaleOrder(models.Model):
             'url': f'/web/content/{IMAGE_ATTACHMENT_ID}?download=false',
             'target': 'new',
         }
+
+    @api.onchange('special_instruction_dcr')
+    def _onchange_special_instruction_dcr(self):
+        for line in self.order_line:
+            if line.product_id:
+                if self.special_instruction_dcr == 'dcr':
+                    line.price_unit = line.product_id.dcr_rate or line.product_id.list_price
+                elif self.special_instruction_dcr == 'non_dcr':
+                    line.price_unit = line.product_id.non_dcr_rate or line.product_id.list_price
+                if hasattr(line, 'onchange_gst_product'):
+                    line.onchange_gst_product()
         
     def action_print_so_custom_report(self):
         """Triggers the report using the SO action ID, setting print_type='sale'."""
@@ -1280,7 +1291,12 @@ class InheritSaleOrderLine(models.Model):
             if rec.inch_feet_type != 'basic':
                 rec.price_unit = rec.sqft_rate * rec.sqft
             else:
-                rec.price_unit = rec.product_id.list_price
+                if rec.order_id.special_instruction_dcr == 'dcr':
+                    rec.price_unit = rec.product_id.dcr_rate or rec.product_id.list_price
+                elif rec.order_id.special_instruction_dcr == 'non_dcr':
+                    rec.price_unit = rec.product_id.non_dcr_rate or rec.product_id.list_price
+                else:
+                    rec.price_unit = rec.product_id.list_price
             rec.actual_price = rec.product_id.list_price
             
             rec.width = rec.product_id.width
