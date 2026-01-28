@@ -51,7 +51,7 @@
                             margin: 0;
                             position: relative;
                             min-height: 370mm;
-                            padding-top: 130px;
+                            padding-top: 140px;
                             padding-bottom: 240px;
                             page-break-after: always;
                         }
@@ -174,52 +174,29 @@
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
                                 <tr>
                                     <!-- Column 1: Logo - KEPT EXACTLY AS IS -->
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 60px;" rowspan="3">
+                                    <td style="width: 100%; text-align: left; vertical-align: top;">
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>
                                         <t t-else="">
                                             <img t-if="o.company_id.quotation_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>   
                                     </td>
-                                    <!-- Document No Column -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
-                                    <!-- <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/><t t-if="o.sale_order_id and o.sale_order_id.revision_number and o.sale_order_id.revision_number > 0">-<span t-esc="'{:03d}'.format(o.sale_order_id.revision_number)"/></t></td> -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/><span t-if="o.sr_number > 0">-<span t-esc="'{:03d}'.format(o.sr_number)"/></span></td>
-                                    <!-- Quotation # Column -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation #</td>
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                     <span t-esc="'01-06-2025'"/>
-                                    <!-- <span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/> -->
-                                    </td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.date_order else ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="'01-06-2025'"/></td>
-                                    <!-- <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td> -->
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Validity Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.validity_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.validity_date else ''"/></td>
                                 </tr>
                             </table>
                         </div>
 
                         <!-- Page 1 Content -->
                         <!-- Company Details Section -->
-                        <table class="excel-table" style="width: 100%; border-collapse: collapse; margin-top: -38px;">
+                        <table class="excel-table" style="width: 100%; border-collapse: collapse; margin-top: 0px;">
                             <tr><td colspan="6" class="section-header">Company Details</td></tr>
                             <tr>
                                 <td class="label-cell" style="width: 15%;">Name</td>
-                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.name"/></td>
+                                <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.name.upper()"/></td>
                                 <td class="label-cell" style="width: 15%;">GSTIN No</td>
                                 <td class="value-cell" style="width: 20%;"><t t-esc="o.company_id.vat or ''"/></td>
                                 <td class="label-cell" style="width: 15%;">Proforma #</td>
@@ -507,7 +484,7 @@
                                             <strong>Approved By</strong>
                                         </td>
                                         <td colspan="2" style="width:33.33%; padding:4px;">
-                                            <strong>For <t t-esc="o.company_id.name"/></strong>
+                                            <strong>For <t t-esc="o.company_id.name.upper()"/></strong>
                                         </td>
                                     </tr>
                                     <tr style="border-bottom: 1px solid #000;">
@@ -528,11 +505,19 @@
                                     </tr>
                                     <tr>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
-                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;"><t t-esc="'{:03d}'.format(o.sr_number)"/></td>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
                                         <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
                                         <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Document No</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;"><span t-esc="o.name"/><span t-if="o.sr_number > 0">-<span t-esc="'{:03d}'.format(o.sr_number)"/></span></td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Issue Date</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">01-06-2025</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Effective Date</td>
+                                        <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">01-06-2025</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -545,41 +530,18 @@
                         <div class="page-header">
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 0px;">
                                 <tr>
-                                    <td style="width: 15%; text-align: left; vertical-align: top; height: 60px;" rowspan="3">
+                                    <td style="width: 100%; text-align: left; vertical-align: top;">
                                         <t t-if="print_type == 'quotation'">
                                             <img t-if="o.company_id.quotation_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>
                                         <t t-else="">
                                             <img t-if="o.company_id.quotation_image" 
                                                 t-att-src="image_data_uri(o.company_id.quotation_image)" 
-                                                style="max-height: 85px; display: block;"/>
+                                                style="width: 100%; display: block;"/>
                                         </t>   
                                     </td>
-                                    <!-- Document No Column -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Document No</td>
-                                    <!-- <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/><t t-if="o.sale_order_id and o.sale_order_id.revision_number and o.sale_order_id.revision_number > 0">-<span t-esc="'{:03d}'.format(o.sale_order_id.revision_number)"/></t></td> -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.name"/><span t-if="o.sr_number > 0">-<span t-esc="'{:03d}'.format(o.sr_number)"/></span></td>
-                                    <!-- Quotation # Column -->
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation #</td>
-                                    <td style="width: 17%; font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.name if o.sale_order_id else ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Issue Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;">
-                                    <span t-esc="'01-06-2025'"/>
-                                    <!-- <span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/> -->
-                                    </td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Quotation Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.date_order.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.date_order else ''"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Effective Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="'01-06-2025'"/></td>
-                                    <!-- <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.invoice_date.strftime('%d-%m-%Y') if o.invoice_date else ''"/></td> -->
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px; font-weight: bold;">Validity Date</td>
-                                    <td style="font-size: 10px; border: 1px solid black; padding: 4px;"><span t-esc="o.sale_order_id.validity_date.strftime('%d-%m-%Y') if o.sale_order_id and o.sale_order_id.validity_date else ''"/></td>
                                 </tr>
                             </table>
                         </div>
@@ -735,7 +697,7 @@
                                             <strong>Approved By</strong>
                                         </td>
                                         <td colspan="2" style="width:33.33%; padding:4px;">
-                                            <strong>For <t t-esc="o.company_id.name"/></strong>
+                                            <strong>For <t t-esc="o.company_id.name.upper()"/></strong>
                                         </td>
                                     </tr>
                                     <tr style="border-bottom: 1px solid #000;">
@@ -756,11 +718,19 @@
                                     </tr>
                                     <tr>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision No</td>
-                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">00</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;"><t t-esc="'{:03d}'.format(o.sr_number)"/></td>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Revision Date</td>
                                         <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">NA</td>
                                         <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Confidentiality</td>
                                         <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">Internal Use / Customer Shared</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Document No</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;"><span t-esc="o.name"/><span t-if="o.sr_number > 0">-<span t-esc="'{:03d}'.format(o.sr_number)"/></span></td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Issue Date</td>
+                                        <td class="value-cell" style="width:21.33%; border-right:1px solid #000; padding:4px; text-align:left;">01-06-2025</td>
+                                        <td class="label-cell" style="width:12%; border-right:1px solid #000; padding:4px;">Effective Date</td>
+                                        <td class="value-cell" style="width:21.33%; padding:4px; text-align:left;">01-06-2025</td>
                                     </tr>
                                 </tbody>
                             </table>
