@@ -188,8 +188,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='taxes_id']" position="after">
                 <field name="wattage"/>
-                <field name="min_unit_price_watt"/>
-                <field name="dcr_min_unit_price_watt"/>
+                <field name="min_unit_price_watt" groups="crm_17.group_global_price_update"/>
+                <field name="dcr_min_unit_price_watt" groups="crm_17.group_global_price_update"/>
                 <field name="product_subsidy_type" widget="radio" options="{'horizontal': true}" invisible="1"/>
                 <field name="dcr_rate" />
                 <field name="non_dcr_rate" />

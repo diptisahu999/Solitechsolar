@@ -156,6 +156,32 @@ class InheritProductTemplate(models.Model):
                 fields_info['list_price']['readonly'] = True
                 fields_info['list_price']['force_save'] = True
 
+        # 1. Global Price Update Group: Can edit EVERYTHING (All 4 fields)
+        has_global_update_access = self.env.user.has_group('crm_17.group_global_price_update')
+        
+        # 2. DCR/Non-DCR Sale Price Access: Can edit ONLY DCR/Non-DCR Sale Prices
+        has_dcr_sale_access = self.env.user.has_group('crm_17.group_dcr_sale_price_update')
+
+        # Logic: 
+        # - Min Prices are strictly controlled by Global Update group (as per previous logic, effectively).
+        # - Sale Prices can be edited if Global Update OR DCR Sale Access is present.
+
+        if not has_global_update_access:
+            # Restrict Min Prices
+            min_fields = ['min_unit_price_watt', 'dcr_min_unit_price_watt']
+            for field in min_fields:
+                if field in fields_info:
+                    fields_info[field]['readonly'] = True
+                    fields_info[field]['force_save'] = True
+            
+            # Restrict Sale Prices ONLY if they don't have the specific sale access
+            if not has_dcr_sale_access:
+                sale_fields = ['dcr_rate', 'non_dcr_rate']
+                for field in sale_fields:
+                    if field in fields_info:
+                        fields_info[field]['readonly'] = True
+                        fields_info[field]['force_save'] = True
+
         return fields_info
     
     def update_last_seq(self):
