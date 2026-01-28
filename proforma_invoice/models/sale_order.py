@@ -47,11 +47,19 @@ class SaleOrder(models.Model):
                     
                     price = line.price_unit or 0.0
                     
-                    # Determine threshold: Use Product's specific min price if set (>0), else fallback to Global
-                    min_price_threshold = line.product_id.min_unit_price_watt if line.product_id.min_unit_price_watt > 0 else min_price_global
+                    
+                    # Determine threshold
+                    is_dcr = order.special_instruction_dcr == 'dcr'
+                    if is_dcr:
+                        product_min = line.product_id.dcr_min_unit_price_watt
+                    else:
+                        product_min = line.product_id.min_unit_price_watt
 
+                    min_price_threshold = product_min if product_min > 0 else min_price_global
+                    
                     if price < (min_price_threshold - 0.01):
-                        raise UserError(_("Oh snap!\nProduct '%s' Price (INR %.2f) is below minimum (INR %.2f).\nPlease request price approval." % (line.product_id.name, price, min_price_threshold)))
+                        type_label = "DCR" if is_dcr else "Non-DCR"
+                        raise UserError(_("Oh snap!\nProduct '%s' (%s) Price (INR %.2f) is below minimum (INR %.2f).\nPlease request price approval." % (line.product_id.name, type_label, price, min_price_threshold)))
 
             # --- NEW: Calculate Tax Breakdown for Snapshot ---
             cgst = 0.0

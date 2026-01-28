@@ -757,12 +757,20 @@ class InheritSaleOrder(models.Model):
             if line.display_type or not line.product_id:
                 continue
             
-            # Determine threshold: Use Product's specific min price if set (>0), else fallback to Global
-            min_price_threshold = line.product_id.min_unit_price_watt if line.product_id.min_unit_price_watt > 0 else min_price_global
+            # Determine threshold based on DCR instruction
+            is_dcr = self.special_instruction_dcr == 'dcr'
+            if is_dcr:
+                product_min = line.product_id.dcr_min_unit_price_watt
+            else:
+                product_min = line.product_id.min_unit_price_watt
+            
+            # Use Product's specific min price if set (>0), else fallback to Global
+            min_price_threshold = product_min if product_min > 0 else min_price_global
 
             if (line.price_unit or 0.0) < (min_price_threshold - 0.01):
                 needs_approval = True
-                approval_reasons.append(f"{line.product_id.name}: Price {line.price_unit} < Min {min_price_threshold}")
+                type_label = "DCR" if is_dcr else "Non-DCR"
+                approval_reasons.append(f"{line.product_id.name} ({type_label}): Price {line.price_unit} < Min {min_price_threshold}")
                 # We can break early if we just want to know if *any* line triggers it
                 # or keep collecting for a detailed message. Let's break for efficiency as per original code.
                 break

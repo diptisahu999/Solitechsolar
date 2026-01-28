@@ -65,17 +65,23 @@ class InheritProductTemplate(models.Model):
     ], string='Product Category', default='non_dcr', index=True)
 
     min_unit_price_watt = fields.Float(
-        string='Unit Price (₹/Wp)',
+        string='Non DCR Unit Price (₹/Wp)',
         default=0.0,
-        help='Minimum allowed unit price (₹/Wp). If Sales Price is below this, Price Approval is required.'
+        help='Minimum allowed unit price for Non-DCR orders.'
+    )
+    
+    dcr_min_unit_price_watt = fields.Float(
+        string='DCR Unit Price (₹/Wp)',
+        default=0.0,
+        help='Minimum allowed unit price for DCR orders.'
     )
 
     dcr_rate = fields.Float(
-        string="DCR Price",
+        string="DCR Sale Price(₹)",
         default=lambda self: float(self.env['ir.config_parameter'].sudo().get_param('crm_17.global_dcr_rate', 0.0))
     )
     non_dcr_rate = fields.Float(
-        string="NON-DCR Price",
+        string="NON-DCR Sale Price(₹)",
         default=lambda self: float(self.env['ir.config_parameter'].sudo().get_param('crm_17.global_non_dcr_rate', 0.0))
     )
 
