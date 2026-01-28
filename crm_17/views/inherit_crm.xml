@@ -582,7 +582,26 @@
 
         </field>
     </record>
+    
+    <record id="crm_oppor_tree_force_hide_revenue_probability" model="ir.ui.view">
+        <field name="name">crm.oppor.tree.force.hide.revenue.probability</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
 
+        <!-- higher priority than 32 -->
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+
+            <!-- 🔥 REMOVE -->
+            <xpath expr="//field[@name='label_ids']" position="replace"/>
+            <xpath expr="//field[@name='campaign_id']" position="replace"/>
+            <xpath expr="//field[@name='medium_id']" position="replace"/>
+            <xpath expr="//field[@name='source_id']" position="replace"/>
+            <xpath expr="//field[@name='expected_revenue']" position="replace"/>
+            <xpath expr="//field[@name='probability']" position="replace"/>
+
+        </field>
+    </record>
 
 
 </odoo>
