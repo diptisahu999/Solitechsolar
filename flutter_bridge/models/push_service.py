@@ -19,7 +19,7 @@ class PushService(models.AbstractModel):
 
         try:
             firebase_id = send_push(
-                device.device_token,
+                device.fcm_token,
                 title,
                 body,
                 data or {"user_id": str(user_id)}
