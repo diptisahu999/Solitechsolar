@@ -819,6 +819,17 @@ class InheritSaleOrder(models.Model):
                  except Exception as e:
                      self.message_post(body=f"Push Notification Error: {e}")
 
+            ##### For Mobile Push Notification   
+            if users_to_notify:
+                try:
+                    self.env['push.service'].send_to_users(
+                        user_ids=self.users_to_notify,
+                        title=title,
+                        body=message
+                    )
+                except Exception as e:
+                    self.message_post(body=f"Push Notification Error: {e}")
+
             # Log standard chatter message
             self.message_post(body=message)
 
