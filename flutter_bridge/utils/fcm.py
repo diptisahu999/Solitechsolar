@@ -5,7 +5,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 cred = credentials.Certificate(
-    os.path.join(BASE_DIR, '/www/wwwroot/Python/firebase_key.json')
+    os.path.join(BASE_DIR, '/www/wwwroot/python/firebase_key.json')
 )
 
 if not firebase_admin._apps:
