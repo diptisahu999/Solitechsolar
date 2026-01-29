@@ -15,6 +15,9 @@
         'web',  
         'mail', 
     ],
+    'data': [
+        'security/ir.model.access.csv'
+    ],
     # 'assets': {
     #     'web.assets_backend': [
     #         'my_flutter_bridge/static/src/js/notification_bridge.js',
