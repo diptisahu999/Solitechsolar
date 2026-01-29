@@ -163,19 +163,19 @@ class NotificationManager(models.AbstractModel):
     _name = 'notification.manager'
     _description = 'Push Notification Manager'
 
-    def send_fcm_notification(self, user_ids, title, message):
-        """Sends push notification via FCM using the push.service."""
-        if not user_ids:
-            return
+    # def send_fcm_notification(self, user_ids, title, message):
+    #     """Sends push notification via FCM using the push.service."""
+    #     if not user_ids:
+    #         return
         
-        try:
-            self.env['push.service'].sudo().send_to_users(
-                user_ids=user_ids,
-                title=title,
-                body=message
-            )
-        except Exception as e:
-            _logger.error(f"FCM notification error via push.service: {e}")
+    #     try:
+    #         self.env['push.service'].sudo().send_to_users(
+    #             user_ids=user_ids,
+    #             title=title,
+    #             body=message
+    #         )
+    #     except Exception as e:
+    #         _logger.error(f"FCM notification error via push.service: {e}")
 
     # Optional alias if other code still calls this name
     def send_push_notification(self, user_ids, title, message, notification_type='info'):
