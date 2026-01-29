@@ -1,6 +1,6 @@
 from odoo import http
 from odoo.http import request
-# from ..utils.fcm import send_push
+from ..utils.fcm import send_push
 from firebase_admin import messaging
 import json
 
@@ -70,26 +70,26 @@ class RegisterFCMTokenAPI(http.Controller):
     # ✅ SEND USER NOTIFICATION
     # =====================================================
 
-    # @http.route(
-    #     '/api/push/send/users',
-    #     type='http', 
-    #     auth='user',
-    #     methods=['POST'],
-    #     csrf=False
-    # )
-    # def send_push_to_users(self, **kwargs):
-    #     data = json.loads(request.httprequest.data or '{}')
+    @http.route(
+        '/api/push/send/users',
+        type='http', 
+        auth='user',
+        methods=['POST'],
+        csrf=False
+    )
+    def send_push_to_users(self, **kwargs):
+        data = json.loads(request.httprequest.data or '{}')
 
-    #     result = request.env['push.service'].sudo().send_to_users(
-    #         user_ids=data['user_ids'],
-    #         title=data['title'],
-    #         body=data['body']
-    #     )
+        result = request.env['push.service'].sudo().send_to_users(
+            user_ids=data['user_ids'],
+            title=data['title'],
+            body=data['body']
+        )
 
-    #     return request.make_response(
-    #         json.dumps(result), 
-    #         headers=[('Content-Type', 'application/json')]
-    #     )
+        return request.make_response(
+            json.dumps(result), 
+            headers=[('Content-Type', 'application/json')]
+        )
 
 
     # if http not work then use this
