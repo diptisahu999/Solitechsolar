@@ -70,45 +70,45 @@ class RegisterFCMTokenAPI(http.Controller):
     # ✅ SEND USER NOTIFICATION
     # =====================================================
 
-    @http.route(
-        '/api/push/send/users',
-        type='http', 
-        auth='user',
-        methods=['POST'],
-        csrf=False
-    )
-    def send_push_to_users(self, **kwargs):
-        data = json.loads(request.httprequest.data or '{}')
-
-        result = request.env['push.service'].sudo().send_to_users(
-            user_ids=data['user_ids'],
-            title=data['title'],
-            body=data['body']
-        )
-
-        return request.make_response(
-            json.dumps(result), 
-            headers=[('Content-Type', 'application/json')]
-        )
-
-
-    # if http not work then use this
-
     # @http.route(
     #     '/api/push/send/users',
-    #     type='json',
+    #     type='http', 
     #     auth='user',
     #     methods=['POST'],
     #     csrf=False
     # )
     # def send_push_to_users(self, **kwargs):
-    #     data = request.jsonrequest
+    #     data = json.loads(request.httprequest.data or '{}')
 
-    #     if not data.get('user_ids') or not data.get('title') or not data.get('body'):
-    #         return {"status": "error", "message": "Missing required fields"}
-
-    #     return request.env['push.service'].sudo().send_to_users(
+    #     result = request.env['push.service'].sudo().send_to_users(
     #         user_ids=data['user_ids'],
     #         title=data['title'],
     #         body=data['body']
     #     )
+
+    #     return request.make_response(
+    #         json.dumps(result), 
+    #         headers=[('Content-Type', 'application/json')]
+    #     )
+
+
+    # if http not work then use this
+
+    @http.route(
+        '/api/push/send/users',
+        type='json',
+        auth='user',
+        methods=['POST'],
+        csrf=False
+    )
+    def send_push_to_users(self, **kwargs):
+        data = request.jsonrequest
+
+        if not data.get('user_ids') or not data.get('title') or not data.get('body'):
+            return {"status": "error", "message": "Missing required fields"}
+
+        return request.env['push.service'].sudo().send_to_users(
+            user_ids=data['user_ids'],
+            title=data['title'],
+            body=data['body']
+        )
