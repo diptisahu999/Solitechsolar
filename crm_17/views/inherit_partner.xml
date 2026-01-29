@@ -280,11 +280,11 @@
             <xpath expr="//field[@name='parent_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//div[@class='oe_chatter']" position="replace">
+            <!-- <xpath expr="//div[@class='oe_chatter']" position="replace">
                 <div class="oe_chatter">
                     <field name="message_ids"/>
                 </div>
-            </xpath>
+            </xpath> -->
         </field>
     </record>
 
