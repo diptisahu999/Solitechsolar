@@ -164,30 +164,18 @@ class NotificationManager(models.AbstractModel):
     _description = 'Push Notification Manager'
 
     def send_fcm_notification(self, user_ids, title, message):
-        """Sends push notification via FCM to the users' mobile app."""
-        # Get user FCM tokens
-        users = self.env['res.users'].browse(user_ids)
-        tokens = [u.fcm_token for u in users if u.fcm_token]
-        if not tokens:
-            _logger.warning("No FCM tokens found for user(s): %s", user_ids)
+        """Sends push notification via FCM using the push.service."""
+        if not user_ids:
             return
-
-        # Path to your Firebase service account json and project_id
-        service_account_file = '/absolute/path/to/service-account.json'
-        project_id = 'your-firebase-project-id'
-
-        fcm = FCMNotification(
-            service_account_file=service_account_file,
-            project_id=project_id
-        )
-        # Send to each token
-        for token in tokens:
-            result = fcm.notify(
-                fcm_token=token,
-                notification_title=title,
-                notification_body=message,
+        
+        try:
+            self.env['push.service'].sudo().send_to_users(
+                user_ids=user_ids,
+                title=title,
+                body=message
             )
-            _logger.info(f"FCM notification result for token {token}: {result}")
+        except Exception as e:
+            _logger.error(f"FCM notification error via push.service: {e}")
 
     # Optional alias if other code still calls this name
     def send_push_notification(self, user_ids, title, message, notification_type='info'):

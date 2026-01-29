@@ -823,7 +823,7 @@ class InheritSaleOrder(models.Model):
             if users_to_notify:
                 try:
                     self.env['push.service'].send_to_users(
-                        user_ids=self.users_to_notify,
+                        user_ids=users_to_notify,
                         title=title,
                         body=message
                     )
@@ -858,6 +858,17 @@ class InheritSaleOrder(models.Model):
                 title=title,
                 message=message,
                 notification_type=notification_type
+                )
+            except Exception as e:
+                self.message_post(body=f"Push Notification Error: {e}")
+
+        # Also trigger Mobile Push Notification
+        if users_to_notify:
+            try:
+                self.env['push.service'].send_to_users(
+                    user_ids=users_to_notify,
+                    title=title,
+                    body=message
                 )
             except Exception as e:
                 self.message_post(body=f"Push Notification Error: {e}")
