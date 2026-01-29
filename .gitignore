@@ -51,3 +51,4 @@ Thumbs.db
 *.wmv
 *.conf
 
+flutter_bridge/firebase_key.json 
