@@ -19,6 +19,7 @@
             'security/ir.model.access.csv',
             'data/round_off.xml',
             'data/charges_product.xml',
+            'data/res_lang_data.xml',
 
             'wizards/saleperson_wizard.xml',
             'wizards/inherit_lead_to_opportunity.xml',
