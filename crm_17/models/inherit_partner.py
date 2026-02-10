@@ -199,6 +199,9 @@ class InheritPartner(models.Model):
             if not rec.phone:
                 continue
 
+            if rec.type in ['delivery', 'invoice']:
+                continue
+
             if rec.company_type == "person":
                 # Remove spaces and hyphens
                 cleaned_phone = re.sub(r'[\s\-]', '', rec.phone)
@@ -228,7 +231,9 @@ class InheritPartner(models.Model):
     @api.constrains('phone', 'mobile')
     def _check_numeric_value(self):
         for rec in self:
-            if rec.company_type == 'person' and not rec.phone:
+            if rec.type in ['delivery', 'invoice']:
+                pass
+            elif rec.company_type == 'person' and not rec.phone:
                  raise ValidationError("Mobile 1 is required for individual contacts.")
 
             if rec.phone:
