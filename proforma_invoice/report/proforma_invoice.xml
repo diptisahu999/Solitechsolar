@@ -261,14 +261,14 @@
                                 <td class="label-cell">GSTIN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.vat"/></td>
                                 <td class="label-cell">Contact Person</td>
-                                <td class="value-cell"><t t-esc="o.partner_id.person_contacts or o.partner_id.name"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_shipping_id.person_contacts or o.partner_shipping_id.name or o.partner_id.person_contacts or o.partner_id.name"/></td>
                                 <td colspan="2" class="label-cell">Supply Timeline Requirement</td>
                             </tr>
                             <tr>
                                 <td class="label-cell">PAN No</td>
                                 <td class="value-cell"><span t-field="o.partner_id.l10n_in_pan"/></td>
                                 <td class="label-cell">Contact No</td>
-                                <td class="value-cell"><t t-esc="o.partner_id.phone"/></td>
+                                <td class="value-cell"><t t-esc="o.partner_shipping_id.phone or o.partner_id.phone"/></td>
                                 <td class="label-cell">Delivery Start Date</td>
                                 <td class="value-cell"><span t-field="o.sale_order_id.date_order" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
                             </tr>
