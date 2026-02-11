@@ -40,10 +40,21 @@
         parent="crm.menu_crm_config_lead"
         sequence="6"/>
 
+    <!-- Leads action -->
+    <record id="action_crm_leads_home" model="ir.actions.act_window">
+        <field name="name">Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,form,calendar,activity</field>
+        <!-- Removed search_view_id to avoid missing external ID error -->
+        <field name="context">{'default_type': 'lead'}</field>
+        <field name="domain">[('type', '=', 'lead')]</field>
+    </record>
+
     <!-- main home -->
     <menuitem
         id="main_home_menu"
         name="Home"
+        action="action_crm_leads_home"
         sequence="-1"/>
 
     <record id="action_contacts_home" model="ir.actions.act_window">
@@ -134,15 +145,6 @@
         sequence="8"/>
 
 
-    <!-- Leads action -->
-    <record id="action_crm_leads_home" model="ir.actions.act_window">
-        <field name="name">Leads</field>
-        <field name="res_model">crm.lead</field>
-        <field name="view_mode">tree,form,calendar,activity</field>
-        <!-- Removed search_view_id to avoid missing external ID error -->
-        <field name="context">{'default_type': 'lead'}</field>
-        <field name="domain">[('type', '=', 'lead')]</field>
-    </record>
 
 
     <!-- Leads menu under Home -->
