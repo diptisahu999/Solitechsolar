@@ -271,9 +271,6 @@ class InheritCRM(models.Model):
                     tag_ids = rec.env['crm.tag'].search([('name', '=', tag.name)])
                     if tag_ids:
                         rec.tag_ids |= tag_ids
-                    # else:
-                    #     tag_ids = rec.env['crm.tag'].create({'name' : tag.name})
-                    #     rec.tag_ids |= tag_ids  
             if not rec.partner_id.category_id:
                 if rec.partner_id.parent_id:
                     if not rec.partner_id.category_id:
@@ -282,6 +279,11 @@ class InheritCRM(models.Model):
                         tag_ids = rec.env['crm.tag'].search([('name', '=', tag.name)])
                         if tag_ids:
                             rec.tag_ids |= tag_ids
+
+    def _compute_name(self):
+        """ Override to prevent Lead name from being auto-populated from partner_id """
+        pass
+
             # if rec.partner_id:                  
             #     if not rec.partner_id.category_id:
             #         partner_id = rec.partner_id.name
