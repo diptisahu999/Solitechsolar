@@ -616,7 +616,7 @@
             
             <xpath expr="//header" position="inside">
                 <button name="306"
-                        string="Mark Lost"
+                        string="Lost"
                         type="action"
                         class="btn-secondary"
                         invisible="type != 'opportunity'"/>
