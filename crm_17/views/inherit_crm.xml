@@ -47,9 +47,7 @@
             <xpath expr="//header/button[@name='action_set_won_rainbowman']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>    
-            <xpath expr="//header/button[@name='%(crm.crm_lead_lost_action)d']" position="after">
-                <button name="%(crm_17.action_crm_lead_lost_stage_wiz)d" string="Lost"  type="action" invisible="type == 'lead' or lost_reason_id != False" />
-            </xpath>
+
             <xpath expr="//header/button[@name='%(crm.crm_lead_lost_action)d']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -600,6 +598,29 @@
             <xpath expr="//field[@name='expected_revenue']" position="replace"/>
             <xpath expr="//field[@name='probability']" position="replace"/>
 
+        </field>
+    </record>
+
+
+  <record id="crm_lead_view_form_fix_opportunity_lost" model="ir.ui.view">
+        <field name="name">crm.lead.form.fix.opportunity.lost.real</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">1001</field>
+        <field name="arch" type="xml">
+
+        <!-- remove duplicate lost button in lead -->
+            <!-- <xpath expr="//header/button[@name='306' and @type='action'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>  -->
+            
+            <xpath expr="//header" position="inside">
+                <button name="306"
+                        string="Mark Lost"
+                        type="action"
+                        class="btn-secondary"
+                        invisible="type != 'opportunity'"/>
+                </xpath>
         </field>
     </record>
 

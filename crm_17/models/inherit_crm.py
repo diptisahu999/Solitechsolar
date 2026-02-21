@@ -514,3 +514,25 @@ class InheritCRMStage(models.Model):
     _inherit = "crm.stage"
 
     is_lost = fields.Boolean("Is Lost Stage?")
+
+
+class CrmOppOverrLostButton(models.Model):
+    _inherit = "crm.lead"
+
+    #If SO confirmed then Mark Lost not confirmed Lost
+    def action_set_lost(self, **kwargs):
+        for lead in self:
+
+            # find confirmed Sale Order
+            sale_order = self.env['sale.order'].search([
+                ('opportunity_id', '=', lead.id),
+                ('state', '=', 'sale')
+            ], limit=1)
+
+            if sale_order:
+                raise UserError(_(
+                    "You cannot mark this Opportunity as Lost because confirmed Sales Order %s exists."
+                ) % sale_order.name)
+
+        # IMPORTANT: call original function
+        return super().action_set_lost(**kwargs)
