@@ -536,3 +536,73 @@ class CrmOppOverrLostButton(models.Model):
 
         # IMPORTANT: call original function
         return super().action_set_lost(**kwargs)
+
+
+
+# Remove Mail tracking validation
+# Admin or manager see all childs leads
+class CrmLeadAccess(models.Model):
+    _inherit = "crm.lead"
+
+    def read(self, fields=None, load='_classic_read'):
+
+        # fields requested by chatter
+        chatter_fields = {
+            'message_ids',
+            'message_follower_ids',
+            'activity_ids',
+        }
+
+        # if chatter fields requested → sudo read
+        if fields and chatter_fields.intersection(fields):
+            return super(
+                CrmLeadAccess,
+                self.sudo()
+            ).read(fields=fields, load=load)
+
+        return super().read(fields=fields, load=load)
+    
+    # -------------------------------------------------
+    # Get all hierarchy users
+    # -------------------------------------------------
+    def _get_hierarchy_user_ids(self, user):
+        users = self.env['res.users']
+
+        # recursive search
+        all_users = users.search([('id', 'child_of', user.id)])
+
+        return all_users.ids
+
+    # -------------------------------------------------
+    # Global CRM Visibility Control
+    # -------------------------------------------------
+    @api.model
+    def _search(self, domain, offset=0, limit=None,
+                order=None, access_rights_uid=None):
+
+        user = self.env.user
+
+        # Admin sees everything
+        if user.has_group('sales_team.group_sale_manager') or user.id == 1:
+            return super()._search(
+                domain,
+                offset=offset,
+                limit=limit,
+                order=order,
+                access_rights_uid=access_rights_uid
+            )
+
+        # Get hierarchy users
+        hierarchy_user_ids = self._get_hierarchy_user_ids(user)
+
+        salesperson_domain = [('user_id', 'in', hierarchy_user_ids)]
+
+        domain = expression.AND([domain, salesperson_domain])
+
+        return super()._search(
+            domain,
+            offset=offset,
+            limit=limit,
+            order=order,
+            access_rights_uid=access_rights_uid
+        )
