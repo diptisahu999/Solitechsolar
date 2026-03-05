@@ -10,7 +10,7 @@
                 <attribute name="invisible">0</attribute>
             </xpath>
             <xpath expr="//field[@name='function']" position="before">
-                <field name="person_contacts" required="is_company" invisible="not is_company"/>
+                <field name="person_contacts"/>
                 <field name="supplier_rank" invisible="1"/>
                 <field name="customer_rank" invisible="1"/>
             </xpath>

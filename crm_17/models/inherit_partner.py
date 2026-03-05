@@ -9,7 +9,7 @@ class InheritPartner(models.Model):
 
     # [Your existing fields]
     name = fields.Char("Company Name", index=True, default_export_compatible=True)
-    person_contacts = fields.Char("Person Name")
+    person_contacts = fields.Char("Contact Name")
     company_name_delivery = fields.Char("Delivery Company Name")
     msme_type = fields.Selection([('Yes', 'Yes'), ('No', 'No')], string="MSME")
     msme_no = fields.Char(string="MSME No")
