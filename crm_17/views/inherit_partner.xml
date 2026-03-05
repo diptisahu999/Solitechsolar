@@ -320,4 +320,8 @@
         </field>
     </record>
 
+    <record id="contacts.action_contacts" model="ir.actions.act_window">
+        <field name="context">{'search_default_my_contacts': 1}</field>
+    </record>
+
 </odoo>
