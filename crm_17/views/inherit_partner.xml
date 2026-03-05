@@ -320,6 +320,27 @@
         </field>
     </record>
 
+
+
+    <!-- Inherit Contacts Search View -->
+    <record id="view_res_partner_filter_inherit_my_contacts" model="ir.ui.view">
+        <field name="name">res.partner.search.my.contacts</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+
+            <!-- Add filter inside search -->
+            <xpath expr="//search" position="inside">
+
+                <filter string="My Contacts"
+                        name="my_contacts"
+                        domain="[('user_id', '=', uid)]"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="contacts.action_contacts" model="ir.actions.act_window">
         <field name="context">{'search_default_my_contacts': 1}</field>
     </record>
