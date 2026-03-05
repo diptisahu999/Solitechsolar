@@ -80,7 +80,7 @@
                     <notebook>
                         <page string="Invoice Lines" name="invoice_lines">
                             <field name="line_ids" nolabel="1">
-                                <tree editable="bottom">
+                                <tree editable="bottom" create="0" delete="0">
                                     <field name="is_pi_line_editable" column_invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="name" string="Description" column_invisible="1"/>
