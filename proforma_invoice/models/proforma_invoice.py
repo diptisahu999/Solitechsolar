@@ -402,6 +402,13 @@ class ProformaInvoiceLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True)
     name = fields.Char(string='Description', required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string="Product Type")
+    is_pi_line_editable = fields.Boolean(compute='_compute_is_pi_line_editable')
+
+    @api.depends_context('uid')
+    def _compute_is_pi_line_editable(self):
+        has_group = self.env.user.has_group('proforma_invoice.group_pi_product_field_edit')
+        for line in self:
+            line.is_pi_line_editable = has_group
     quantity = fields.Float(string='Quantity', default=1.0)
     
     # Base Price (e.g. 13.00)

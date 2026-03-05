@@ -81,19 +81,20 @@
                         <page string="Invoice Lines" name="invoice_lines">
                             <field name="line_ids" nolabel="1">
                                 <tree editable="bottom">
+                                    <field name="is_pi_line_editable" column_invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="name" string="Description" column_invisible="1"/>
                                     <!-- <field name="inch_feet_type" string="Inch/Feet"/> -->
-                                    <field name="discount"/>
+                                    <field name="discount" readonly="not is_pi_line_editable" force_save="1"/>
                                     <field name="product_type"/>
                                     <field name="quantity"/>
-                                    <field name="wattage" optional="show"/>
-                                    <field name="price_unit" string="Price (₹/Wp)"/>
+                                    <field name="wattage" optional="show" readonly="not is_pi_line_editable" force_save="1"/>
+                                    <field name="price_unit" string="Price (₹/Wp)" readonly="not is_pi_line_editable" force_save="1"/>
                                     <field name="unit_price_per_nos" string="Actual Price (₹/Nos)" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="actual_price" column_invisible="1"/>
-                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="tax_ids" widget="many2many_tags" readonly="not is_pi_line_editable" force_save="1"/>
                                     <field name="price_subtotal" string="Tax excl." widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="remarks"/>
+                                    <!-- <field name="remarks"/> -->
                                 </tree>
 
                                 <!-- <form string="Invoice Line" create="false" edit="false">

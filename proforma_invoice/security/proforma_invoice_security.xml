@@ -2,6 +2,16 @@
 <odoo>
     <data noupdate="1">
 
+        <record id="module_category_pi_product_field" model="ir.module.category">
+            <field name="name">PI product field access</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <record id="group_pi_product_field_edit" model="res.groups">
+            <field name="name">Yes</field>
+            <field name="category_id" ref="module_category_pi_product_field"/>
+        </record>
+
         <record id="proforma_invoice_personal_rule" model="ir.rule">
             <field name="name">Proforma Invoice: Personal Documents</field>
             <field name="model_id" ref="model_proforma_invoice"/>
