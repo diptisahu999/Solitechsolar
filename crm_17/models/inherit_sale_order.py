@@ -89,9 +89,9 @@ class InheritSaleOrder(models.Model):
 
     offer_validity = fields.Datetime(
         string="Offer Validity",
-        compute="_compute_offer_validity",
         store=True,
-        readonly=True,
+        readonly=False,
+        copy=False,
     )
 
     jurisdiction_state = fields.Char(
@@ -364,16 +364,22 @@ class InheritSaleOrder(models.Model):
     def create(self, vals):
         if not vals.get('start_date') and vals.get('date_order'):
             vals['start_date'] = vals['date_order']
+        if 'offer_validity' not in vals and vals.get('date_order'):
+            dt = fields.Datetime.to_datetime(vals['date_order'])
+            vals['offer_validity'] = dt + timedelta(days=7)
         return super().create(vals)
     
+    @api.onchange("date_order")
+    def _onchange_date_order_offer_validity(self):
+        if self.date_order:
+            self.offer_validity = self.date_order + timedelta(days=7)
 
-    @api.depends("date_order")
-    def _compute_offer_validity(self):
+    @api.constrains('date_order', 'offer_validity')
+    def _check_offer_validity_date(self):
         for order in self:
-            if order.date_order:
-                order.offer_validity = order.date_order + timedelta(days=7)
-            else:
-                order.offer_validity = False
+            if order.date_order and order.offer_validity:
+                if order.offer_validity.date() < order.date_order.date():
+                    raise ValidationError(_("Offer Validity date cannot be set before the Quotation Date."))
 
     def action_print_quotation_report(self):
             """Triggers the report using the Quotation action ID, setting print_type='quotation'."""
