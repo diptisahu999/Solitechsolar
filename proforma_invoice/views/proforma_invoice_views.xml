@@ -190,4 +190,23 @@
         </field>
     </record>
 
+
+    <!-- Set Default filter 'PI Draft' on Search -->
+    <record id="proforma_invoice_search_inherit"
+            model="ir.ui.view">
+        <field name="name">proforma.invoice.search.inherit</field>
+        <field name="model">proforma.invoice</field>
+        <field name="inherit_id"
+            ref="proforma_invoice.proforma_invoice_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="PI Draft" name="pi_draft" domain="[('state','=','draft')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="proforma_invoice.action_proforma_invoice" model="ir.actions.act_window">
+        <field name="context" eval="{'search_default_pi_draft': 1}"/>
+    </record>
+
 </odoo>
