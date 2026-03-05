@@ -606,3 +606,34 @@ class CrmLeadAccess(models.Model):
             order=order,
             access_rights_uid=access_rights_uid
         )
+
+
+# if CRM Salesperson doesn't match with Selected Contact Salesperson
+# Contact SalesPerson = CRM Lead SalesPerson
+class CrmLeadUpdateContactSalesPerson(models.Model):
+    _inherit = 'crm.lead'
+
+    @api.model
+    def create(self, vals):
+        lead = super().create(vals)
+        lead._sync_contact_salesperson()
+        return lead
+
+    def write(self, vals):
+        res = super().write(vals)
+        for lead in self:
+            lead._sync_contact_salesperson()
+        return res
+
+    def _sync_contact_salesperson(self):
+        for lead in self:
+            if lead.partner_id and lead.user_id:
+                if lead.partner_id.user_id != lead.user_id:
+                    lead.partner_id.user_id = lead.user_id
+
+    # Fetch custom field from res.partner
+    @api.onchange('partner_id')
+    def _onchange_partner_id_set_contact_name(self):
+        for lead in self:
+            if lead.partner_id:
+                lead.contact_name = lead.partner_id.person_contacts or False
