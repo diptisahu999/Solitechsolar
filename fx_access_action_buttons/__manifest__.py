@@ -11,5 +11,5 @@
         "security/action_security.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
 }
