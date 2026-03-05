@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- New category for better UI organization -->
+        <record id="module_category_action_buttons" model="ir.module.category">
+            <field name="name">Action Gear Menus</field>
+            <field name="description">Controls access to action menu options like Export and Download vCard.</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- Modify the standard Export group to be visible -->
+        <record id="base.group_allow_export" model="res.groups">
+            <field name="name">Export</field>
+            <field name="category_id" ref="module_category_action_buttons"/>
+        </record>
+
+        <!-- Create the Download vCard Group -->
+        <record id="group_download_vcard" model="res.groups">
+            <field name="name">Download (vCard)</field>
+            <field name="category_id" ref="module_category_action_buttons"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <record id="base.default_user" model="res.users">
+            <field name="groups_id" eval="[(4, ref('group_download_vcard'))]"/>
+        </record>
+    </data>
+    
+    <data>
+        <!-- Restrict the vCard Server Action using the new group -->
+        <!-- 'web.download_contact' is defined in web module, so we can override it here -->
+        <record id="web.download_contact" model="ir.actions.server">
+            <field name="groups_id" eval="[(4, ref('group_download_vcard'))]"/>
+        </record>
+    </data>
+</odoo>
