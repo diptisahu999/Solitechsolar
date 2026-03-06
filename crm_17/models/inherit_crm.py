@@ -95,7 +95,7 @@ class InheritCRM(models.Model):
     ], string="Status", tracking=True, default='pending')
 
     def _search_pending_activity_count(self, operator, value):
-        if operator in ['>', '='] and value > 0:
+        if operator == '>' and value >= 0:
             today = fields.Date.today()
             self.env.cr.execute("""
                 SELECT res_id 
@@ -104,10 +104,19 @@ class InheritCRM(models.Model):
             """, [today])
             lead_ids = [row[0] for row in self.env.cr.fetchall()]
             return [('id', 'in', lead_ids)]
-        return []
+        elif operator == '=' and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'crm.lead' AND active = True AND date_deadline >= %s
+            """, [today])
+            lead_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', lead_ids)]
+        return [('id', '=', False)]
 
     def _search_due_activity_count(self, operator, value):
-        if operator in ['>', '='] and value > 0:
+        if operator == '>' and value >= 0:
             today = fields.Date.today()
             self.env.cr.execute("""
                 SELECT res_id 
@@ -116,7 +125,16 @@ class InheritCRM(models.Model):
             """, [today])
             lead_ids = [row[0] for row in self.env.cr.fetchall()]
             return [('id', 'in', lead_ids)]
-        return []
+        elif operator == '=' and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'crm.lead' AND active = True AND date_deadline <= %s
+            """, [today])
+            lead_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', lead_ids)]
+        return [('id', '=', False)]
 
     def _compute_activity_counts(self):
         today = fields.Date.today()
