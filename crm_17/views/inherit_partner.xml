@@ -153,6 +153,9 @@
             <xpath expr="//field[@name='country_id']" position="after">
                 <field name="id" column_invisible="1"/>
                 <field name="email_color" column_invisible="1"/>
+                <field name="last_done_activity_user_id" optional="show"/>
+                <field name="last_done_activity_date" optional="show"/>
+                <field name="last_done_activity_feedback" optional="show"/>
                 <field name="action_link" widget="html"/>
             </xpath>
             <xpath expr="//field[@name='email']" position="attributes">
@@ -179,8 +182,15 @@
         <field name="inherit_id" ref="base.view_res_partner_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
+                <field name="user_id" string="Salesperson"/>
                 <field name="vat" string="GST No." filter_domain="[('vat', 'ilike', self)]"/>
                 <field name="city" string="City" filter_domain="[('city', 'ilike', self)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='inactive']" position="before">
+                <filter string="Done Activities" name="has_done_activities" domain="[('has_done_activities', '=', True)]"/>
+                <filter string="Pending Activities" name="pending_activities" domain="[('pending_activity_count', '>', 0)]"/>
+                <filter string="Due Activities" name="due_activities" domain="[('due_activity_count', '>', 0)]"/>
+                <separator/>
             </xpath>
         </field>
     </record>
@@ -343,6 +353,24 @@
 
     <record id="contacts.action_contacts" model="ir.actions.act_window">
         <field name="context">{'search_default_my_contacts': 1}</field>
+    </record>
+
+    <record id="res_partner_view_activity_inherit" model="ir.ui.view">
+        <field name="name">res.partner.view.activity.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_activity"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <div class="mt-1">
+                    <span class="badge rounded-pill text-bg-danger" t-if="record.overdue_days.raw_value > 0">
+                        Due: <field name="overdue_days"/> Days
+                    </span>
+                    <span class="badge rounded-pill text-bg-info ms-1" t-if="record.pending_activity_count.raw_value > 0">
+                        Pending: <field name="pending_activity_count"/>
+                    </span>
+                </div>
+            </xpath>
+        </field>
     </record>
 
 </odoo>

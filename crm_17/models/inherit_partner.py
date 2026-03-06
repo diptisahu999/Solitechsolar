@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _  # <--- Checked: '_' is imported
 from odoo.exceptions import ValidationError
 import re
+from odoo.tools import html_to_inner_content
 
 class InheritPartner(models.Model):
     _inherit = "res.partner"
@@ -20,6 +21,104 @@ class InheritPartner(models.Model):
     email_color = fields.Selection([('green', 'Green'), ('no', 'No Decoration')], compute='_compute_email_color', store=False)
     contact_type = fields.Selection([('key_accountant', 'Most Important Key Accountant'), ('important', 'Important'), ('useful', 'Useful')], string='Contact Type', tracking=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user)
+    has_done_activities = fields.Boolean(
+        string="Has Done Activities", 
+        compute="_compute_has_done_activities", 
+        search="_search_has_done_activities"
+    )
+    last_done_activity_user_id = fields.Many2one('res.users', string="Done Activity By", compute="_compute_last_done_activity", store=False)
+    last_done_activity_date = fields.Date(string="Activity Done Date", compute="_compute_last_done_activity", store=False)
+    last_done_activity_feedback = fields.Text(string="Last Activity Feedback", compute="_compute_last_done_activity", store=False)
+
+    pending_activity_count = fields.Integer(string="Pending Activities", compute="_compute_activity_counts", search="_search_pending_activity_count")
+    due_activity_count = fields.Integer(string="Due Activities", compute="_compute_activity_counts", search="_search_due_activity_count")
+    overdue_days = fields.Integer(string="Overdue Days", compute="_compute_activity_counts")
+
+    def _search_pending_activity_count(self, operator, value):
+        if operator in ['>', '='] and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'res.partner' AND active = True AND date_deadline >= %s
+            """, [today])
+            partner_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', partner_ids)]
+        return []
+
+    def _search_due_activity_count(self, operator, value):
+        if operator in ['>', '='] and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'res.partner' AND active = True AND date_deadline <= %s
+            """, [today])
+            partner_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', partner_ids)]
+        return []
+
+    def _compute_activity_counts(self):
+        for partner in self:
+            activities = self.env['mail.activity'].search([
+                ('res_model', '=', 'res.partner'),
+                ('res_id', '=', partner.id),
+                ('active', '=', True)
+            ])
+            today = fields.Date.today()
+            partner.pending_activity_count = len(activities.filtered(lambda a: a.date_deadline >= today))
+            due_acts = activities.filtered(lambda a: a.date_deadline <= today)
+            partner.due_activity_count = len(due_acts)
+            
+            # Compute max overdue days
+            if due_acts:
+                # Get the oldest deadline (minimum date)
+                oldest_deadline = min(due_acts.mapped('date_deadline'))
+                if oldest_deadline < today:
+                    diff = today - oldest_deadline
+                    partner.overdue_days = diff.days
+                else:
+                    partner.overdue_days = 0
+            else:
+                partner.overdue_days = 0
+
+    def _compute_last_done_activity(self):
+        for partner in self:
+            last_activity = self.env['mail.activity'].with_context(active_test=False).search([
+                ('res_model', '=', 'res.partner'),
+                ('res_id', '=', partner.id),
+                ('active', '=', False)
+            ], order='date_done DESC NULLS LAST, id DESC', limit=1)
+            if last_activity:
+                partner.last_done_activity_user_id = last_activity.write_uid.id or last_activity.user_id.id
+                partner.last_done_activity_date = last_activity.date_done
+                # Use the real feedback message if available, otherwise fallback to the note
+                raw_feedback = last_activity.done_feedback or last_activity.note
+                partner.last_done_activity_feedback = html_to_inner_content(raw_feedback) if raw_feedback else False
+            else:
+                partner.last_done_activity_user_id = False
+                partner.last_done_activity_date = False
+                partner.last_done_activity_feedback = False
+
+    def _compute_has_done_activities(self):
+        for partner in self:
+            count = self.env['mail.activity'].with_context(active_test=False).search_count([
+                ('res_model', '=', 'res.partner'),
+                ('res_id', '=', partner.id),
+                ('active', '=', False)
+            ])
+            partner.has_done_activities = count > 0
+
+    def _search_has_done_activities(self, operator, value):
+        if operator == '=' and value:
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'res.partner' AND active = False
+            """)
+            partner_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', partner_ids)]
+        return []
 
     @api.onchange('vat')
     def onchange_vat(self):

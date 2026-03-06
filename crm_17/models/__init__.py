@@ -19,3 +19,4 @@ from . import spare_parts_production
 from . import inherit_mail_thread
 from . import upcoming_stock
 from . import reserved_stock
+from . import mail_activity

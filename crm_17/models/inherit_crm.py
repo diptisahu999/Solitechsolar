@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.exceptions import AccessError
-from odoo.tools import date_utils, email_split, is_html_empty, groupby, parse_contact_from_email
+from odoo.tools import date_utils, email_split, is_html_empty, groupby, parse_contact_from_email, html_to_inner_content
 import re
 
 class InheritCRM(models.Model):
@@ -20,6 +20,19 @@ class InheritCRM(models.Model):
     partner_vat = fields.Char(string='Partner Vat')
     source_id = fields.Many2one(ondelete='set null',tracking=True)
     label_ids = fields.Many2many('label.mst',string="Label",tracking=True)
+
+    has_done_activities = fields.Boolean(
+        string="Has Done Activities", 
+        compute="_compute_has_done_activities", 
+        search="_search_has_done_activities"
+    )
+    last_done_activity_user_id = fields.Many2one('res.users', string="Done Activity By", compute="_compute_last_done_activity", store=False)
+    last_done_activity_date = fields.Date(string="Activity Done Date", compute="_compute_last_done_activity", store=False)
+    last_done_activity_feedback = fields.Text(string="Last Activity Feedback", compute="_compute_last_done_activity", store=False)
+
+    pending_activity_count = fields.Integer(string="Pending Activities", compute="_compute_activity_counts", search="_search_pending_activity_count")
+    due_activity_count = fields.Integer(string="Due Activities", compute="_compute_activity_counts", search="_search_due_activity_count")
+    overdue_days = fields.Integer(string="Overdue Days", compute="_compute_activity_counts")
 
     sale_line_ids = fields.One2many('crm.lead.sale.line','sale_id',string="Lead Assigned")
     kw = fields.Float(string="KW")
@@ -80,6 +93,96 @@ class InheritCRM(models.Model):
         ('not_interested','NOT INTRESTED'),
         ('pending', 'PENDING'),
     ], string="Status", tracking=True, default='pending')
+
+    def _search_pending_activity_count(self, operator, value):
+        if operator in ['>', '='] and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'crm.lead' AND active = True AND date_deadline >= %s
+            """, [today])
+            lead_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', lead_ids)]
+        return []
+
+    def _search_due_activity_count(self, operator, value):
+        if operator in ['>', '='] and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'crm.lead' AND active = True AND date_deadline <= %s
+            """, [today])
+            lead_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', lead_ids)]
+        return []
+
+    def _compute_activity_counts(self):
+        today = fields.Date.today()
+        for lead in self:
+            acts = self.env['mail.activity'].search([
+                ('res_model', '=', 'crm.lead'),
+                ('res_id', '=', lead.id)
+            ])
+            pending_acts = acts.filtered(lambda a: a.date_deadline >= today)
+            due_acts = acts.filtered(lambda a: a.date_deadline < today)
+            
+            lead.pending_activity_count = len(pending_acts)
+            lead.due_activity_count = len(due_acts)
+            
+            # Compute max overdue days
+            if due_acts:
+                # Get the oldest deadline (minimum date)
+                oldest_deadline = min(due_acts.mapped('date_deadline'))
+                if oldest_deadline < today:
+                    diff = today - oldest_deadline
+                    lead.overdue_days = diff.days
+                else:
+                    lead.overdue_days = 0
+            else:
+                lead.overdue_days = 0
+
+    def _compute_last_done_activity(self):
+        for lead in self:
+            last_activity = self.env['mail.activity'].with_context(active_test=False).search([
+                ('res_model', '=', 'crm.lead'),
+                ('res_id', '=', lead.id),
+                ('active', '=', False)
+            ], order='date_done DESC NULLS LAST, id DESC', limit=1)
+            if last_activity:
+                lead.last_done_activity_user_id = last_activity.write_uid.id or last_activity.user_id.id
+                lead.last_done_activity_date = last_activity.date_done
+                # Use the real feedback message if available, otherwise fallback to the note
+                raw_feedback = last_activity.done_feedback or last_activity.note
+                lead.last_done_activity_feedback = html_to_inner_content(raw_feedback) if raw_feedback else False
+            else:
+                lead.last_done_activity_user_id = False
+                lead.last_done_activity_date = False
+                lead.last_done_activity_feedback = False
+
+    def _compute_has_done_activities(self):
+        for lead in self:
+            count = self.env['mail.activity'].with_context(active_test=False).search_count([
+                ('res_model', '=', 'crm.lead'),
+                ('res_id', '=', lead.id),
+                ('active', '=', False)
+            ])
+            lead.has_done_activities = True if count > 0 else False
+
+    def _search_has_done_activities(self, operator, value):
+        if operator == '=':
+            self.env.cr.execute("""
+                SELECT DISTINCT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'crm.lead' AND active = False
+            """)
+            lead_ids = [row[0] for row in self.env.cr.fetchall()]
+            if value:
+                return [('id', 'in', lead_ids)]
+            else:
+                return [('id', 'not in', lead_ids)]
+        return []
 
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
