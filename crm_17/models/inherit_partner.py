@@ -35,7 +35,7 @@ class InheritPartner(models.Model):
     overdue_days = fields.Integer(string="Overdue Days", compute="_compute_activity_counts")
 
     def _search_pending_activity_count(self, operator, value):
-        if operator in ['>', '='] and value > 0:
+        if operator == '>' and value >= 0:
             today = fields.Date.today()
             self.env.cr.execute("""
                 SELECT res_id 
@@ -44,10 +44,19 @@ class InheritPartner(models.Model):
             """, [today])
             partner_ids = [row[0] for row in self.env.cr.fetchall()]
             return [('id', 'in', partner_ids)]
-        return []
+        elif operator == '=' and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'res.partner' AND active = True AND date_deadline >= %s
+            """, [today])
+            partner_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', partner_ids)]
+        return [('id', '=', False)]
 
     def _search_due_activity_count(self, operator, value):
-        if operator in ['>', '='] and value > 0:
+        if operator == '>' and value >= 0:
             today = fields.Date.today()
             self.env.cr.execute("""
                 SELECT res_id 
@@ -56,7 +65,16 @@ class InheritPartner(models.Model):
             """, [today])
             partner_ids = [row[0] for row in self.env.cr.fetchall()]
             return [('id', 'in', partner_ids)]
-        return []
+        elif operator == '=' and value > 0:
+            today = fields.Date.today()
+            self.env.cr.execute("""
+                SELECT res_id 
+                FROM mail_activity 
+                WHERE res_model = 'res.partner' AND active = True AND date_deadline <= %s
+            """, [today])
+            partner_ids = [row[0] for row in self.env.cr.fetchall()]
+            return [('id', 'in', partner_ids)]
+        return [('id', '=', False)]
 
     def _compute_activity_counts(self):
         for partner in self:
