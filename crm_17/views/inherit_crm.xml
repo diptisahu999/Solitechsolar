@@ -318,11 +318,18 @@
                 <field name="pi_no" string="Lead No." filter_domain="[('pi_no', 'ilike', self)]"/>            
                 <field name="partner_vat" string="GST No." filter_domain="[('partner_vat', 'ilike', self)]"/>            
                 <field name="email_from" string="Email" filter_domain="[('email_from', 'ilike', self)]"/>            
+                <field name="stage_id" string="Stage" filter_domain="[('stage_id', 'ilike', self)]"/>
             </xpath>
             <xpath expr="//filter[@name='open_opportunities']" position="after">
                 <filter string="Done Activities" name="has_done_activities" domain="[('has_done_activities', '=', True)]"/>
                 <filter string="Pending Activities" name="pending_activities" domain="[('pending_activity_count', '>', 0)]"/>
                 <filter string="Due Activities" name="due_activities" domain="[('due_activity_count', '>', 0)]"/>
+                <separator/>
+                <filter string="New" name="stage_new" domain="[('stage_id.name', 'ilike', 'New')]"/>
+                <filter string="Warm" name="stage_warm" domain="[('stage_id.name', 'ilike', 'Warm')]"/>
+                <filter string="Hot" name="stage_hot" domain="[('stage_id.name', 'ilike', 'Hot')]"/>
+                <filter string="Won" name="stage_won" domain="[('stage_id.is_won', '=', True)]"/>
+                <filter string="Lost" name="stage_lost" domain="['|', ('stage_id.is_lost', '=', True), ('active', '=', False)]"/>
                 <separator/>
                 <filter string="Remarks not added" name="create_lead" domain="[('last_update', '=', False)]" help="No Edit Lead"/>
                 <filter string="Project" name="project_id" domain="[('project_id', '!=', False)]" help="Soo Lead use Project"/>
@@ -409,7 +416,7 @@
         <field name="view_mode">tree,form,graph,pivot,calendar,activity</field>
         <field name="view_id" ref="crm.crm_case_tree_view_oppor"/>
         <field name="domain">[('type','=','opportunity')]</field>
-        <field name="context">{'default_type': 'opportunity', 'search_default_assigned_to_me': 1, 'create': False, 'disable_generate_lead': True}</field>
+        <field name="context">{'default_type': 'opportunity', 'search_default_assigned_to_me': 1, 'search_default_stage_new': 1, 'search_default_stage_warm': 1, 'search_default_stage_hot': 1, 'create': False, 'disable_generate_lead': True}</field>
         <field name="limit">60</field>
         <field name="mobile_view_mode">tree,kanban</field>  <!-- default view for Mobile -->
     </record>
