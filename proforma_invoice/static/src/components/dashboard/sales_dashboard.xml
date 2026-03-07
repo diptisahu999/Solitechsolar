@@ -11,6 +11,31 @@
                 </div>
             </div>
 
+            <!-- SIMPLE DATE FILTER BAR -->
+            <div class="container-fluid mt-3">
+                <div class="card shadow-sm o_filter_bar">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                            <select class="bd-select" t-model="state.dateFilter" t-on-change="onDateFilterChange">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="custom">Custom</option>
+                            </select>
+
+                            <t t-if="state.dateFilter === 'custom'">
+                                <div class="d-flex align-items-center ms-3 gap-2">
+                                    <input type="date" class="bd-input" t-model="state.dateFrom"
+                                        t-on-change="onCustomDateChange"/>
+                                    <span class="text-muted">to</span>
+                                    <input type="date" class="bd-input" t-model="state.dateTo"
+                                        t-on-change="onCustomDateChange"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex-grow-1 overflow-auto bg-light">
                 <div t-if="state.isLoading" class="d-flex justify-content-center align-items-center h-100">
                     <i class="fa fa-spinner fa-spin fa-3x text-primary"/>

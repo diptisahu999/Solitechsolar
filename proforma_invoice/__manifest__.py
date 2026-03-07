@@ -6,6 +6,7 @@
     'category': 'Sales',
     'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account'],
     'data': [
+        'security/proforma_invoice_security.xml',
         'report/proforma_invoice.xml',
         'data/sales_dashboard_data.xml',
         'data/proforma_invoice_data.xml',
@@ -18,7 +19,6 @@
         'views/proforma_wizard_views.xml',
         'views/quotation_action_fix.xml',
         'security/ir.model.access.csv',
-        'security/proforma_invoice_security.xml',
     ],
     'assets': {
         'web.assets_backend': [

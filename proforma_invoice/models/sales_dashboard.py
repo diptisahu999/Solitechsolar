@@ -20,21 +20,21 @@ class SalesDashboard(models.Model):
             domain = [('team_id', 'in', [False, self.env.user.sale_team_id.id])]
         return self.env['crm.stage'].search(domain, order='sequence asc').mapped('name')
 
-    def _get_pipeline_overview_data(self, uid):
+    def _get_pipeline_overview_data(self, uid, date_domain):
         # domain = [('user_id', '=', uid)] if uid else []
         # my_leads_opps = self.env['crm.lead'].search(domain)
         # my_opportunities = my_leads_opps.filtered(lambda l: l.type == 'opportunity')
         # leads_count = len(my_leads_opps)
         
         # For Leads
-        leads_domain = [('type', '!=', 'opportunity')]
+        leads_domain = [('type', '!=', 'opportunity')] + date_domain
         if uid:
             leads_domain.append(('user_id', '=', uid))
             
         my_leads = self.env['crm.lead'].search(leads_domain)
         
         # For Opportunities
-        opp_domain = [('type', '=', 'opportunity')]
+        opp_domain = [('type', '=', 'opportunity')] + date_domain
         if uid:
             opp_domain.append(('user_id', '=', uid))
         
@@ -54,15 +54,18 @@ class SalesDashboard(models.Model):
             'lost_count': len(my_opportunities.filtered(lambda o: not o.active and not o.stage_id.is_won)),
         }
 
-    def _get_opportunity_analysis_data(self, uid):
+    def _get_opportunity_analysis_data(self, uid, date_domain):
         stage_order = self._get_opportunity_stage_order()
         
-        domain_base = [('type', '=', 'opportunity'), ('stage_id.is_won', '=', False), ('active', '=', True)]
+        domain_base = [('type', '=', 'opportunity'), ('stage_id.is_won', '=', False), ('active', '=', True)] + date_domain
+        # ALL opportunities (open + won + lost)
+        domain_all_opps = [('type', '=', 'opportunity'),] + date_domain
+       
         if uid:
-            domain_base.append(('user_id', '=', uid))
+            domain_all_opps.append(('user_id', '=', uid))
 
         stage_count_data = self.env['crm.lead'].read_group(
-            domain_base,
+            domain_all_opps,
             ['stage_id'], groupby=['stage_id'], lazy=False
         )
         stages_count_map = {s['stage_id'][1]: s['__count'] for s in stage_count_data if s['stage_id']}
@@ -73,7 +76,7 @@ class SalesDashboard(models.Model):
         )
         stages_value_map = {s['stage_id'][1]: s['expected_revenue'] for s in stage_value_data if s['stage_id']}
 
-        domain_source = [('type', '=', 'opportunity')]
+        domain_source = [('type', '=', 'opportunity')] + date_domain
         if uid:
             domain_source.append(('user_id', '=', uid))
 
@@ -82,8 +85,8 @@ class SalesDashboard(models.Model):
             ['source_id'], groupby=['source_id'], lazy=False
         )
 
-        won_domain = [('type', '=', 'opportunity'), ('stage_id.is_won', '=', True)]
-        lost_domain = [('type', '=', 'opportunity'), ('active', '=', False), ('stage_id.is_won', '=', False)]
+        won_domain = [('type', '=', 'opportunity'), ('stage_id.is_won', '=', True)] + date_domain
+        lost_domain = [('type', '=', 'opportunity'), ('active', '=', False), ('stage_id.is_won', '=', False)] + date_domain
         if uid:
             won_domain.append(('user_id', '=', uid))
             lost_domain.append(('user_id', '=', uid))
@@ -109,8 +112,8 @@ class SalesDashboard(models.Model):
             ),
         }
 
-    def _get_quotation_analysis_data(self, uid):
-        domain = []
+    def _get_quotation_analysis_data(self, uid, date_domain):
+        domain = [] + date_domain
         if uid:
             domain.append(('user_id', '=', uid))
             
@@ -129,8 +132,8 @@ class SalesDashboard(models.Model):
             'average_order_value': confirmed_revenue / confirmed_count if confirmed_count > 0 else 0,
         }
 
-    def _get_proforma_analysis_data(self, uid):
-        domain = []
+    def _get_proforma_analysis_data(self, uid, date_domain):
+        domain = [] + date_domain
         if uid:
             domain.append(('user_id', '=', uid))
             
@@ -145,15 +148,19 @@ class SalesDashboard(models.Model):
             'posted_revenue': stats.get('posted', {}).get('amount_total', 0),
         }
     
-    def _get_sales_over_time_data(self, uid):
+    def _get_sales_over_time_data(self, uid, date_domain):
         """Helper to get sales data for the last 12 months."""
         today = fields.Date.today()
         date_from = today - relativedelta(months=11, day=1)
         
         domain = [
             ('state', 'in', ['sale', 'done']),
-            ('date_order', '>=', date_from),
-        ]
+        ] + date_domain
+
+        # fallback if All Time
+        if not date_domain:
+            domain.append(('date_order', '>=', date_from))
+
         if uid:
             domain.append(('user_id', '=', uid))
 
@@ -176,11 +183,11 @@ class SalesDashboard(models.Model):
             })
         return data
 
-    def _get_sales_by_category_data(self, uid):
+    def _get_sales_by_category_data(self, uid, date_domain):
         """Helper to get revenue breakdown by product category."""
         domain = [
             ('order_id.state', 'in', ['sale', 'done']),
-        ]
+        ] + date_domain
         if uid:
             domain.append(('order_id.user_id', '=', uid))
 
@@ -213,11 +220,11 @@ class SalesDashboard(models.Model):
 
         return [{'name': name, 'revenue': rev} for name, rev in category_revenue.items()]
         
-    def _get_top_products_data(self, uid):
+    def _get_top_products_data(self, uid, date_domain):
         """Helper to get top 5 selling products by revenue."""
         domain = [
             ('order_id.state', 'in', ['sale', 'done']),
-        ]
+        ] + date_domain
         if uid:
             domain.append(('order_id.user_id', '=', uid))
 
@@ -303,9 +310,34 @@ class SalesDashboard(models.Model):
             lazy=False
         )
         return [{'name': perf['user_id'][1], 'revenue': perf['amount_total']} for perf in performance_data if perf['user_id']]
-    
+
+    # Add date domain builder
+    def _get_date_domain(self, payload, field_name):
+        if not payload or payload.get('filter') == 'all':
+            return []
+
+        today = fields.Date.today()
+
+        if payload['filter'] == 'today':
+            start = today
+            end = today
+
+        elif payload['filter'] == 'custom':
+            start = payload.get('date_from')
+            end = payload.get('date_to')
+            if not start or not end:
+                return []
+        else:
+            return []
+
+        return [
+            (field_name, '>=', start),
+            (field_name, '<=', end),
+        ]
+
     @api.model
-    def get_dashboard_data(self):
+    def get_dashboard_data(self, date_payload=None):
+
         """ The main controller method that calls helpers and assembles the data. """
         try:
             # We rely on Odoo's standard Record Rules to filter data. 
@@ -316,14 +348,19 @@ class SalesDashboard(models.Model):
             # Manager check for Team Analysis tab
             is_sales_manager = self.env.user.has_group('sales_team.group_sale_manager')
 
-            pipeline_overview = self._get_pipeline_overview_data(filter_uid)
-            opportunity_analysis = self._get_opportunity_analysis_data(filter_uid)
-            quotation_analysis = self._get_quotation_analysis_data(filter_uid)
-            proforma_analysis = self._get_proforma_analysis_data(filter_uid)
+            lead_date_domain      = self._get_date_domain(date_payload, 'create_date')
+            order_date_domain     = self._get_date_domain(date_payload, 'date_order')
+            invoice_date_domain   = self._get_date_domain(date_payload, 'invoice_date')
+            orderline_date_domain = self._get_date_domain(date_payload, 'order_id.date_order')
 
-            quotation_analysis['sales_over_time'] = self._get_sales_over_time_data(filter_uid)
-            quotation_analysis['sales_by_category'] = self._get_sales_by_category_data(filter_uid)
-            quotation_analysis['top_products'] = self._get_top_products_data(filter_uid)
+            pipeline_overview    = self._get_pipeline_overview_data(filter_uid, lead_date_domain)
+            opportunity_analysis = self._get_opportunity_analysis_data(filter_uid, lead_date_domain)
+            quotation_analysis   = self._get_quotation_analysis_data(filter_uid, order_date_domain)
+            proforma_analysis    = self._get_proforma_analysis_data(filter_uid, invoice_date_domain)
+
+            quotation_analysis['sales_over_time']   = self._get_sales_over_time_data(filter_uid, order_date_domain)
+            quotation_analysis['sales_by_category'] = self._get_sales_by_category_data(filter_uid, orderline_date_domain)
+            quotation_analysis['top_products']      = self._get_top_products_data(filter_uid, orderline_date_domain)
 
             team_analysis = {}
             if is_sales_manager:

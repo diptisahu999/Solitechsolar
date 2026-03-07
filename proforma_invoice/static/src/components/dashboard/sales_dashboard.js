@@ -24,6 +24,9 @@ class SalesDashboard extends Component {
             dashboardData: {},
             isLoading: true,
             activeTab: 'overview',
+            dateFilter: 'all',
+            dateFrom: null,
+            dateTo: null,
         });
 
         onWillStart(async () => {
@@ -36,14 +39,66 @@ class SalesDashboard extends Component {
         });
     }
 
+    // async loadDashboardData() {
+    //     this.state.isLoading = true;
+    //     try {
+    //         this.state.dashboardData = await this.orm.call(
+    //             "sales.dashboard", 
+    //             "get_dashboard_data", 
+    //             [this._getDatePayload()]
+    //         );
+    //     } catch (error) {
+    //         console.error("Error loading dashboard data:", error);
+    //     } finally {
+    //         this.state.isLoading = false;
+    //     }
+    // }
+
     async loadDashboardData() {
         this.state.isLoading = true;
         try {
-            this.state.dashboardData = await this.orm.call("sales.dashboard", "get_dashboard_data", []);
+            const data = await this.orm.call(
+                "sales.dashboard",
+                "get_dashboard_data",
+                [this._getDatePayload()]
+            );
+
+            // SAFETY DEFAULTS
+            this.state.dashboardData = data || {};
+            this.state.dashboardData.pipeline_overview ??= {};
+            this.state.dashboardData.opportunity_analysis ??= {};
+            this.state.dashboardData.quotation_analysis ??= {};
+            this.state.dashboardData.proforma_analysis ??= {};
+            this.state.dashboardData.team_analysis ??= {};
         } catch (error) {
             console.error("Error loading dashboard data:", error);
         } finally {
             this.state.isLoading = false;
+        }
+    }
+
+    // Add payload builder
+    _getDatePayload() {
+        return {
+            filter: this.state.dateFilter,
+            date_from: this.state.dateFrom,
+            date_to: this.state.dateTo,
+        };
+    }
+
+    // Handle dropdown change
+    async onDateFilterChange() {
+        if (this.state.dateFilter !== 'custom') {
+            this.state.dateFrom = null;
+            this.state.dateTo = null;
+            await this.refreshDashboard();
+        }
+    }
+
+    // Handle custom date change
+    async onCustomDateChange() {
+        if (this.state.dateFrom && this.state.dateTo) {
+            await this.refreshDashboard();
         }
     }
 
