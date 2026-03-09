@@ -180,6 +180,16 @@
         </field>
     </record>
 
+    <record id="view_custom_sale_order_search" model="ir.ui.view">
+        <field name="name">custom.sale.order.search</field>
+        <field name="model">custom.sale.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter name="my_orders" string="My Orders" domain="[('user_id','=',uid)]"/>
+            </search>
+        </field>
+    </record>
+
 
          
 </odoo>

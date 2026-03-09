@@ -160,7 +160,8 @@
         <field name="name">Confirmed Sales Orders</field>
         <field name="res_model">custom.sale.order</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
+        <field name="search_view_id" ref="proforma_invoice.view_custom_sale_order_search"/>
+        <field name="context">{'search_default_my_orders': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No confirmed sales orders yet
