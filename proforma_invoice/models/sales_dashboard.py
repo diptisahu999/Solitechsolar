@@ -595,3 +595,30 @@ class SalesDashboard(models.Model):
             'views': [[False, 'tree'], [False, 'form']],
             'domain': domain 
         }
+
+class MailActivity(models.Model):
+    _inherit = 'mail.activity'
+
+    dashboard_feedback_safe = fields.Text(string='Feedback Message', compute='_compute_dashboard_feedback_safe')
+
+    def _compute_dashboard_feedback_safe(self):
+        """
+        Safely fetches done_feedback from the database without needing crm_17 in depends.
+        """
+        # Check if column exists in DB to avoid crash
+        self.env.cr.execute("""
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name='mail_activity' AND column_name='done_feedback'
+        """)
+        has_field = bool(self.env.cr.fetchone())
+
+        for rec in self:
+            if has_field:
+                # Use raw SQL to fetch the value to avoid Odoo Registry errors
+                self.env.cr.execute("SELECT done_feedback FROM mail_activity WHERE id = %s", [rec.id])
+                res = self.env.cr.fetchone()
+                rec.dashboard_feedback_safe = res[0] if res else False
+            else:
+                # Fallback to the standard note field if done_feedback isn't found
+                rec.dashboard_feedback_safe = rec.note or False
