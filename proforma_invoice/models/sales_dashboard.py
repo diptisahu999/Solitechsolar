@@ -58,9 +58,10 @@ class SalesDashboard(models.Model):
         stage_order = self._get_opportunity_stage_order()
         
         domain_base = [('type', '=', 'opportunity'), ('stage_id.is_won', '=', False), ('active', '=', True)] + date_domain
+
         # ALL opportunities (open + won + lost)
         domain_all_opps = [('type', '=', 'opportunity'),] + date_domain
-       
+
         if uid:
             domain_all_opps.append(('user_id', '=', uid))
 
@@ -146,6 +147,99 @@ class SalesDashboard(models.Model):
             'draft_count': stats.get('draft', {}).get('__count', 0),
             'posted_count': stats.get('posted', {}).get('__count', 0),
             'posted_revenue': stats.get('posted', {}).get('amount_total', 0),
+        }
+    
+    def _get_contacts_data(self, uid, date_domain):
+        """
+        Match Contacts app counter exactly
+        """
+        domain = [
+            ('active', '=', True),          # not archived
+            ('type', '!=', 'private'),      # hide private addresses
+            ('parent_id', '=', False),      # only top-level contacts
+        ]
+
+        domain += date_domain
+        if uid:
+            domain.append(('user_id', '=', uid))
+
+        total_contacts = self.env['res.partner'].search_count(domain)
+
+        return {
+            'total_contacts': total_contacts
+        }
+    
+    def _get_contact_activities_data(self, uid, date_payload):
+        """
+        Total Contact Activities KPI - Created vs Done
+        """
+        # 1. Done Activities (filtered by date_done)
+        done_domain = [('res_model', '=', 'res.partner'), ('active', '=', False)]
+        if uid:
+            done_domain.append(('user_id', '=', uid))
+        date_done_domain = self._get_date_domain(date_payload, 'date_done')
+        total_done = self.env['mail.activity'].with_context(active_test=False).search_count(done_domain + date_done_domain)
+
+        # 2. Created Activities (filtered by create_date)
+        created_domain = [('res_model', '=', 'res.partner')]
+        if uid:
+            created_domain.append(('user_id', '=', uid))
+        create_date_domain = self._get_date_domain(date_payload, 'create_date')
+        total_created = self.env['mail.activity'].with_context(active_test=False).search_count(created_domain + create_date_domain)
+
+        return {
+            'total_contact_activities_done': total_done,
+            'total_contact_activities_created': total_created,
+        }
+    
+    def _get_lead_activities_data(self, uid, date_payload):
+        """
+        Total Lead Activities KPI - Created vs Done
+        """
+        lead_ids = self.env['crm.lead'].search([('type', '!=', 'opportunity')]).ids
+
+        # 1. Done Activities
+        done_domain = [('res_model', '=', 'crm.lead'), ('res_id', 'in', lead_ids), ('active', '=', False)]
+        if uid:
+            done_domain.append(('user_id', '=', uid))
+        date_done_domain = self._get_date_domain(date_payload, 'date_done')
+        total_done = self.env['mail.activity'].with_context(active_test=False).search_count(done_domain + date_done_domain)
+
+        # 2. Created Activities
+        created_domain = [('res_model', '=', 'crm.lead'), ('res_id', 'in', lead_ids)]
+        if uid:
+            created_domain.append(('user_id', '=', uid))
+        create_date_domain = self._get_date_domain(date_payload, 'create_date')
+        total_created = self.env['mail.activity'].with_context(active_test=False).search_count(created_domain + create_date_domain)
+
+        return {
+            'total_lead_activities_done': total_done,
+            'total_lead_activities_created': total_created,
+        }
+    
+    def _get_opportunity_activities_data(self, uid, date_payload):
+        """
+        Total Opportunity Activities KPI - Created vs Done
+        """
+        opp_ids = self.env['crm.lead'].search([('type', '=', 'opportunity')]).ids
+
+        # 1. Done Activities
+        done_domain = [('res_model', '=', 'crm.lead'), ('res_id', 'in', opp_ids), ('active', '=', False)]
+        if uid:
+            done_domain.append(('user_id', '=', uid))
+        date_done_domain = self._get_date_domain(date_payload, 'date_done')
+        total_done = self.env['mail.activity'].with_context(active_test=False).search_count(done_domain + date_done_domain)
+
+        # 2. Created Activities
+        created_domain = [('res_model', '=', 'crm.lead'), ('res_id', 'in', opp_ids)]
+        if uid:
+            created_domain.append(('user_id', '=', uid))
+        create_date_domain = self._get_date_domain(date_payload, 'create_date')
+        total_created = self.env['mail.activity'].with_context(active_test=False).search_count(created_domain + create_date_domain)
+
+        return {
+            'total_opportunity_activities_done': total_done,
+            'total_opportunity_activities_created': total_created,
         }
     
     def _get_sales_over_time_data(self, uid, date_domain):
@@ -238,78 +332,6 @@ class SalesDashboard(models.Model):
         )
         return [{'name': p['product_id'][1], 'revenue': p['price_subtotal']} for p in product_data if p['product_id']]
     
-    def _get_team_overview_data(self, member_ids):
-        """Calculates high-level aggregated stats for the team."""
-        if not member_ids:
-            return {}
-
-        # Team Pipeline
-        leads_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'lead'), ('stage_id.is_won', '=', False)])
-        opportunities_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', True), ('stage_id.is_won', '=', False)])
-        pipeline_data = self.env['crm.lead'].read_group([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', True), ('stage_id.is_won', '=', False)], ['expected_revenue:sum'], [], lazy=False)
-        
-        # Team Win Rate
-        won_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('stage_id.is_won', '=', True)])
-        lost_count = self.env['crm.lead'].search_count([('user_id', 'in', member_ids), ('type', '=', 'opportunity'), ('active', '=', False), ('stage_id.is_won', '=', False)])
-        total_closed = won_count + lost_count
-        win_rate = (won_count / total_closed * 100) if total_closed > 0 else 0
-
-        # Team Revenue
-        revenue_data = self.env['sale.order'].read_group([('user_id', 'in', member_ids), ('state', 'in', ['sale', 'done'])], ['amount_total:sum'], [], lazy=False)
-        
-        return {
-            'leads_count': leads_count,
-            'opportunities_count': opportunities_count,
-            'pipeline_revenue': pipeline_data[0]['expected_revenue'] if pipeline_data and pipeline_data[0]['expected_revenue'] else 0,
-            'win_rate': f"{win_rate:.1f}%",
-            'total_revenue': revenue_data[0]['amount_total'] if revenue_data and revenue_data[0]['amount_total'] else 0,
-        }
-
-    def _get_team_sales_over_time_data(self, member_ids):
-        """Gets aggregated team sales data for the last 12 months."""
-        if not member_ids:
-            return []
-            
-        today = fields.Date.today()
-        date_from = today - relativedelta(months=11, day=1)
-        
-        sales_data = self.env['sale.order'].read_group(
-            domain=[
-                ('user_id', 'in', member_ids),
-                ('state', 'in', ['sale', 'done']),
-                ('date_order', '>=', date_from),
-            ],
-            fields=['amount_total'],
-            groupby=['date_order:month'],
-            orderby='date_order:month'
-        )
-        month_map = {item['date_order:month']: item['amount_total'] for item in sales_data}
-        data = []
-        for i in range(11, -1, -1):
-            current_month_start = today - relativedelta(months=i, day=1)
-            month_key = current_month_start.strftime('%B %Y')
-            data.append({
-                'month': current_month_start.strftime('%b %Y'),
-                'revenue': month_map.get(month_key, 0),
-            })
-        return data
-
-    def _get_team_member_performance_data(self, member_ids):
-        """Gets revenue breakdown by team member."""
-        if not member_ids:
-            return []
-            
-        performance_data = self.env['sale.order'].read_group(
-            domain=[
-                ('user_id', 'in', member_ids),
-                ('state', 'in', ['sale', 'done']),
-            ],
-            fields=['amount_total'],
-            groupby=['user_id'],
-            orderby='amount_total desc',
-            lazy=False
-        )
-        return [{'name': perf['user_id'][1], 'revenue': perf['amount_total']} for perf in performance_data if perf['user_id']]
 
     # Add date domain builder
     def _get_date_domain(self, payload, field_name):
@@ -352,39 +374,36 @@ class SalesDashboard(models.Model):
             order_date_domain     = self._get_date_domain(date_payload, 'date_order')
             invoice_date_domain   = self._get_date_domain(date_payload, 'invoice_date')
             orderline_date_domain = self._get_date_domain(date_payload, 'order_id.date_order')
+            partner_date_domain   = self._get_date_domain(date_payload, 'create_date')
 
             pipeline_overview    = self._get_pipeline_overview_data(filter_uid, lead_date_domain)
             opportunity_analysis = self._get_opportunity_analysis_data(filter_uid, lead_date_domain)
             quotation_analysis   = self._get_quotation_analysis_data(filter_uid, order_date_domain)
             proforma_analysis    = self._get_proforma_analysis_data(filter_uid, invoice_date_domain)
+            contacts_analysis    = self._get_contacts_data(filter_uid, partner_date_domain)
+            contact_activities   = self._get_contact_activities_data(filter_uid, date_payload)
+            lead_activities        = self._get_lead_activities_data(filter_uid, date_payload)
+            opportunity_activities = self._get_opportunity_activities_data(filter_uid, date_payload)
 
             quotation_analysis['sales_over_time']   = self._get_sales_over_time_data(filter_uid, order_date_domain)
             quotation_analysis['sales_by_category'] = self._get_sales_by_category_data(filter_uid, orderline_date_domain)
             quotation_analysis['top_products']      = self._get_top_products_data(filter_uid, orderline_date_domain)
 
-            team_analysis = {}
-            if is_sales_manager:
-                team = self.env['crm.team'].search([('user_id', '=', self.env.uid)], limit=1)
-                if team:
-                    member_ids = team.member_ids.ids + [team.user_id.id]
-                    team_analysis = {
-                        'overview': self._get_team_overview_data(member_ids),
-                        'sales_over_time': self._get_team_sales_over_time_data(member_ids),
-                        'member_performance': self._get_team_member_performance_data(member_ids),
-                    }
 
             return {
-                'pipeline_overview': pipeline_overview,
-                'opportunity_analysis': opportunity_analysis,
-                'quotation_analysis': quotation_analysis,
-                'proforma_analysis': proforma_analysis,
+                'pipeline_overview'      : pipeline_overview,
+                'opportunity_analysis'   : opportunity_analysis,
+                'quotation_analysis'     : quotation_analysis,
+                'proforma_analysis'      : proforma_analysis,
+                'contacts_analysis'      : contacts_analysis,
+                'contact_activities'     : contact_activities,
+                'lead_activities'        : lead_activities,
+                'opportunity_activities' : opportunity_activities,
                 
-                'team_analysis': team_analysis, 
-                
-                'is_sales_manager': is_sales_manager,
-                'currency_id': self.env.company.currency_id.id,
-                'currency_symbol': self.env.company.currency_id.symbol,
-                'currency_code': self.env.company.currency_id.name,
+                'is_sales_manager'  : is_sales_manager,
+                'currency_id'       : self.env.company.currency_id.id,
+                'currency_symbol'   : self.env.company.currency_id.symbol,
+                'currency_code'     : self.env.company.currency_id.name,
             }
         except Exception as e:
             _logger.error("Error in get_dashboard_data: %s", str(e), exc_info=True)
@@ -393,23 +412,76 @@ class SalesDashboard(models.Model):
     # --- NAVIGATION ACTION METHODS (STILL REQUIRED) ---
 
     @api.model
-    def action_open_my_leads(self):
+    def action_open_my_leads(self, payload=None):
         # Return all records allowed by record rules
-        return { 'name': 'My Leads', 'type': 'ir.actions.act_window', 'res_model': 'crm.lead',
+        domain = [('type', '!=', 'opportunity')]
+
+        # ✅ DATE FILTER (minimal add)
+        if payload:
+            filter_type = payload.get('filter')
+            date_from = payload.get('date_from')
+            date_to = payload.get('date_to')
+
+            if filter_type == 'today':
+                today = fields.Date.context_today(self)
+                domain += [
+                    ('create_date', '>=', today),
+                    ('create_date', '<=', today),
+                ]
+
+            elif filter_type == 'custom' and date_from and date_to:
+                domain += [
+                    ('create_date', '>=', date_from),
+                    ('create_date', '<=', date_to),
+                ]
+        # ✅ END DATE FILTER
+
+        return { 
+            'name': 'My Leads', 
+            'type': 'ir.actions.act_window', 
+            'res_model': 'crm.lead',
             'views': [[False, 'tree'], [False, 'kanban'], [False, 'form']],
-            'domain': [('type', '!=', 'opportunity')] }
+            'domain': domain
+        }
 
     @api.model
-    def action_open_my_opportunities(self):
-        return { 'name': 'My Opportunities', 'type': 'ir.actions.act_window', 'res_model': 'crm.lead',
+    def action_open_my_opportunities(self, payload=None):
+        domain = [('type', '=', 'opportunity')]
+
+        # ✅ DATE FILTER (minimal add)
+        if payload:
+            filter_type = payload.get('filter')
+            date_from = payload.get('date_from')
+            date_to = payload.get('date_to')
+
+            if filter_type == 'today':
+                today = fields.Date.context_today(self)
+                domain += [
+                    ('create_date', '>=', today),
+                    ('create_date', '<=', today),
+                ]
+
+            elif filter_type == 'custom' and date_from and date_to:
+                domain += [
+                    ('create_date', '>=', date_from),
+                    ('create_date', '<=', date_to),
+                ]
+        # ✅ END DATE FILTER
+
+        return { 
+            'name': 'My Opportunities', 
+            'type': 'ir.actions.act_window', 
+            'res_model': 'crm.lead',
             'views': [[False, 'tree'], [False, 'kanban'], [False, 'form']],
-            'domain': [('type', '=', 'opportunity')] }
+            'domain': domain
+        }
 
     @api.model
-    def action_open_my_quotations(self, state=None):
+    def action_open_my_quotations(self, state=None, payload=None):
         domain = []
         
         action_name = 'My Quotations'
+
         if state == 'draft':
             domain.append(('state', '=', 'draft'))
             action_name = 'My Draft Quotations (from Opps)'
@@ -419,31 +491,107 @@ class SalesDashboard(models.Model):
         elif state == 'confirmed':
             domain.append(('state', 'in', ['sale', 'done']))
             action_name = 'My Confirmed Orders'
-        return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'sale.order',
+
+        # ✅ DATE FILTER (MINIMAL ADD)
+        if payload:
+            filter_type = payload.get('filter')
+            date_from = payload.get('date_from')
+            date_to = payload.get('date_to')
+
+            if filter_type == 'today':
+                today = fields.Date.context_today(self)
+                domain += [
+                    ('date_order', '>=', today),
+                    ('date_order', '<=', today),
+                ]
+
+            elif filter_type == 'custom' and date_from and date_to:
+                domain += [
+                    ('date_order', '>=', date_from),
+                    ('date_order', '<=', date_to),
+                ]
+        # ✅ END DATE FILTER
+
+        return { 
+            'name': action_name, 
+            'type': 'ir.actions.act_window', 
+            'res_model': 'sale.order',
             'views': [[False, 'tree'], [False, 'form'], [False, 'kanban']],
-            'domain': domain }
+            'domain': domain 
+        }
 
     @api.model
-    def action_open_my_proformas(self, state=None):
+    def action_open_my_proformas(self, state=None, payload=None):
         domain = []
 
         action_name = 'My Proformas'
+
         if state == 'draft':
             domain.append(('state', '=', 'draft'))
             action_name = 'My Draft Proformas (from Opps)'
+
         elif state == 'posted':
             domain.append(('state', '=', 'posted'))
             action_name = 'My Confirmed Proformas'
-        return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'proforma.invoice',
+
+        # ✅ DATE FILTER ADDED (ONLY THIS PART NEW)
+        if payload:
+            filter_type = payload.get('filter')
+            date_from = payload.get('date_from')
+            date_to = payload.get('date_to')
+
+            if filter_type == 'today':
+                today = fields.Date.context_today(self)
+                domain += [
+                    ('invoice_date', '>=', today),
+                    ('invoice_date', '<=', today),
+                ]
+
+            elif filter_type == 'custom' and date_from and date_to:
+                domain += [
+                    ('invoice_date', '>=', date_from),
+                    ('invoice_date', '<=', date_to),
+                ]
+        # ✅ END DATE FILTER
+
+        return { 
+            'name': action_name, 
+            'type': 'ir.actions.act_window', 
+            'res_model': 'proforma.invoice',
             'views': [[False, 'tree'], [False, 'form']],
-            'domain': domain }
+            'domain': domain 
+        }
         
     @api.model
-    def action_open_my_sales_order(self):
+    def action_open_my_sales_order(self, payload=None):
         domain = []
 
         action_name = 'My Sales Orders'
+
+        # ✅ DATE FILTER (MINIMAL ADDITION)
+        if payload:
+            filter_type = payload.get('filter')
+            date_from = payload.get('date_from')
+            date_to = payload.get('date_to')
+
+            if filter_type == 'today':
+                today = fields.Date.context_today(self)
+                domain += [
+                    ('date_order', '>=', today),
+                    ('date_order', '<=', today),
+                ]
+
+            elif filter_type == 'custom' and date_from and date_to:
+                domain += [
+                    ('date_order', '>=', date_from),
+                    ('date_order', '<=', date_to),
+                ]
+        # ✅ END
         
-        return { 'name': action_name, 'type': 'ir.actions.act_window', 'res_model': 'custom.sale.order',
+        return { 
+            'name': action_name, 
+            'type': 'ir.actions.act_window', 
+            'res_model': 'custom.sale.order',
             'views': [[False, 'tree'], [False, 'form']],
-            'domain': domain }
+            'domain': domain 
+        }

@@ -4,7 +4,7 @@
     'summary': 'Proforma Invoicing',
     'author': 'Diptiranjan',
     'category': 'Sales',
-    'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account'],
+    'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account', 'crm_17'],
     'data': [
         'security/proforma_invoice_security.xml',
         'report/proforma_invoice.xml',
@@ -18,6 +18,7 @@
         'views/sale_order_views.xml',
         'views/proforma_wizard_views.xml',
         'views/quotation_action_fix.xml',
+        'views/mail_activity_views.xml',
         'security/ir.model.access.csv',
     ],
     'assets': {

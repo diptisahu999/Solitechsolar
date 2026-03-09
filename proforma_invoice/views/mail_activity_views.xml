@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_activity_view_tree_done_dashboard" model="ir.ui.view">
+        <field name="name">mail.activity.view.tree.done.dashboard</field>
+        <field name="model">mail.activity</field>
+        <field name="arch" type="xml">
+            <tree string="Completed Activities" create="0" delete="0" decoration-danger="date_deadline &lt; current_date" decoration-success="date_deadline &gt;= current_date">
+                <field name="res_name" string="Document Name"/>
+                <field name="activity_type_id"/>
+                <field name="summary"/>
+                <field name="done_feedback" string="Feedback Message"/>
+                <field name="date_deadline" string="Due Date"/>
+                <field name="date_done" string="Completed Date"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

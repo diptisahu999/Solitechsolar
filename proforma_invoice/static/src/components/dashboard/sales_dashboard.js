@@ -15,11 +15,9 @@ class SalesDashboard extends Component {
         this.oppsByStageChartRef = useRef("oppsByStageChart");
         this.oppsBySourceChartRef = useRef("oppsBySourceChart");
         this.pipelineValueByStageChartRef = useRef("pipelineValueByStageChart");
-        this.salesOverTimeChartRef = useRef("salesOverTimeChart"); 
+        this.salesOverTimeChartRef = useRef("salesOverTimeChart");
         this.salesByCategoryChartRef = useRef("salesByCategoryChart");
-        this.teamSalesTrendChartRef = useRef("teamSalesTrendChart"); // NEW
-        this.teamMemberPerformanceChartRef = useRef("teamMemberPerformanceChart");
-        
+
         this.state = useState({
             dashboardData: {},
             isLoading: true,
@@ -30,29 +28,43 @@ class SalesDashboard extends Component {
         });
 
         onWillStart(async () => {
+            const isDrillDown = sessionStorage.getItem('dashboard_drilldown');
+            this._restoreDashboardState(isDrillDown);
+            sessionStorage.removeItem('dashboard_drilldown');
             await this.loadDashboardData();
         });
 
-         onPatched(() => {
+        onPatched(() => {
             this.destroyCharts();
             this.renderCharts();
         });
     }
 
-    // async loadDashboardData() {
-    //     this.state.isLoading = true;
-    //     try {
-    //         this.state.dashboardData = await this.orm.call(
-    //             "sales.dashboard", 
-    //             "get_dashboard_data", 
-    //             [this._getDatePayload()]
-    //         );
-    //     } catch (error) {
-    //         console.error("Error loading dashboard data:", error);
-    //     } finally {
-    //         this.state.isLoading = false;
-    //     }
-    // }
+    _restoreDashboardState(isDrillDown = false) {
+        const saved = sessionStorage.getItem('sales_dashboard_state');
+        if (!saved) {
+            this.state.dateFilter = 'all';
+            return;
+        }
+
+        const data = JSON.parse(saved);
+        this.state.activeTab = data.activeTab || 'overview';
+
+        // Reset date filters unless we are coming back from a drill-down
+        if (isDrillDown) {
+            this.state.dateFilter = data.dateFilter || 'all';
+            this.state.dateFrom = data.dateFrom || null;
+            this.state.dateTo = data.dateTo || null;
+        } else {
+            this.state.dateFilter = 'all';
+            this.state.dateFrom = null;
+            this.state.dateTo = null;
+        }
+    }
+
+    _setDrillDownFlag() {
+        sessionStorage.setItem('dashboard_drilldown', 'true');
+    }
 
     async loadDashboardData() {
         this.state.isLoading = true;
@@ -105,6 +117,7 @@ class SalesDashboard extends Component {
     async refreshDashboard() {
         this.destroyCharts();
         await this.loadDashboardData();
+        this._saveDashboardState();   // ✅ remember filter when navigating away
         // The onPatched hook will automatically call renderCharts after data is loaded and state is set
     }
 
@@ -117,7 +130,7 @@ class SalesDashboard extends Component {
 
     renderCharts() {
         if (this.state.isLoading || !this.state.dashboardData) return;
-        
+
         if (this.state.activeTab === 'opportunities' && this.state.dashboardData.opportunity_analysis) {
             this.renderOppsByStageChart();
             this.renderOppsBySourceChart();
@@ -125,9 +138,6 @@ class SalesDashboard extends Component {
         } else if (this.state.activeTab === 'quotations' && this.state.dashboardData.quotation_analysis) {
             this.renderSalesOverTimeChart();
             this.renderSalesByCategoryChart();
-        } else if (this.state.activeTab === 'team' && this.state.dashboardData.is_sales_manager) {
-            this.renderTeamSalesTrendChart();
-            this.renderTeamMemberPerformanceChart();
         }
     }
 
@@ -229,7 +239,7 @@ class SalesDashboard extends Component {
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { 
+                plugins: {
                     legend: { position: 'right' },
                     tooltip: {
                         callbacks: {
@@ -245,55 +255,7 @@ class SalesDashboard extends Component {
         });
     }
 
-    renderTeamSalesTrendChart() {
-        const canvas = this.teamSalesTrendChartRef.el;
-        if (!canvas) return;
-        const data = this.state.dashboardData.team_analysis.sales_over_time || [];
-        const ctx = canvas.getContext('2d');
-        this.charts.teamSalesTrend = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map(d => d.month),
-                datasets: [{
-                    label: 'Team Sales Revenue',
-                    data: data.map(d => d.revenue),
-                    borderColor: 'rgba(16, 185, 129, 1)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.3,
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: (value) => this.formatCurrency(value) } } }
-            }
-        });
-    }
 
-    renderTeamMemberPerformanceChart() {
-        const canvas = this.teamMemberPerformanceChartRef.el;
-        if (!canvas) return;
-        const data = this.state.dashboardData.team_analysis.member_performance || [];
-        const ctx = canvas.getContext('2d');
-        this.charts.teamMemberPerformance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.name),
-                datasets: [{
-                    label: 'Revenue',
-                    data: data.map(d => d.revenue),
-                    backgroundColor: ['#4c51bf', '#667eea', '#3b82f6', '#f59e0b', '#10b981', '#6b7280'],
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: (value) => this.formatCurrency(value) } } }
-            }
-        });
-    }
-    
     formatCurrency(value) {
         if (value === undefined || value === null) return (this.state.dashboardData.currency_symbol || '$') + '0';
         const formatter = new Intl.NumberFormat(this.user.lang.replace('_', '-'), {
@@ -353,9 +315,13 @@ class SalesDashboard extends Component {
 
     async openMyLeads() {
         try {
-            let action = await this.orm.call('sales.dashboard', 'action_open_my_leads', []);
+            const payload = this._getDatePayload()
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_leads', [payload]);
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
             else console.error("openMyLeads: invalid action", action);
         } catch (err) {
             console.error("openMyLeads error:", err);
@@ -364,9 +330,13 @@ class SalesDashboard extends Component {
 
     async openMyOpportunities() {
         try {
-            let action = await this.orm.call('sales.dashboard', 'action_open_my_opportunities', []);
+            const payload = this._getDatePayload();
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_opportunities', [payload]);
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
             else console.error("openMyOpportunities: invalid action", action);
         } catch (err) {
             console.error("openMyOpportunities error:", err);
@@ -375,9 +345,13 @@ class SalesDashboard extends Component {
 
     async openMyQuotations(state = null) {
         try {
-            let action = await this.orm.call('sales.dashboard', 'action_open_my_quotations', [state]);
+            const payload = this._getDatePayload();
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_quotations', [state, payload]);
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
             else console.error("openMyQuotations: invalid action", action);
         } catch (err) {
             console.error("openMyQuotations error:", err);
@@ -386,10 +360,20 @@ class SalesDashboard extends Component {
 
     async openMyProformas(state = null) {
         try {
-            let action = await this.orm.call('sales.dashboard', 'action_open_my_proformas', [state]);
+            const payload = this._getDatePayload();   // ⭐ get date filter
+            let action = await this.orm.call(
+                'sales.dashboard',
+                'action_open_my_proformas',
+                [state, payload]
+            );
+
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
             else console.error("openMyProformas: invalid action", action);
+
         } catch (err) {
             console.error("openMyProformas error:", err);
         }
@@ -397,9 +381,13 @@ class SalesDashboard extends Component {
 
     async openMySalesOrder() {
         try {
-            let action = await this.orm.call('sales.dashboard', 'action_open_my_sales_order', [])
+            const payload = this._getDatePayload();
+            let action = await this.orm.call('sales.dashboard', 'action_open_my_sales_order', [payload])
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
             else console.error("openMySalesOrder: invalid action", action);
         } catch (err) {
             console.error("openMySalesOrder error:", err);
@@ -416,7 +404,10 @@ class SalesDashboard extends Component {
                 domain: [['customer_rank', '>', 0]],
             };
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
         } catch (err) {
             console.error("openTopCustomers error:", err);
         }
@@ -433,10 +424,194 @@ class SalesDashboard extends Component {
                 domain: [['user_id', 'in', team_member_ids], ['type', '=', 'opportunity']],
             };
             action = this._normalizeAction(action);
-            if (action) this.action.doAction(action);
+            if (action) {
+                this._setDrillDownFlag();
+                this.action.doAction(action);
+            }
         } catch (err) {
             console.error("openTeamPipeline error:", err);
         }
+    }
+
+    async openContacts() {
+        const payload = this._getDatePayload();
+
+        let domain = [
+            ['active', '=', true],
+            ['type', '!=', 'private'],
+            ['parent_id', '=', false],
+        ];
+
+        // Apply date filter
+        if (payload.filter === 'today') {
+            const today = new Date().toISOString().split('T')[0];
+            domain.push(['create_date', '>=', today]);
+            domain.push(['create_date', '<=', today]);
+        }
+        else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['create_date', '>=', payload.date_from]);
+            domain.push(['create_date', '<=', payload.date_to]);
+        }
+
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Contacts',
+            res_model: 'res.partner',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+        });
+    }
+
+    // today - //new Date().toISOString().split('T')[0]; //UTC date
+    async openContactActivitiesDone() {
+        const payload = this._getDatePayload();
+        let domain = [
+            ['res_model', '=', 'res.partner'],
+            ['active', '=', false],
+        ];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['date_done', '>=', today], ['date_done', '<=', today]);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['date_done', '>=', payload.date_from], ['date_done', '<=', payload.date_to]);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Completed Contact Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false, search_default_my_activities: 1, tree_view_ref: 'proforma_invoice.mail_activity_view_tree_done_dashboard' }
+        });
+    }
+
+    async openContactActivitiesCreated() {
+        const payload = this._getDatePayload();
+        let domain = [['res_model', '=', 'res.partner']];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['create_date', '>=', today + ' 00:00:00'], ['create_date', '<=', today + ' 23:59:59']);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['create_date', '>=', payload.date_from + ' 00:00:00'], ['create_date', '<=', payload.date_to + ' 23:59:59']);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Created Contact Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false }
+        });
+    }
+
+    async openLeadActivitiesDone() {
+        const payload = this._getDatePayload();
+        const leadIds = await this.orm.search('crm.lead', [['type', '!=', 'opportunity']]);
+        let domain = [
+            ['res_model', '=', 'crm.lead'],
+            ['res_id', 'in', leadIds],
+            ['active', '=', false],
+        ];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['date_done', '>=', today], ['date_done', '<=', today]);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['date_done', '>=', payload.date_from], ['date_done', '<=', payload.date_to]);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Completed Lead Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false, tree_view_ref: 'proforma_invoice.mail_activity_view_tree_done_dashboard' }
+        });
+    }
+
+    async openLeadActivitiesCreated() {
+        const payload = this._getDatePayload();
+        const leadIds = await this.orm.search('crm.lead', [['type', '!=', 'opportunity']]);
+        let domain = [['res_model', '=', 'crm.lead'], ['res_id', 'in', leadIds]];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['create_date', '>=', today + ' 00:00:00'], ['create_date', '<=', today + ' 23:59:59']);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['create_date', '>=', payload.date_from + ' 00:00:00'], ['create_date', '<=', payload.date_to + ' 23:59:59']);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Created Lead Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false }
+        });
+    }
+
+    async openOpportunityActivitiesDone() {
+        const payload = this._getDatePayload();
+        const oppIds = await this.orm.search('crm.lead', [['type', '=', 'opportunity']]);
+        let domain = [
+            ['res_model', '=', 'crm.lead'],
+            ['res_id', 'in', oppIds],
+            ['active', '=', false],
+        ];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['date_done', '>=', today], ['date_done', '<=', today]);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['date_done', '>=', payload.date_from], ['date_done', '<=', payload.date_to]);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Completed Opportunity Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false, tree_view_ref: 'proforma_invoice.mail_activity_view_tree_done_dashboard' }
+        });
+    }
+
+    async openOpportunityActivitiesCreated() {
+        const payload = this._getDatePayload();
+        const oppIds = await this.orm.search('crm.lead', [['type', '=', 'opportunity']]);
+        let domain = [['res_model', '=', 'crm.lead'], ['res_id', 'in', oppIds]];
+        if (payload.filter === 'today') {
+            const today = luxon.DateTime.local().toISODate();
+            domain.push(['create_date', '>=', today + ' 00:00:00'], ['create_date', '<=', today + ' 23:59:59']);
+        } else if (payload.filter === 'custom' && payload.date_from && payload.date_to) {
+            domain.push(['create_date', '>=', payload.date_from + ' 00:00:00'], ['create_date', '<=', payload.date_to + ' 23:59:59']);
+        }
+        this._setDrillDownFlag();
+        this.action.doAction({
+            type: 'ir.actions.act_window',
+            name: 'Created Opportunity Activities',
+            res_model: 'mail.activity',
+            view_mode: 'tree,form',
+            views: [[false, 'list'], [false, 'form']],
+            domain: domain,
+            context: { active_test: false }
+        });
+    }
+
+    _saveDashboardState() {
+        sessionStorage.setItem('sales_dashboard_state', JSON.stringify({
+            activeTab: this.state.activeTab,
+            dateFilter: this.state.dateFilter,
+            dateFrom: this.state.dateFrom,
+            dateTo: this.state.dateTo,
+        }));
     }
 }
 

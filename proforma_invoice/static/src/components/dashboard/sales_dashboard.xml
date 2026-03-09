@@ -51,9 +51,6 @@
                         <li class="nav-item">
                             <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'quotations' }" href="#" t-on-click.prevent="() => state.activeTab = 'quotations'">Sales &amp; Revenue</a>
                         </li>
-                        <li t-if="state.dashboardData.is_sales_manager" class="nav-item">
-                             <a class="nav-link" t-att-class="{ 'active': state.activeTab === 'team' }" href="#" t-on-click.prevent="() => state.activeTab = 'team'">Team Performance</a>
-                        </li>
                     </ul>
 
                     <div class="tab-content">
@@ -64,9 +61,58 @@
                                 <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" ><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-info text-white me-3"><i class="fa fa-line-chart"/></div><div><p class="text-muted mb-0 small">Pipeline Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.pipeline_overview.pipeline_revenue)"/></h3></div></div></div></div>
                                 <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" ><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-bullseye"/></div><div><p class="text-muted mb-0 small">Lead Conversion</p><h3 class="mb-0"><t t-esc="state.dashboardData.pipeline_overview.conversion_rate"/></h3></div></div></div></div>
                                 <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="openMySalesOrder"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success text-white me-3"><i class="fa fa-check-square-o"/></div><div><p class="text-muted mb-0 small">Confirmed Orders</p><h3 class="mb-0"><t t-esc="state.dashboardData.quotation_analysis.confirmed_count"/></h3></div></div></div></div>
-                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="openMyQuotations"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-inr"/></div><div><p class="text-muted mb-0 small">Sales Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.confirmed_revenue)"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="() => this.openMyQuotations('confirmed')"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-inr"/></div><div><p class="text-muted mb-0 small">Sales Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.confirmed_revenue)"/></h3></div></div></div></div>
                                 <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" ><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-success-dark text-white me-3"><i class="fa fa-balance-scale"/></div><div><p class="text-muted mb-0 small">Avg. Order Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.quotation_analysis.average_order_value)"/></h3></div></div></div></div>
-                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="openMyProformas"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-secondary text-white me-3"><i class="fa fa-file-text-o"/></div><div><p class="text-muted mb-0 small">Confirmed Proformas</p><h3 class="mb-0"><t t-esc="state.dashboardData.proforma_analysis.posted_count"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="() => this.openMyProformas('posted')"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-secondary text-white me-3"><i class="fa fa-file-text-o"/></div><div><p class="text-muted mb-0 small">Confirmed Proformas</p><h3 class="mb-0"><t t-esc="state.dashboardData.proforma_analysis.posted_count"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4"><div class="card kpi-card h-100" t-on-click="openContacts"><div class="card-body d-flex align-items-center"><div class="kpi-icon bg-danger text-white me-3"> <i class="fa fa-address-book"/></div><div><p class="text-muted mb-0 small">Contacts</p><h3 class="mb-0"><t t-esc="state.dashboardData.contacts_analysis?.total_contacts || 0"/></h3></div></div></div></div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100" t-on-click="openContactActivitiesDone">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="kpi-icon bg-danger text-white me-3"><i class="fa fa-tasks"/></div>
+                                            <div>
+                                                <p class="text-muted mb-0 small">Contact Activities</p>
+                                                <h3 class="mb-0">
+                                                    <t t-esc="state.dashboardData.contact_activities?.total_contact_activities_done || 0"/> Done 
+                                                    <small class="text-primary cursor-pointer hover-underline" style="font-size: 0.61em; margin-left: 5px;" t-on-click.stop="openContactActivitiesCreated">
+                                                        (<t t-esc="state.dashboardData.contact_activities?.total_contact_activities_created || 0"/> New)
+                                                    </small>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100" t-on-click="openLeadActivitiesDone">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="kpi-icon bg-danger text-white me-3"><i class="fa fa-tasks"/></div>
+                                            <div>
+                                                <p class="text-muted mb-0 small">Lead Activities</p>
+                                                <h3 class="mb-0">
+                                                    <t t-esc="state.dashboardData.lead_activities?.total_lead_activities_done || 0"/> Done
+                                                    <small class="text-primary cursor-pointer hover-underline" style="font-size: 0.6em; margin-left: 5px;" t-on-click.stop="openLeadActivitiesCreated">
+                                                        (<t t-esc="state.dashboardData.lead_activities?.total_lead_activities_created || 0"/> New)
+                                                    </small>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-6 mb-4">
+                                    <div class="card kpi-card h-100" t-on-click="openOpportunityActivitiesDone">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="kpi-icon bg-danger text-white me-3"><i class="fa fa-tasks"/></div>
+                                            <div>
+                                                <p class="text-muted mb-0 small">Opportunity Activities</p>
+                                                <h3 class="mb-0">
+                                                    <t t-esc="state.dashboardData.opportunity_activities?.total_opportunity_activities_done || 0"/> Done
+                                                    <small class="text-primary cursor-pointer hover-underline" style="font-size: 0.6em; margin-left: 5px;" t-on-click.stop="openOpportunityActivitiesCreated">
+                                                        (<t t-esc="state.dashboardData.opportunity_activities?.total_opportunity_activities_created || 0"/> New)
+                                                    </small>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </t>
 
@@ -182,42 +228,6 @@
                                     <div class="card h-100"><div class="card-header">Sales by Product Category</div><div class="card-body"><div style="height: 300px;"><canvas t-ref="salesByCategoryChart"/></div></div></div>
                                 </div>
                             </div>
-                        </t>
-
-                        <t t-if="state.activeTab === 'team'">
-                            <t t-if="state.dashboardData.team_analysis and state.dashboardData.team_analysis.overview">
-                                <div class="row mb-4">
-                                    <div class="col-lg col-6 mb-4">
-                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Leads</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.leads_count"/></h3></div></div>
-                                    </div>
-                                    <div class="col-lg col-6 mb-4">
-                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Opportunities</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.opportunities_count"/></h3></div></div>
-                                    </div>
-                                    <div class="col-lg col-6 mb-4">
-                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Pipeline Value</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.team_analysis.overview.pipeline_revenue)"/></h3></div></div>
-                                    </div>
-                                    <div class="col-lg col-6 mb-4">
-                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Revenue</p><h3 class="mb-0"><t t-esc="formatCurrency(state.dashboardData.team_analysis.overview.total_revenue)"/></h3></div></div>
-                                    </div>
-                                    <div class="col-lg col-6 mb-4">
-                                        <div class="card kpi-card h-100"><div class="card-body text-center"><p class="text-muted mb-1 small">Team Win Rate</p><h3 class="mb-0"><t t-esc="state.dashboardData.team_analysis.overview.win_rate"/></h3></div></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-8 mb-4">
-                                        <div class="card h-100"><div class="card-header">Team's 12-Month Sales Trend</div><div class="card-body"><div style="height: 350px;"><canvas t-ref="teamSalesTrendChart"/></div></div></div>
-                                    </div>
-                                    <div class="col-lg-4 mb-4">
-                                        <div class="card h-100"><div class="card-header">Revenue Contribution by Member</div><div class="card-body"><div style="height: 350px;"><canvas t-ref="teamMemberPerformanceChart"/></div></div></div>
-                                    </div>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="alert alert-info" role="alert">
-                                    <i class="fa fa-info-circle me-2"/>
-                                    Team performance data could not be loaded. To view this tab, please ensure you are set as the "Team Leader" of a Sales Team in the CRM app.
-                                </div>
-                            </t>
                         </t>
                     </div>
                 </div>
