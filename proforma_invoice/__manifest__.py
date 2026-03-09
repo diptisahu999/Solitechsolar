@@ -4,7 +4,7 @@
     'summary': 'Proforma Invoicing',
     'author': 'Diptiranjan',
     'category': 'Sales',
-    'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account', 'crm_17'],
+    'depends': ['base', 'mail','sale', 'product', 'sale_management', 'project', 'contacts', 'crm', 'web','l10n_in', 'account'],
     'data': [
         'security/proforma_invoice_security.xml',
         'report/proforma_invoice.xml',
