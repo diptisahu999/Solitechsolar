@@ -154,7 +154,7 @@ class InheritPartner(models.Model):
         }
     
     def action_open_workflow_contact_image(self):
-        IMAGE_ATTACHMENT_ID = 1547
+        IMAGE_ATTACHMENT_ID = 2199
 
         return {
             'type': 'ir.actions.act_url',
