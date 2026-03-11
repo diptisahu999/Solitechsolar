@@ -249,7 +249,7 @@ class InheritCRM(models.Model):
         }
     
     def action_open_workflow_image(self):
-        IMAGE_ATTACHMENT_ID = 1548
+        IMAGE_ATTACHMENT_ID = 2240
 
         return {
             'type': 'ir.actions.act_url',

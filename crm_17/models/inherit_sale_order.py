@@ -402,7 +402,7 @@ class InheritSaleOrder(models.Model):
         }
     
     def action_open_workflow_sale_image(self):
-        IMAGE_ATTACHMENT_ID = 1549
+        IMAGE_ATTACHMENT_ID = 2196
 
         return {
             'type': 'ir.actions.act_url',
