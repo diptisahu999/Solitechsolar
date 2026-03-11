@@ -104,7 +104,7 @@ class ProformaInvoice(models.Model):
     
 
     def action_open_help_pi(self):
-        HELP_ATTACHMENT_ID = 1546
+        HELP_ATTACHMENT_ID = 2242
         return {
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',

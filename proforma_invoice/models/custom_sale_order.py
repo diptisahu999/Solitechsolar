@@ -65,7 +65,7 @@ class CustomSaleOrder(models.Model):
 
 
     def action_open_help_so(self):
-        HELP_ATTACHMENT_ID = 1545  # your PDF attachment ID
+        HELP_ATTACHMENT_ID = 2241  # your PDF attachment ID
         return {
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{HELP_ATTACHMENT_ID}?download=false',
