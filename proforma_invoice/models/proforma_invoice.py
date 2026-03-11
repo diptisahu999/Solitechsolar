@@ -112,7 +112,7 @@ class ProformaInvoice(models.Model):
         }
     
     def action_open_workflow_pi_image(self):
-        IMAGE_ATTACHMENT_ID = 1551
+        IMAGE_ATTACHMENT_ID = 2198
 
         return {
             'type': 'ir.actions.act_url',

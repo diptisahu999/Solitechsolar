@@ -73,7 +73,7 @@ class CustomSaleOrder(models.Model):
         }
     
     def action_open_workflow_so_image(self):
-        IMAGE_ATTACHMENT_ID = 1550
+        IMAGE_ATTACHMENT_ID = 2197
 
         return {
             'type': 'ir.actions.act_url',
