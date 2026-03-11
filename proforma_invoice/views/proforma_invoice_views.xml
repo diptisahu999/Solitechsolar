@@ -200,7 +200,18 @@
             ref="proforma_invoice.proforma_invoice_view_search"/>
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
-                <filter string="PI Draft" name="pi_draft" domain="[('state','=','draft')]"/>
+                <!-- My Drafts (NEW) -->
+                <filter string="My Draft" name="pi_draft" 
+                domain="[
+                        ('state','=','draft'), 
+                        ('user_id','=',uid)
+                    ]"
+                />
+                <!-- All Drafts (NEW) -->
+                <filter string="PI Draft" name="all_draft" domain="[('state','=','draft')]"/>
+                <separator/>
+                <filter string="PI Confirmed" name="all_confirmed" domain="[('state','=','posted')]"/>
+                <filter string="Cancelled" name="all_cancel" domain="[('state','=','cancel')]"/>
             </xpath>
         </field>
     </record>
