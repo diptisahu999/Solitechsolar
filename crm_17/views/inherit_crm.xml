@@ -693,4 +693,19 @@
         </field>
     </record>
 
+
+    <!-- My 'Quotations' filter -->
+    <record id="sale_order_search_add_my_draft_filter" model="ir.ui.view">
+        <field name="name">sale.order.search.add.my.draft.filter</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="My Draft Quotations"
+                        name="my_draft_quotations"
+                        domain="[('state','=','draft'), ('user_id','=',uid)]"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

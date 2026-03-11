@@ -5,6 +5,8 @@ from odoo.osv import expression
 from odoo.exceptions import AccessError
 from odoo.tools import date_utils, email_split, is_html_empty, groupby, parse_contact_from_email, html_to_inner_content
 import re
+from odoo.tools.safe_eval import safe_eval
+
 
 class InheritCRM(models.Model):
     _inherit = "crm.lead"
@@ -758,3 +760,31 @@ class CrmLeadUpdateContactSalesPerson(models.Model):
         for lead in self:
             if lead.partner_id:
                 lead.contact_name = lead.partner_id.person_contacts or False
+
+
+# My 'Quotations' filter
+class SaleOrderAction(models.Model):
+    _inherit = 'ir.actions.act_window'
+
+    def read(self, fields=None, load='_classic_read'):
+        res = super().read(fields, load)
+
+        for action in res:
+            # Only affect Quotations menu
+            if action.get('xml_id') == 'sale.action_quotations':
+
+                ctx = action.get('context') or {}
+
+                # Context stored as string → convert safely
+                if isinstance(ctx, str):
+                    ctx = safe_eval(ctx)
+
+                # Inject your dynamic filters
+                ctx.update({
+                    'search_default_only_draft': 1,
+                    'search_default_my_draft_quotations': 1,
+                })
+
+                action['context'] = ctx
+
+        return res
