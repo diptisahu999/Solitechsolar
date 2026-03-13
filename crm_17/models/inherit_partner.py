@@ -7,6 +7,21 @@ from odoo.tools import html_to_inner_content
 class InheritPartner(models.Model):
     _inherit = "res.partner"
     _order = 'id desc'
+    
+    @api.depends('name', 'person_contacts', 'street')
+    def _compute_display_name(self):
+        super()._compute_display_name()
+        if self.env.context.get('show_person_contacts_street'):
+            for partner in self:
+                contact_name = partner.person_contacts
+                if contact_name:
+                    if partner.street:
+                        partner.display_name = f"{contact_name}, {partner.street}"
+                    else:
+                        partner.display_name = contact_name
+                elif partner.street:
+                    partner.display_name = partner.street
+                # Else fallback to default display_name from super()
 
     # [Your existing fields]
     name = fields.Char("Company Name", index=True, default_export_compatible=True)

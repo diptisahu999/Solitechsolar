@@ -59,9 +59,9 @@
                     </div>
                         <group>
                             <group>
-                                <field name="partner_id" string="Contact" domain="[('parent_id','=',partner_id)]"/>
+                                <field name="partner_id" string="Contact" widget="res_partner_many2one" context="{'show_address': 1}" options='{"always_reload": True}' readonly="1"/>
                                 <!-- <button name="action_open_partner_view" type="object"/> -->
-                                <field name="partner_shipping_id" string="Place of supply" domain="[('parent_id','=',partner_id)]" options="{'no_create': True, 'no_quick_create': True}"  create="false"/>
+                                <field name="partner_shipping_id" string="Place of supply" domain="[('parent_id', '=', partner_id)]" widget="res_partner_many2one" options="{'no_create': True, 'show_address': True, 'show_vat': True, 'always_reload': True}" context="{'show_person_contacts_street': 1}"/>
                                 <!-- <field name="l10n_in_gst_treatment" string="GST Treatment"/> -->
                             </group>
 

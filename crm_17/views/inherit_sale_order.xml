@@ -13,7 +13,7 @@
                  <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='sale_order_template_id']" position="after" >
-                 <field name="place_of_supply" options="{'no_create': True}"/>
+                 <field name="place_of_supply" widget="res_partner_many2one" options="{'no_create': True, 'show_address': True, 'show_vat': True}" context="{'show_person_contacts_street': 1}"/>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before" >
                 <field name = "image_128" widget="image" class="oe_avatar"/>
