@@ -731,21 +731,27 @@ class CrmLeadAccess(models.Model):
         )
 
 
-# if CRM Salesperson doesn't match with Selected Contact Salesperson
-# Contact SalesPerson = CRM Lead SalesPerson
 class CrmLeadUpdateContactSalesPerson(models.Model):
     _inherit = 'crm.lead'
 
     @api.model
     def create(self, vals):
         lead = super().create(vals)
-        lead._sync_contact_salesperson()
+
+        # Run only if salesperson is set during creation
+        if 'user_id' in vals:
+            lead._sync_contact_salesperson()
+
         return lead
 
     def write(self, vals):
         res = super().write(vals)
-        for lead in self:
-            lead._sync_contact_salesperson()
+
+        # Run only if salesperson is updated
+        if 'user_id' in vals:
+            for lead in self:
+                lead._sync_contact_salesperson()
+
         return res
 
     def _sync_contact_salesperson(self):
