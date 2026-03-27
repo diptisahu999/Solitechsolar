@@ -737,21 +737,13 @@ class CrmLeadUpdateContactSalesPerson(models.Model):
     @api.model
     def create(self, vals):
         lead = super().create(vals)
-
-        # Run only if salesperson is set during creation
-        if 'user_id' in vals:
-            lead._sync_contact_salesperson()
-
+        lead._sync_contact_salesperson()
         return lead
 
     def write(self, vals):
         res = super().write(vals)
-
-        # Run only if salesperson is updated
-        if 'user_id' in vals:
-            for lead in self:
-                lead._sync_contact_salesperson()
-
+        for lead in self:
+            lead._sync_contact_salesperson()
         return res
 
     def _sync_contact_salesperson(self):
