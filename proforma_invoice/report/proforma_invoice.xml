@@ -45,15 +45,14 @@
                         }
                         /* Page styling with header and footer space */
                         .proforma-page {
-                            zoom: 0.88;
+                            zoom: 0.85;
                             line-height: 1.05;
                             padding: 8px;
                             margin: 0;
                             position: relative;
-                            min-height: 370mm;
-                            padding-top: 120px;
-                            padding-bottom: 240px;
-                            page-break-after: always;
+                            min-height: 280mm;
+                            padding-top: 100px;
+                            padding-bottom: 220px;
                         }
                         /* Header styling - repeats on all pages */
                         .page-header {
@@ -122,7 +121,7 @@
                         }
                         .report-footer {
                             position: absolute;
-                            bottom: 10px;
+                            bottom: 0px;
                             left: 8px;
                             right: 8px;
                             width: calc(100% - 16px);
