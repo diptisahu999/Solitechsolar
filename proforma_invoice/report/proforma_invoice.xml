@@ -51,7 +51,7 @@
                             margin: 0;
                             position: relative;
                             min-height: 280mm;
-                            padding-top: 100px;
+                            padding-top: 170px;
                             padding-bottom: 220px;
                         }
                         /* Header styling - repeats on all pages */
@@ -152,6 +152,8 @@
                         <field name="margin_right"></field>
                         <field name="header_line" eval="False"/>
                         <field name="disable_shrinking" eval="False"/>
+                        <field name="header_spacing"></field>
+                        <field name="dpi"></field>
                     </record>
 
                     <!-- link this paperformat to your report action -->
@@ -167,7 +169,7 @@
                     </record>
 
                     <!-- PAGE 1: Header + Main Content + Footer -->
-                    <div class="page proforma-page">
+                    <div class="page proforma-page" style="page-break-after: always;">
                         <!-- Header with Document Info -->
                         <div class="page-header">
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 5px;">
