@@ -74,12 +74,12 @@
                         }
                         .page {
                             position: relative; /* Essential: makes 'position: absolute' in report-footer relative to the page */
-                            min-height: 297mm; /* Assuming standard A4 height to help with positioning */
+                            min-height: 280mm; /* Adjusted to fit within A4 printable area (297mm - margins) */
                             padding-bottom: 120px; /* Add padding at the bottom to reserve space for the footer */
                         }
                         .report-footer {
                             position: absolute;
-                            bottom: -10px;
+                            bottom: 0px;
                             width: 100%; /* Spanning full width */
                             box-sizing: border-box;
                         }
