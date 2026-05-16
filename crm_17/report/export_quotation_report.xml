@@ -426,7 +426,7 @@
                                             <span t-esc="o.company_id.bank_name"/>
                                         </td>
                                         <td class="value-cell" style="padding:4px;">
-                                            <strong>DCR Type: </strong>
+                                            <strong>Product Type: </strong>
                                             <span t-esc="dict(o._fields['special_instruction_dcr'].selection).get(o.special_instruction_dcr, '') if o.special_instruction_dcr else ''"/>
                                         </td>
                                     </tr>
