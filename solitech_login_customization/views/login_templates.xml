@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="login_layout_hide_footer" inherit_id="web.login_layout" name="Hide Login Footer">
+        <!-- Hide the entire footer div that contains Manage Databases and Powered by Odoo -->
+        <xpath expr="//div[@t-if='not disable_footer']" position="replace">
+            <!-- Replaced with nothing to hide it -->
+        </xpath>
+    </template>
+
+    <template id="login_hide_signup_reset" inherit_id="auth_signup.login" name="Hide Signup and Reset Password">
+        <!-- Hide the signup and reset password links -->
+        <xpath expr="//div[hasclass('justify-content-between', 'mt-2', 'd-flex', 'small')]" position="replace">
+            <!-- Replaced with nothing to hide it -->
+        </xpath>
+    </template>
+</odoo>
