@@ -73,15 +73,25 @@
                             margin: 0;
                         }
                         .page {
-                            position: relative; /* Essential: makes 'position: absolute' in report-footer relative to the page */
-                            min-height: 280mm; /* Adjusted to fit within A4 printable area (297mm - margins) */
-                            padding-bottom: 120px; /* Add padding at the bottom to reserve space for the footer */
+                            position: relative;
+                            min-height: 210mm; /* content area min-height; total = 210mm + 65mm padding = 275mm (fits A4 ~277mm printable) */
+                            padding-bottom: 65mm; /* reserves space for footer below content */
+                            /* NO box-sizing: border-box — keeps min-height as content-only so div grows with content */
                         }
                         .report-footer {
                             position: absolute;
-                            bottom: 0px;
-                            width: 100%; /* Spanning full width */
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
                             box-sizing: border-box;
+                            page-break-inside: avoid;
+                        }
+                        .report-footer table {
+                            page-break-inside: avoid;
+                        }
+                        .report-footer tr {
+                            page-break-inside: avoid;
+                            page-break-after: avoid;
                         }
                     </style>
 
