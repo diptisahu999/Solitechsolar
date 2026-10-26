@@ -15,7 +15,7 @@
                         }
                         .excel-table td, .excel-table th {
                             border: 1px solid #000;
-                            padding: 4px 6px;
+                            padding: 3px 5px;
                             font-size: 11px;
                             vertical-align: top;
                         }
@@ -43,26 +43,22 @@
                         .note-content p {
                             margin: 0;
                         }
-                        /* Page styling with header and footer space */
+                        /* Page styling with bottom-pinned footer */
                         .proforma-page {
                             zoom: 0.85;
-                            line-height: 1.05;
-                            padding: 8px;
+                            line-height: 1.1;
+                            padding: 0;
                             margin: 0;
                             position: relative;
-                            min-height: 280mm;
-                            padding-top: 170px;
-                            padding-bottom: 220px;
+                            min-height: 422mm;
+                            padding-bottom: 120px;
+                            box-sizing: border-box;
                         }
-                        /* Header styling - repeats on all pages */
+                        /* Header styling */
                         .page-header {
-                            position: absolute;
-                            top: 0px;
-                            left: 8px;
-                            right: 8px;
-                            width: calc(100% - 16px);
+                            width: 100%;
                             background: white;
-                            z-index: 10;
+                            margin-bottom: 4px;
                             box-sizing: border-box;
                         }
                         .terms-wrapper {
@@ -122,11 +118,10 @@
                         .report-footer {
                             position: absolute;
                             bottom: 0px;
-                            left: 8px;
-                            right: 8px;
-                            width: calc(100% - 16px);
+                            left: 0;
+                            right: 0;
+                            width: 100%;
                             background: white;
-                            z-index: 10;
                             box-sizing: border-box;
                         }
                         .page-break {
@@ -140,33 +135,6 @@
                         }
 
                     </style>
-
-                    <!-- A4 LANDSCAPE with very small margins -->
-                    <record id="paperformat_proforma_onepage" model="report.paperformat">
-                        <field name="name"></field>
-                        <field name="format"></field>
-                        <field name="orientation"></field>
-                        <field name="margin_top"></field>
-                        <field name="margin_bottom"></field>
-                        <field name="margin_left"></field>
-                        <field name="margin_right"></field>
-                        <field name="header_line" eval="False"/>
-                        <field name="disable_shrinking" eval="False"/>
-                        <field name="header_spacing"></field>
-                        <field name="dpi"></field>
-                    </record>
-
-                    <!-- link this paperformat to your report action -->
-                    <record id="action_report_proforma" model="ir.actions.report">
-                        <field name="name"></field>
-                        <field name="model"></field>
-                        <field name="report_type"></field>
-                        <field name="report_name"></field>
-                        <field name="report_file"></field>
-                        <field name="binding_model_id" ref="model_proforma_invoice"/>
-                        <field name="binding_type"></field>
-                        <field name="paperformat_id" ref="paperformat_proforma_onepage"/>
-                    </record>
 
                     <!-- PAGE 1: Header + Main Content + Footer -->
                     <div class="page proforma-page" style="page-break-after: always;">
@@ -425,7 +393,7 @@
                         </table>
 
                         <!-- Commercial Terms -->
-                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:5px; margin-bottom: 69px;">
+                        <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:5px;">
                             <thead><tr><td colspan="6" class="section-header">Commercial Terms</td></tr></thead>
                             <tbody>
                                 <tr>

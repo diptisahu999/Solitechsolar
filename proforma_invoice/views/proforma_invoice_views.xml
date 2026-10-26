@@ -10,6 +10,7 @@
         <field name="print_report_name">'%s - %s' % (object.name.replace('/','_'), object.partner_id.name)</field>
         <field name="binding_model_id" ref="model_proforma_invoice"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="proforma_invoice.paperformat_proforma_one_page"/>
     </record>
 
     <record id="proforma_invoice_view_form" model="ir.ui.view">
