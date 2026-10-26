@@ -50,9 +50,11 @@
                             padding: 0;
                             margin: 0;
                             position: relative;
-                            min-height: 422mm;
+                            height: 335mm;
+                            max-height: 335mm;
                             padding-bottom: 120px;
                             box-sizing: border-box;
+                            page-break-inside: avoid !important;
                         }
                         /* Header styling */
                         .page-header {
@@ -123,6 +125,10 @@
                             width: 100%;
                             background: white;
                             box-sizing: border-box;
+                            page-break-inside: avoid !important;
+                        }
+                        .report-footer table, .report-footer tr, .report-footer td {
+                            page-break-inside: avoid !important;
                         }
                         .page-break {
                             page-break-after: always;
