@@ -75,7 +75,7 @@
                         .page {
                             position: relative;
                             min-height: 247mm; /* A4 (297mm) minus top+bottom margins */
-                            padding-bottom: 52mm; /* reserve space for footer - prevents overlap */
+                            padding-bottom: 65mm; /* reserve space for footer - prevents overlap */
                             box-sizing: border-box;
                         }
                         .page-content {
@@ -88,6 +88,13 @@
                             width: 100%;
                             box-sizing: border-box;
                             page-break-inside: avoid;
+                        }
+                        .report-footer table {
+                            page-break-inside: avoid;
+                        }
+                        .report-footer tr {
+                            page-break-inside: avoid;
+                            page-break-after: avoid;
                         }
                     </style>
 
@@ -533,9 +540,9 @@
                         </div><!-- end page-content -->
                         <div class="report-footer">
 
-                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
+                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid; page-break-before: avoid;">
                                     <tbody>
-                                        <tr style="border-bottom: 1px solid #000;">
+                                        <tr style="border-bottom: 1px solid #000; page-break-inside: avoid;">
                                             <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
                                                 <strong>Prepared By</strong>
                                             </td>
@@ -728,7 +735,7 @@
                     
                         </div><!-- end page-content -->
                         <div class="report-footer">
-                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
+                                <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid; page-break-before: avoid;">
                                     <tbody>
                                         <tr style="border-bottom: 1px solid #000;">
                                             <td colspan="2" style="width:33.33%; padding:4px; border-right: 1px solid #000;">
