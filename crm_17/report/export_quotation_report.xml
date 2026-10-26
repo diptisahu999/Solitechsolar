@@ -73,20 +73,27 @@
                             margin: 0;
                         }
                         .page {
-                            position: relative; /* Essential: makes 'position: absolute' in report-footer relative to the page */
-                            min-height: 280mm; /* Adjusted to fit within A4 printable area (297mm - margins) */
-                            padding-bottom: 120px; /* Add padding at the bottom to reserve space for the footer */
+                            position: relative;
+                            min-height: 247mm; /* A4 (297mm) minus top+bottom margins */
+                            padding-bottom: 52mm; /* reserve space for footer - prevents overlap */
+                            box-sizing: border-box;
+                        }
+                        .page-content {
+                            width: 100%;
                         }
                         .report-footer {
                             position: absolute;
-                            bottom: 0px;
-                            width: 100%; /* Spanning full width */
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
                             box-sizing: border-box;
+                            page-break-inside: avoid;
                         }
                     </style>
 
                     <div class="page">
                         <t t-set="print_type" t-value="env.context.get('print_type')"/>
+                        <div class="page-content">
 
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                                 <tr>
@@ -523,7 +530,8 @@
                                     </tbody>
                                 </table>
 
-                            <div class="report-footer">
+                        </div><!-- end page-content -->
+                        <div class="report-footer">
 
                                 <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
                                     <tbody>
@@ -587,7 +595,8 @@
                     <div class="page-break"/>
 
                     <div class="page">
-                        
+                        <div class="page-content">
+
                             <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
                                 <tr>
                                     <td style="width: 100%; text-align: left; vertical-align: top;">
@@ -717,7 +726,8 @@
                                     </tbody>
                             </table>
                     
-                            <div class="report-footer">
+                        </div><!-- end page-content -->
+                        <div class="report-footer">
                                 <table class="excel-table" style="width:100%; border-collapse: collapse; border: 1px solid #000; text-align: center; page-break-inside: avoid;">
                                     <tbody>
                                         <tr style="border-bottom: 1px solid #000;">
