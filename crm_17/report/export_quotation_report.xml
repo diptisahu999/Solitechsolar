@@ -74,9 +74,10 @@
                         }
                         .page {
                             position: relative;
-                            height: 275mm;
-                            min-height: 275mm;
+                            height: 320mm;
+                            min-height: 320mm;
                             box-sizing: border-box;
+                            padding-bottom: 35mm;
                         }
                         .report-footer {
                             position: absolute;
@@ -97,9 +98,10 @@
                         /* Page 2: Terms and Conditions - footer pinned to bottom of page (page last) */
                         .page-terms {
                             position: relative;
-                            height: 275mm;
-                            min-height: 275mm;
+                            height: 320mm;
+                            min-height: 320mm;
                             box-sizing: border-box;
+                            padding-bottom: 35mm;
                         }
                         .page-terms .report-footer {
                             position: absolute;
