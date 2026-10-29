@@ -73,11 +73,17 @@
                             margin: 0;
                         }
                         .page {
-                            /* Page 1: normal document flow to prevent any overwrite of Commercial Terms */
+                            position: relative;
+                            height: 275mm;
+                            min-height: 275mm;
+                            box-sizing: border-box;
                         }
                         .report-footer {
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
                             width: 100%;
-                            margin-top: 6px;
+                            margin-top: 0;
                             page-break-inside: avoid;
                             page-break-before: avoid;
                         }
